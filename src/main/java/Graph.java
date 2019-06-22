@@ -6,11 +6,8 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import pure_pursuit.PathGenerator;
-import pure_pursuit.VelocityConstraints;
-import pure_pursuit.Waypoint;
+import pure_pursuit.BezierPoint;
 import pure_pursuit.Path;
-import pure_pursuit.enums.PathType;
 import pure_pursuit.paths.BezierCurvePath;
 
 import javax.swing.*;
@@ -19,89 +16,55 @@ import java.awt.geom.Point2D;
 
 public class Graph {
 
-	public double[] colorByVelocity;
-
 	public Graph(final String title) {
-		XYSeries pathSeries = new XYSeries("path", false);
-		XYSeries velocitySeries = new XYSeries("velocity", false);
+		XYSeries pathSeries = new XYSeries("Path", false);
+		BezierPoint[] waypoints = new BezierPoint[2];
+		waypoints[0] = new BezierPoint(new Point2D.Double(0, 0), new Point2D.Double(10, 0));
+		waypoints[1] = new BezierPoint(new Point2D.Double(10, 5), new Point2D.Double(0, 5));
 
-		Waypoint[] waypoints = new Waypoint[2];
-		waypoints[0] = new Waypoint(new Point2D.Double(0, 0), new Point2D.Double(10, 0));
-		waypoints[1] = new Waypoint(new Point2D.Double(10, 5), new Point2D.Double(0, 5));
-
-		PathGenerator generator = new PathGenerator(PathType.BEZIER_CURVE_PATH, new VelocityConstraints(2,3));
-		Path path = generator.generate(waypoints, 200);
-
-		colorByVelocity = new double[path.length()];
+		Path path = new Path(2, 5, new BezierCurvePath(waypoints, 200));
+		path.generatePath();
 		for (int i = 0; i < path.length(); i++) {
-			pathSeries.add(path.get(i).getX(), path.get(i).getY());
-			velocitySeries.add(path.get(i).getPosition(), path.get(i).getVelocity());
-
-			if(path.get(i).getVelocity() < path.getMaxVelocity()){
-				colorByVelocity[i] = path.getMaxVelocity()-path.get(i).getVelocity();
-			}
-			else{
-				colorByVelocity[i] = 0;
-			}
-
+			pathSeries.add(path.getPoint(i).getX(), path.getPoint(i).getY());
 		}
 
 
-		XYSeriesCollection positionData = new XYSeriesCollection();
-		positionData.addSeries(pathSeries); //Series: 0
+		XYSeriesCollection data = new XYSeriesCollection();
+		data.addSeries(pathSeries); //Series: 0
 
-		XYSeriesCollection velocityData = new XYSeriesCollection();
-		velocityData.addSeries(velocitySeries); //Series: 0
 
 		for(int i = 0; i < waypoints.length; i++){
 			XYSeries waypointSeries = new XYSeries("waypoint" + i, false);
 			waypointSeries.add(waypoints[i].getWaypoint().getX(),waypoints[i].getWaypoint().getY());
 			waypointSeries.add(waypoints[i].getHandle().getX(),waypoints[i].getHandle().getY());
-			positionData.addSeries(waypointSeries);
+			data.addSeries(waypointSeries);
 		}
 
 
-		JFreeChart positionChart = ChartFactory.createScatterPlot(
-				"Position",
+		JFreeChart chart = ChartFactory.createScatterPlot(
+				"Graph",
 				"X",
 				"Y",
-				positionData,
+				data,
 				PlotOrientation.VERTICAL,
 				true,
 				true,
 				false
 		);
 
-		JFreeChart velocityChart = ChartFactory.createScatterPlot(
-				"Velocity",
-				"Distance",
-				"Velocity",
-				velocityData,
-				PlotOrientation.VERTICAL,
-				true,
-				true,
-				false
-		);
+		XYPlot plot = chart.getXYPlot();
 
-		XYPlot positionPlot = positionChart.getXYPlot();
-		XYPlot velocityPlot = velocityChart.getXYPlot();
 		CustomColorRenderer renderer = new CustomColorRenderer(true, false);
 		renderer.setSeriesStroke(0, new BasicStroke(4f));
-		CustomColorRenderer renderer1 = new CustomColorRenderer(true, false);
-		renderer1.setSeriesStroke(0, new BasicStroke(4f));
-		positionPlot.setRenderer(renderer);
-		velocityPlot.setRenderer(renderer1);
 
-		ChartPanel positionPanel = new ChartPanel(positionChart);
-		positionPanel.setPreferredSize(new java.awt.Dimension(400, 400));
+		plot.setRenderer(renderer);
 
-		ChartPanel velocityPanel = new ChartPanel(velocityChart);
-		velocityPanel.setPreferredSize(new java.awt.Dimension(400, 400));
+		ChartPanel chartPanel = new ChartPanel(chart);
+		chartPanel.setPreferredSize(new java.awt.Dimension(800, 800));
 
 		JFrame f = new JFrame();
 		f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		f.add(positionPanel);
-		f.add(velocityPanel, BorderLayout.SOUTH);
+		f.add(chartPanel);
 		f.pack();
 		f.setLocationRelativeTo(null);
 		f.setVisible(true);
@@ -116,12 +79,7 @@ public class Graph {
 
 		@Override
 		public Paint getItemPaint(int row, int col) {
-			if(row == 0 || row == 0){
-				return Color.getHSBColor(0.25f - (float) (colorByVelocity[col] / 5) / 4, 1f, 0.75f + (float) (colorByVelocity[col] / 5) / 4);
-			}
-			else{
-				return Color.getHSBColor(0.6f, 1.0f, 1.0f);
-			}
+			return Color.getHSBColor(0.6f, 1.0f, 1.0f);
 		}
 	}
 }
