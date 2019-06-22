@@ -6,19 +6,40 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import pure_pursuit.BezierPoint;
+import pure_pursuit.Path;
+import pure_pursuit.paths.BezierCurvePath;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Point2D;
 
 public class Graph {
 
-	public Graph(final String title){
-		XYSeries testSeries = new XYSeries("Test", false);
-		testSeries.add(0,0);
-		testSeries.add(10,10);
+	public Graph(final String title) {
+		XYSeries pathSeries = new XYSeries("Path", false);
+		BezierPoint[] waypoints = new BezierPoint[2];
+		waypoints[0] = new BezierPoint(new Point2D.Double(0, 0), new Point2D.Double(10, 0));
+		waypoints[1] = new BezierPoint(new Point2D.Double(10, 5), new Point2D.Double(0, 5));
+
+		Path path = new Path(2, 5, new BezierCurvePath(waypoints, 200));
+		path.generatePath();
+		for (int i = 0; i < path.length(); i++) {
+			pathSeries.add(path.getPoint(i).getX(), path.getPoint(i).getY());
+		}
+
 
 		XYSeriesCollection data = new XYSeriesCollection();
-		data.addSeries(testSeries); //Series: 0
+		data.addSeries(pathSeries); //Series: 0
+
+
+		for(int i = 0; i < waypoints.length; i++){
+			XYSeries waypointSeries = new XYSeries("waypoint" + i, false);
+			waypointSeries.add(waypoints[i].getWaypoint().getX(),waypoints[i].getWaypoint().getY());
+			waypointSeries.add(waypoints[i].getHandle().getX(),waypoints[i].getHandle().getY());
+			data.addSeries(waypointSeries);
+		}
+
 
 		JFreeChart chart = ChartFactory.createScatterPlot(
 				"Graph",
@@ -33,8 +54,8 @@ public class Graph {
 
 		XYPlot plot = chart.getXYPlot();
 
-		CustomColorRenderer renderer = new CustomColorRenderer(true,false);
-		renderer.setSeriesStroke(0,new BasicStroke(4f));
+		CustomColorRenderer renderer = new CustomColorRenderer(true, false);
+		renderer.setSeriesStroke(0, new BasicStroke(4f));
 
 		plot.setRenderer(renderer);
 
@@ -58,7 +79,7 @@ public class Graph {
 
 		@Override
 		public Paint getItemPaint(int row, int col) {
-			return Color.getHSBColor(0f,1.0f,1.0f);
+			return Color.getHSBColor(0.6f, 1.0f, 1.0f);
 		}
 	}
 }
