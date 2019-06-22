@@ -1,14 +1,14 @@
 package pure_pursuit.paths;
 
-import pure_pursuit.BezierPoint;
+import pure_pursuit.Waypoint;
 import pure_pursuit.TradjectoryPoint;
 
 import java.awt.geom.Point2D;
 
 public class BezierCurvePath{
 	private int steps;
-	private BezierPoint[] waypoints;
-	public BezierCurvePath(BezierPoint[] waypoints, int steps){
+	private Waypoint[] waypoints;
+	public BezierCurvePath(Waypoint[] waypoints, int steps){
 		this.steps = steps;
 		this.waypoints = waypoints;
 	}
@@ -19,7 +19,6 @@ public class BezierCurvePath{
 
 			TradjectoryPoint[] segment = generateSegment(waypoints[i], waypoints[i+1], steps/(waypoints.length-1), i==0);
 			for(int a = 0; a < segment.length; a++){
-				System.out.println(a*(i+1));
 				tradjectoryPoints[a*(i+1)] = segment[a];
 			}
 		}
@@ -27,7 +26,7 @@ public class BezierCurvePath{
 		return tradjectoryPoints;
 	}
 
-	private TradjectoryPoint[] generateSegment(BezierPoint waypoint0, BezierPoint waypoint1, int steps, boolean firstSegment){
+	private TradjectoryPoint[] generateSegment(Waypoint waypoint0, Waypoint waypoint1, int steps, boolean firstSegment){
 		TradjectoryPoint[] tradjectoryPoints = new TradjectoryPoint[steps];
 		Point2D p0,p1,p2,p3;
 		if(firstSegment){
