@@ -1,0 +1,15 @@
+# Java
+
+# Build
+build
+out
+
+# Gradle
+.gradle
+
+# IntelliJ
+.idea
+
+# MacOSX
+.DS_Store
+pure-persuit-controller.iml
