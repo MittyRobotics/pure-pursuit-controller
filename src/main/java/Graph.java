@@ -93,10 +93,10 @@ public class Graph {
 		velocityPlot.setRenderer(renderer1);
 
 		ChartPanel positionPanel = new ChartPanel(positionChart);
-		positionPanel.setPreferredSize(new java.awt.Dimension(400, 400));
+		positionPanel.setPreferredSize(new java.awt.Dimension(800, 600));
 
 		ChartPanel velocityPanel = new ChartPanel(velocityChart);
-		velocityPanel.setPreferredSize(new java.awt.Dimension(400, 400));
+		velocityPanel.setPreferredSize(new java.awt.Dimension(800, 600));
 
 		JFrame f = new JFrame();
 		f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
