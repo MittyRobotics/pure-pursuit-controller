@@ -69,7 +69,7 @@ public class Path {
 	}
 
 	public void calculateVelocities(){
-		double kCurvature = 1; //Intensity of slowing down at turns
+		double kCurvature = 0.4; //Intensity of slowing down at turns
 		for(int i = points.length-1; i > 0; i--){
 			double maxVelocityWithCurvature = Math.min(maxVelocity, kCurvature/points[i].getCurvature());
 			if(i == points.length-1){
@@ -83,7 +83,7 @@ public class Path {
 		}
 		for(int i =0; i < points.length; i++){
 			if(i == 0){
-				points[i].setVelocity(0);
+				points[i].setVelocity(0.6);
 			}
 			else{
 				double distance = TradjectoryPoint.distance(points[i-1], points[i]);
