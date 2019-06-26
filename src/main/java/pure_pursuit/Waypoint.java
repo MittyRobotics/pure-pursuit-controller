@@ -22,3 +22,4 @@ public class Waypoint {
 		return oppositeHandle;
 	}
 }
+

@@ -29,8 +29,7 @@ public class Graph {
 		waypoints[0] = new Waypoint(new Point2D.Double(0, 0), new Point2D.Double(10, 0));
 		waypoints[1] = new Waypoint(new Point2D.Double(10, 5), new Point2D.Double(0, 5));
 
-		PathGenerator generator = new PathGenerator(PathType.BEZIER_CURVE_PATH, new VelocityConstraints(2,3));
-		Path path = generator.generate(waypoints, 200);
+		Path path = PathGenerator.getInstance().generate(waypoints, PathType.BEZIER_CURVE_PATH,new VelocityConstraints(2,5), 200);
 
 		colorByVelocity = new double[path.length()];
 		for (int i = 0; i < path.length(); i++) {

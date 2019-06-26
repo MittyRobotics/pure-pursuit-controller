@@ -1,10 +1,11 @@
 package pure_pursuit;
 
+
 import pure_pursuit.paths.BezierCurvePath;
 
 public class Path {
 
-	TradjectoryPoint[] points;
+	TrajectoryPoint[] points;
 
 	BezierCurvePath bezierPath;
 
@@ -26,11 +27,11 @@ public class Path {
 				points[i].setPosition(0);
 			}
 			else{
-				points[i].setPosition(points[i-1].getPosition() + TradjectoryPoint.distance(points[i-1],points[i]));
+				points[i].setPosition(points[i-1].getPosition() + TrajectoryPoint.distance(points[i-1],points[i]));
 			}
 		}
 	}
-	
+
 	public void calculateCurvature(){
 		for(int i = 0; i < points.length; i++){
 			if(i == 0){
@@ -76,17 +77,17 @@ public class Path {
 				points[i].setVelocity(0);
 			}
 			else{
-				double distance =TradjectoryPoint.distance(points[i+1], points[i]);
+				double distance = TrajectoryPoint.distance(points[i+1], points[i]);
 				double velocity = Math.min(maxVelocityWithCurvature, Math.sqrt(Math.pow(points[i+1].getVelocity(),2)+2*maxAcceleration*distance));
 				points[i].setVelocity(velocity);
 			}
 		}
 		for(int i =0; i < points.length; i++){
 			if(i == 0){
-				points[i].setVelocity(0.6);
+				points[i].setVelocity(1);
 			}
 			else{
-				double distance = TradjectoryPoint.distance(points[i-1], points[i]);
+				double distance = TrajectoryPoint.distance(points[i-1], points[i]);
 				double velocity = Math.min(points[i].getVelocity(), Math.sqrt(Math.pow(points[i-1].getVelocity(),2)+2*maxAcceleration*distance));
 				points[i].setVelocity(velocity);
 			}
@@ -99,12 +100,12 @@ public class Path {
 	public double getMaxVelocity(){
 		return maxVelocity;
 	}
-	
+
 	public int length(){
 		return points.length;
 	}
 
-	public TradjectoryPoint get(int index){
+	public TrajectoryPoint get(int index){
 		return points[index];
 	}
 }

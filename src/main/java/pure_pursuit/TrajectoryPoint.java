@@ -2,14 +2,16 @@ package pure_pursuit;
 
 import java.awt.geom.Point2D;
 
-public class TradjectoryPoint {
+import java.awt.geom.Point2D;
+
+public class TrajectoryPoint {
 	double x;
 	double y;
 	double position;
 	double velocity;
 	double curvature;
 
-	public TradjectoryPoint(double x, double y) {
+	public TrajectoryPoint(double x, double y) {
 		this.x = x;
 		this.y = y;
 	}
@@ -54,16 +56,16 @@ public class TradjectoryPoint {
 		return curvature;
 	}
 
-	public double distance(TradjectoryPoint p) {
+	public double distance(TrajectoryPoint p) {
 		return Point2D.distance(this.x, this.y, p.getX(), p.getY());
 	}
 
-	public static double distance(TradjectoryPoint p1, TradjectoryPoint p2) {
+	public static double distance(TrajectoryPoint p1, TrajectoryPoint p2) {
 		return Point2D.distance(p1.getX(), p1.getY(), p2.getX(), p2.getY());
 	}
 
-	public TradjectoryPoint midPoint(TradjectoryPoint p1, TradjectoryPoint p2) {
-		TradjectoryPoint point = new TradjectoryPoint((p1.getX() + p2.getX()) / 2, (p1.getY() + p2.getY()) / 2);
+	public TrajectoryPoint midPoint(TrajectoryPoint p1, TrajectoryPoint p2) {
+		TrajectoryPoint point = new TrajectoryPoint((p1.getX() + p2.getX()) / 2, (p1.getY() + p2.getY()) / 2);
 		point.setCurvature((p1.getCurvature() + p2.getCurvature()) / 2);
 		point.setPosition((p1.getPosition() + p2.getPosition()) / 2);
 		point.setVelocity((p1.getVelocity() + p2.getVelocity()) / 2);
