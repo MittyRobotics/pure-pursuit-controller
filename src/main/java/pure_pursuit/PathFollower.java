@@ -11,11 +11,16 @@ public class PathFollower {
 
 	double WHEEL_DISTANCE = 26.5;
 
+	private boolean reversed;
+
 	boolean finished = false;
 
-
 	public PathFollower(Path path){
+		new PathFollower(path,false);
+	}
+	public PathFollower(Path path, boolean reversed){
 		this.path=path;
+		this.reversed = reversed;
 	}
 
 	public TrajectoryFollowerOutput update(){
@@ -24,6 +29,11 @@ public class PathFollower {
 
 		double leftVel = targetVelocity*(2+curvature*WHEEL_DISTANCE)/2;
 		double rightVel = targetVelocity*(2-curvature*WHEEL_DISTANCE)/2;
+
+		if(reversed){
+			leftVel = -leftVel;
+			rightVel = -rightVel;
+		}
 
 		return new TrajectoryFollowerOutput(leftVel,rightVel);
 	}
@@ -66,6 +76,7 @@ public class PathFollower {
 			double a = Math.tan((path.get(path.length()-1).getY()-path.get(path.length()-2).getY())/(path.get(path.length()-1).getX()-path.get(path.length()-2).getX()));
 			double x1 = Math.cos(a)*lookaheadDistance;
 			double y1 = Math.sin(a)*lookaheadDistance;
+			System.out.println("lookahead within dist " + currentLookaheadDistance);
 			return new TrajectoryPoint(x1, y1);
 		}
 		else {
