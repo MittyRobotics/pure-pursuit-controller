@@ -24,8 +24,8 @@ public class PathFollower {
 	}
 
 	public TrajectoryFollowerOutput update(){
-		double curvature = calculateCurvature(RobotPose.getInstance().getRobotX(), RobotPose.getInstance().getRobotY(), RobotPose.getInstance().getRobotHeading());
-		double targetVelocity = findClosestPoint(RobotPose.getInstance().getRobotX(), RobotPose.getInstance().getRobotY()).getVelocity();
+		double curvature = calculateCurvature(PathFollowerPosition.getInstance().getRobotX(), PathFollowerPosition.getInstance().getRobotY(), PathFollowerPosition.getInstance().getRobotHeading());
+		double targetVelocity = findClosestPoint(PathFollowerPosition.getInstance().getRobotX(), PathFollowerPosition.getInstance().getRobotY()).getVelocity();
 
 		double leftVel = targetVelocity*(2+curvature*WHEEL_DISTANCE)/2;
 		double rightVel = targetVelocity*(2-curvature*WHEEL_DISTANCE)/2;
