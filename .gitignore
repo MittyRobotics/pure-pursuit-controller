@@ -13,3 +13,4 @@ out
 # MacOSX
 .DS_Store
 pure-persuit-controller.iml
+*.html

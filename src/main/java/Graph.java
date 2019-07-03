@@ -7,11 +7,9 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import pure_pursuit.PathGenerator;
-import pure_pursuit.VelocityConstraints;
 import pure_pursuit.Waypoint;
 import pure_pursuit.Path;
 import pure_pursuit.enums.PathType;
-import pure_pursuit.paths.BezierCurvePath;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,10 +24,12 @@ public class Graph {
 		XYSeries velocitySeries = new XYSeries("velocity", false);
 
 		Waypoint[] waypoints = new Waypoint[2];
-		waypoints[0] = new Waypoint(new Point2D.Double(0, 0), new Point2D.Double(10, 0));
-		waypoints[1] = new Waypoint(new Point2D.Double(10, 5), new Point2D.Double(0, 5));
+		waypoints[0] = new Waypoint(new Point2D.Double(0, 0), new Point2D.Double(5, 0));
+		waypoints[1] = new Waypoint(new Point2D.Double(10, 5), new Point2D.Double(10, 0));
 
-		Path path = PathGenerator.getInstance().generate(waypoints, PathType.BEZIER_CURVE_PATH,new VelocityConstraints(2,5), 200);
+		PathGenerator.getInstance().setPathKCurvature(0.8);
+
+		Path path = PathGenerator.getInstance().generate(waypoints, PathType.BEZIER_CURVE_PATH,2,5, 200);
 
 		colorByVelocity = new double[path.length()];
 		for (int i = 0; i < path.length(); i++) {

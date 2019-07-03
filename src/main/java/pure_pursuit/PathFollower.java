@@ -1,29 +1,65 @@
 package pure_pursuit;
 
-
+/**
+ * Path Follower Object that allows the robot to follow the path.
+ *
+ * This contains functions for generating the left and right feed-forward wheel velocities for the wheels based on a given
+ * robot position and heading.
+ *
+ * @author Owen Leather
+ * @version 1.0
+ */
 public class PathFollower {
-	Path path;
-	double lookaheadDistance =  4;
-	double currentLookaheadDistance;
-	int previousPointIndex = 0;
+	/**Current path to follow*/
+	private Path path;
+	/**
+	 * Lookahead distance of the path follower. The lookahead distance determines the distance that the lookahead point
+	 * is away from the robot. The higher the lookahead distance, the larger the turns the robot makes are. More information at:
+	 * https://www.mathworks.com/help/robotics/ug/pure-pursuit-controller.html#burwbfa
+	 */
+	private double lookaheadDistance;
+	/**The current lookahead distance that is slightly changed based on the closest pre-generated point.*/
+	private double currentLookaheadDistance;
+	/**The index of the previous closest point.*/
+	private int previousPointIndex = 0;
 
+	/**The current closest {@link TrajectoryPoint} to the robot. This determines the robot's base velocity.*/
 	private TrajectoryPoint currentClosestPoint;
 
-	double WHEEL_DISTANCE = 26.5;
+	/**The distance between the wheels on the chassis, also known as the track width.*/
+	private double WHEEL_DISTANCE;
 
+	/**If the robot should follow the path reversed. If this is true, the robot will be following the path backwards*/
 	private boolean reversed;
 
-	boolean finished = false;
-
+	/**
+	 * Constructor
+	 *
+	 * @param path the path to follow
+	 */
 	public PathFollower(Path path){
 		new PathFollower(path,false);
 	}
+
+	/**
+	 * Constructor
+	 *
+	 * @param path the path to follow
+	 * @param reversed whether or not the output should be reversed, resulting in the robot following the path backwards.
+	 */
 	public PathFollower(Path path, boolean reversed){
 		this.path=path;
 		this.reversed = reversed;
 	}
 
-	public TrajectoryFollowerOutput update(){
+	/**
+	 * Updates the path follower.
+	 *
+	 * Master update function to return the left and right feed-forward wheel velocity values. These values are returned in the form of a {@link PathFollowerOutput}.
+	 *
+	 * @return A {@link PathFollowerOutput} object with the left and right feed-forward wheel velocity values.
+	 */
+	public PathFollowerOutput update(){
 		double curvature = calculateCurvature(PathFollowerPosition.getInstance().getRobotX(), PathFollowerPosition.getInstance().getRobotY(), PathFollowerPosition.getInstance().getRobotHeading());
 		double targetVelocity = findClosestPoint(PathFollowerPosition.getInstance().getRobotX(), PathFollowerPosition.getInstance().getRobotY()).getVelocity();
 
@@ -35,9 +71,17 @@ public class PathFollower {
 			rightVel = -rightVel;
 		}
 
-		return new TrajectoryFollowerOutput(leftVel,rightVel);
+		return new PathFollowerOutput(leftVel,rightVel);
 	}
 
+	/**
+	 * Calculates the curvature of the arc from the robot to the lookahead point.
+	 *
+	 * @param robotX robot's current X position.
+	 * @param robotY robot's current Y position.
+	 * @param robotHeading robot's current heading angle (degrees).
+	 * @return the curvature of the arc from the robot's position to the lookahead point.
+	 */
 	private double calculateCurvature(double robotX, double robotY, double robotHeading){
 		double a = -Math.tan(Math.toRadians(robotHeading));
 		double b = 1;
@@ -49,8 +93,15 @@ public class PathFollower {
 		return curvature*side;
 	}
 
-
-
+	/**
+	 * Finds the closest point to the robot.
+	 *
+	 * This point is used to determine the robot's base forward velocity.
+	 *
+	 * @param x the robot's current X position.
+	 * @param y the robot's current Y position.
+	 * @return a {@link TrajectoryPoint} that is the closest point on the path to the robot.
+	 */
 	private TrajectoryPoint findClosestPoint(double x, double y){
 		double currentClosest = 1000;
 		int index = 0;
@@ -67,6 +118,17 @@ public class PathFollower {
 		currentClosestPoint = path.get(index);
 		return path.get(index);
 	}
+
+	/**
+	 * Finds the lookahead point based on the robot's current position and the lookahead distance.
+	 *
+	 * The lookahead point is the point that the robot follows on the path. This function finds the closest point on the
+	 * path that is ahead of the {@link #findClosestPoint(double, double)} that is lookahead distance away from the robot.
+	 *
+	 * @param x the robot's current X position.
+	 * @param y the robot's current Y position.
+	 * @return a {@link TrajectoryPoint} that is the lookahead point on the path.
+	 */
 	private TrajectoryPoint findLookaheadPoint(double x, double y){
 		double currentClosest = 1000;
 		int index = 0;
@@ -93,10 +155,59 @@ public class PathFollower {
 
 	}
 
+	/**
+	 * Returns the current closest point to the robot.
+	 *
+	 * @return the {@link TrajectoryPoint} that is the current closest point on the path to the robot.
+	 */
 	public TrajectoryPoint getCurrentClosestPoint(){
 		return currentClosestPoint;
 	}
 
+	/**
+	 * Sets the lookahead distance value.
+	 *
+	 * @param lookaheadDistance the lookahead distance value.
+	 */
+	public void setLookaheadDistance(double lookaheadDistance){
+		this.lookaheadDistance = lookaheadDistance;
+	}
+
+	/**
+	 * Returns the lookahead distance value.
+	 *
+	 * @return the lookahead distance value.
+	 */
+	public double getLookaheadDistance(){
+		return lookaheadDistance;
+	}
+
+	/**
+	 * Sets the wheel distance value.
+	 *
+	 * The wheel distance is the distance between the wheels on the chassis, also known as the track width.
+	 *
+	 * @param WHEEL_DISTANCE the wheel distance value.
+	 */
+	public void setWheelDistance(double WHEEL_DISTANCE){
+		this.WHEEL_DISTANCE = WHEEL_DISTANCE;
+	}
+
+	/**
+	 * Returns the wheel distance value of the path follower.
+	 * @return the wheel distance value.
+	 */
+	public double getWheelDistance(){
+		return WHEEL_DISTANCE;
+	}
+
+	/**
+	 * Function that checks whether or not the path following is finished.
+	 *
+	 * This is determined by if the {@link #currentClosestPoint} is the last point of the {@link #path}.
+	 *
+	 * @return if the path follower is finished following the path.
+	 */
 	public boolean isFinished(){
 		return  getCurrentClosestPoint().getX() == path.get(path.length()-1).getX() && getCurrentClosestPoint().getY() == path.get(path.length()-1).getY();
 	}
