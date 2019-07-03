@@ -38,7 +38,7 @@ public class PathFollower {
 	 * @param path the path to follow
 	 */
 	public PathFollower(Path path){
-		new PathFollower(path,false);
+		this(path,false);
 	}
 
 	/**
