@@ -2,6 +2,7 @@ plugins {
     id 'java'
 }
 
+group = "com.github.OLeather"
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
@@ -17,6 +18,5 @@ dependencies {
 }
 
 jar {
-    exclude('mi/package/excluded/**')
-    exclude('mi/package/excluded2/**')
+    exclude('src/main/graph/**')
 }
