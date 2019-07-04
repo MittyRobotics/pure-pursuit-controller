@@ -1,10 +1,11 @@
-package pure_pursuit;
+package team1351.purepursuit;
 
 /**
  * Path Follower Object that allows the robot to follow the path.
  *
  * This contains functions for generating the left and right feed-forward wheel velocities for the wheels based on a given
- * robot position and heading.
+ * robot position and heading. Some calculations are based off of team 1712's paper:
+ * https://www.chiefdelphi.com/t/paper-implementation-of-the-adaptive-pure-pursuit-controller/166552
  *
  * @author Owen Leather
  * @version 1.0

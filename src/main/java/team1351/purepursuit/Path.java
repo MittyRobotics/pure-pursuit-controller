@@ -1,14 +1,15 @@
-package pure_pursuit;
+package team1351.purepursuit;
 
 
-import pure_pursuit.paths.BezierCurvePath;
-import pure_pursuit.paths.LinearPath;
+import team1351.purepursuit.paths.BezierCurvePath;
+import team1351.purepursuit.paths.LinearPath;
 
 /**
  * Master Path Object.
  * <p>
  * Contains functions for generating the distance, curvature, and velocity for each point. Holds the master array of
- * {@link TrajectoryPoint} for the path with calculated x, y, distance, curvature, and velocity values.
+ * {@link TrajectoryPoint} for the path with calculated x, y, distance, curvature, and velocity values. Some calculations
+ * are based off of team 1712's paper: https://www.chiefdelphi.com/t/paper-implementation-of-the-adaptive-pure-pursuit-controller/166552
  *
  * @author Owen Leather
  * @version 1.0

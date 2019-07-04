@@ -1,4 +1,4 @@
-package graph;
+package team1351.purepursuit.graph;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -8,10 +8,10 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import pure_pursuit.PathGenerator;
-import pure_pursuit.Waypoint;
-import pure_pursuit.Path;
-import pure_pursuit.enums.PathType;
+import team1351.purepursuit.PathGenerator;
+import team1351.purepursuit.Waypoint;
+import team1351.purepursuit.Path;
+import team1351.purepursuit.enums.PathType;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,6 +1,5 @@
-package pure_pursuit;
+package team1351.purepursuit;
 
-import java.awt.Point;
 import java.awt.geom.Point2D;
 
 /**
@@ -13,8 +12,8 @@ public class Waypoint {
 	/**The waypoint {@link Point2D}. This is the main position of the waypoint.*/
 	private  Point2D waypoint;
 	/**
-	 * The handle {@link Point2D}. This is the handle of the waypoint used in {@link pure_pursuit.paths.BezierCurvePath}.
-	 * For {@link pure_pursuit.paths.LinearPath} the handle is included as another waypoint.
+	 * The handle {@link Point2D}. This is the handle of the waypoint used in {@link team1351.purepursuit.paths.BezierCurvePath}.
+	 * For {@link team1351.purepursuit.paths.LinearPath} the handle is included as another waypoint.
 	 */
 	private  Point2D handle;
 	/**The opposite handle {@link Point2D}. This is the point directly opposite of the handle point.*/

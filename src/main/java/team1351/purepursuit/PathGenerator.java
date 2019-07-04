@@ -1,8 +1,8 @@
-package pure_pursuit;
+package team1351.purepursuit;
 
-import pure_pursuit.enums.PathType;
-import pure_pursuit.paths.BezierCurvePath;
-import pure_pursuit.paths.LinearPath;
+import team1351.purepursuit.enums.PathType;
+import team1351.purepursuit.paths.BezierCurvePath;
+import team1351.purepursuit.paths.LinearPath;
 
 /**
  * The master path generator object.

@@ -1,6 +1,6 @@
-package pure_pursuit.enums;
+package team1351.purepursuit.enums;
 
-import pure_pursuit.Waypoint;
+import team1351.purepursuit.Waypoint;
 
 /**
  * Path type enum containing all path types.

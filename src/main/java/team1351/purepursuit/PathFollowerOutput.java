@@ -1,4 +1,4 @@
-package pure_pursuit;
+package team1351.purepursuit;
 
 /**
  * Path follower output object.

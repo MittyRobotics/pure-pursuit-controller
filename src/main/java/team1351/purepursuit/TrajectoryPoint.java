@@ -1,4 +1,4 @@
-package pure_pursuit;
+package team1351.purepursuit;
 
 import java.awt.geom.Point2D;
 
