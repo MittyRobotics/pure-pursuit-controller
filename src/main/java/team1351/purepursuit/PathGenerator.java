@@ -42,8 +42,24 @@ public class PathGenerator {
 	 * @return a {@link Path} object generated based on the parameters.
 	 */
 	public Path generate(Waypoint[] waypoints, PathType type, double maxAcceleration, double maxVelocity, int steps) {
+		return generate(waypoints,type,maxAcceleration,maxVelocity,0,0,steps);
+	}
+
+	/**
+	 * Generates a path based on the parameters.
+	 *
+	 * @param waypoints       the set of {@link Waypoint}s that define the path.
+	 * @param type            the type of path that is generated.
+	 * @param maxAcceleration the maximum acceleration value of the robot.
+	 * @param maxVelocity     the maximum velocity value of the robot.
+	 * @param startVelocity   the robot starting forward velocity.
+	 * @param endVelocity     the robot ending forward velocity.
+	 * @param steps           Number of points generated. The more steps, the longer it takes to generate but the more accurate the path generation will be.
+	 * @return a {@link Path} object generated based on the parameters.
+	 */
+	public Path generate(Waypoint[] waypoints, PathType type, double maxAcceleration, double maxVelocity, double startVelocity, double endVelocity, int steps) {
 		if (type == PathType.BEZIER_CURVE_PATH) {
-			Path path = new Path(maxAcceleration, maxVelocity, new BezierCurvePath(waypoints, steps));
+			Path path = new Path(maxAcceleration, maxVelocity, startVelocity, endVelocity, new BezierCurvePath(waypoints, steps));
 			path.setKCurvature(kCurvature);
 			path.generatePath();
 			path.calculateDistances();
@@ -51,7 +67,7 @@ public class PathGenerator {
 			path.calculateVelocities();
 			return path;
 		} else if (type == PathType.LINEAR_PATH) {
-			Path path = new Path(maxAcceleration, maxVelocity, new LinearPath(waypoints, steps));
+			Path path = new Path(maxAcceleration, maxVelocity, startVelocity, endVelocity, new LinearPath(waypoints, steps));
 			path.setKCurvature(kCurvature);
 			path.generatePath();
 			path.calculateDistances();

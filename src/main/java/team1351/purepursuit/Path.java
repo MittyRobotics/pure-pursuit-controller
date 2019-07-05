@@ -29,6 +29,10 @@ public class Path {
 	 * velocity of the robot.
 	 */
 	private double maxVelocity;
+	/**The robot's starting velocity on the path. This is used when the robot starts the path while moving at a certain forward velocity*/
+	private double startVelocity;
+	/**The robot's ending velocity on the path. This is used when the robot should end the path moving at a certain forward velocity*/
+	private double endVelocity;
 
 	/**
 	 * Value that determines how much the velocity slows down around turns. Decreasing this value makes the velocity slow down
@@ -47,9 +51,7 @@ public class Path {
 	 * @param bezierPath      bezier curve path.
 	 */
 	public Path(double maxAcceleration, double maxVelocity, BezierCurvePath bezierPath) {
-		this.maxAcceleration = maxAcceleration;
-		this.maxVelocity = maxVelocity;
-		this.bezierPath = bezierPath;
+		this(maxAcceleration,maxVelocity,0,0,bezierPath);
 	}
 
 	/**
@@ -62,9 +64,45 @@ public class Path {
 	 * @param linearPath      linear path.
 	 */
 	public Path(double maxAcceleration, double maxVelocity, LinearPath linearPath) {
+		this(maxAcceleration,maxVelocity,0,0,linearPath);
+	}
+
+	/**
+	 * Constructor
+	 * <p>
+	 * Sets up a path with a {@link LinearPath} as the path generation method.
+	 *
+	 * @param maxAcceleration Maximum robot acceleration.
+	 * @param maxVelocity     Maximum robot velocity.
+	 * @param startVelocity   the robot starting forward velocity.
+	 * @param endVelocity     the robot ending forward velocity.
+	 * @param bezierPath      bezier curve path.
+	 */
+	public Path(double maxAcceleration, double maxVelocity, double startVelocity, double endVelocity, BezierCurvePath bezierPath) {
+		this.maxAcceleration = maxAcceleration;
+		this.maxVelocity = maxVelocity;
+		this.bezierPath = bezierPath;
+		this.startVelocity = startVelocity;
+		this.endVelocity = endVelocity;
+	}
+
+	/**
+	 * Constructor
+	 * <p>
+	 * Sets up a path with a {@link LinearPath} as the path generation method.
+	 *
+	 * @param maxAcceleration Maximum robot acceleration.
+	 * @param maxVelocity     Maximum robot velocity.
+	 * @param startVelocity   the robot starting forward velocity.
+	 * @param endVelocity     the robot ending forward velocity.
+	 * @param linearPath      linear path.
+	 */
+	public Path(double maxAcceleration, double maxVelocity, double startVelocity, double endVelocity, LinearPath linearPath) {
 		this.maxAcceleration = maxAcceleration;
 		this.maxVelocity = maxVelocity;
 		this.linearPath = linearPath;
+		this.startVelocity = startVelocity;
+		this.endVelocity = endVelocity;
 	}
 
 	/**
@@ -152,7 +190,7 @@ public class Path {
 		for (int i = points.length - 1; i > 0; i--) {
 			double maxVelocityWithCurvature = Math.min(maxVelocity, kCurvature / points[i].getCurvature());
 			if (i == points.length - 1) {
-				points[i].setVelocity(0);
+				points[i].setVelocity(endVelocity);
 			} else {
 				double distance = TrajectoryPoint.distance(points[i + 1], points[i]);
 				double velocity = Math.min(maxVelocityWithCurvature, Math.sqrt(Math.pow(points[i + 1].getVelocity(), 2) + 2 * maxAcceleration * distance));
@@ -161,7 +199,7 @@ public class Path {
 		}
 		for (int i = 0; i < points.length; i++) {
 			if (i == 0) {
-				points[i].setVelocity(1);
+				points[i].setVelocity(maxAcceleration+startVelocity);
 			} else {
 				double distance = TrajectoryPoint.distance(points[i - 1], points[i]);
 				double velocity = Math.min(points[i].getVelocity(), Math.sqrt(Math.pow(points[i - 1].getVelocity(), 2) + 2 * maxAcceleration * distance));

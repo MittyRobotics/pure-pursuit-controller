@@ -19,6 +19,7 @@ import java.awt.geom.Point2D;
 
 public class Graph {
 
+
 	public double[] colorByVelocity;
 
 	public Graph(final String title) {
@@ -31,7 +32,7 @@ public class Graph {
 
 		PathGenerator.getInstance().setPathKCurvature(0.8);
 
-		Path path = PathGenerator.getInstance().generate(waypoints, PathType.BEZIER_CURVE_PATH,2,5, 200);
+		 Path path = PathGenerator.getInstance().generate(waypoints, PathType.BEZIER_CURVE_PATH,2,5,  200);
 
 		colorByVelocity = new double[path.length()];
 		for (int i = 0; i < path.length(); i++) {
