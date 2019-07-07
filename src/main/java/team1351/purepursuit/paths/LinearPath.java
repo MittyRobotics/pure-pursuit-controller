@@ -41,11 +41,13 @@ public class LinearPath {
 	 */
 	public TrajectoryPoint[] generate() {
 		TrajectoryPoint[] tradjectoryPoints = new TrajectoryPoint[steps];
+		int prevSegmentLength = 0;
 		for (int i = 0; i < waypoints.length - 1; i++) {
 
 			TrajectoryPoint[] segment = generateSegment(waypoints[i], waypoints[i + 1], steps / (waypoints.length - 1), i == 0);
 			for (int a = 0; a < segment.length; a++) {
-				tradjectoryPoints[a * (i + 1)] = segment[a];
+				tradjectoryPoints[a +prevSegmentLength] = segment[a];
+				prevSegmentLength = segment.length+prevSegmentLength;
 			}
 		}
 

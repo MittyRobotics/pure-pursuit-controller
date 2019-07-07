@@ -26,10 +26,10 @@ public class Graph {
 		XYSeries pathSeries = new XYSeries("path", false);
 		XYSeries velocitySeries = new XYSeries("velocity", false);
 
-		Waypoint[] waypoints = new Waypoint[2];
+		Waypoint[] waypoints = new Waypoint[3];
 		waypoints[0] = new Waypoint(new Point2D.Double(0, 0), new Point2D.Double(5, 0));
 		waypoints[1] = new Waypoint(new Point2D.Double(10, 5), new Point2D.Double(10, 0));
-
+		waypoints[2] = new Waypoint(new Point2D.Double(15, 10), new Point2D.Double(10, 10));
 		PathGenerator.getInstance().setPathKCurvature(0.8);
 
 		 Path path = PathGenerator.getInstance().generate(waypoints, PathType.BEZIER_CURVE_PATH,2,5,  200);

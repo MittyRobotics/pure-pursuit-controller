@@ -42,12 +42,14 @@ public class BezierCurvePath {
 	 */
 	public TrajectoryPoint[] generate() {
 		TrajectoryPoint[] tradjectoryPoints = new TrajectoryPoint[steps];
+		int prevSegmentLength = 0;
 		for (int i = 0; i < waypoints.length - 1; i++) {
 
 			TrajectoryPoint[] segment = generateSegment(waypoints[i], waypoints[i + 1], steps / (waypoints.length - 1), i == 0);
 			for (int a = 0; a < segment.length; a++) {
-				tradjectoryPoints[a * (i + 1)] = segment[a];
+				tradjectoryPoints[a +prevSegmentLength] = segment[a];
 			}
+			prevSegmentLength = segment.length+prevSegmentLength;
 		}
 
 		return tradjectoryPoints;
@@ -65,6 +67,7 @@ public class BezierCurvePath {
 	 * @return An array of {@link TrajectoryPoint}s that create a segment of the path.
 	 */
 	private TrajectoryPoint[] generateSegment(Waypoint waypoint0, Waypoint waypoint1, int steps, boolean firstSegment) {
+		System.out.println("here");
 		TrajectoryPoint[] tradjectoryPoints = new TrajectoryPoint[steps];
 		Point2D p0, p1, p2, p3;
 		if (firstSegment) {
