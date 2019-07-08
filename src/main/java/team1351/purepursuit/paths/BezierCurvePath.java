@@ -48,7 +48,6 @@ public class BezierCurvePath {
 
 		if(stepsPerSegment*(waypoints.length-1) < steps){
 			addedSteps = (steps-(stepsPerSegment*(waypoints.length-1)));
-			System.out.println(stepsPerSegment + " " + addedSteps);
 		}
 
 		for (int i = 0; i < waypoints.length - 1; i++) {
