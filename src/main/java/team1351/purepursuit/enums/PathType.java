@@ -11,6 +11,7 @@ import team1351.purepursuit.Waypoint;
 public enum PathType {
 	/** Bezier curve path type. This path type generates a bezier curve to follow. */
 	BEZIER_CURVE_PATH,
+	CUBIC_HERMITE_PATH,
 	/** Linear path type. This path type generates lines between {@link Waypoint}s making a set of linear segments to follow. */
 	LINEAR_PATH
 }

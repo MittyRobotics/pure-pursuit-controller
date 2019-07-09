@@ -27,14 +27,13 @@ public class Graph {
 		XYSeries velocitySeries = new XYSeries("velocity", false);
 
 		Waypoint[] waypoints = new Waypoint[4];
-		waypoints[0] = new Waypoint(new Point2D.Double(0, 0), new Point2D.Double(5, 0));
-		waypoints[1] = new Waypoint(new Point2D.Double(10, 5), new Point2D.Double(10, 0));
-		waypoints[2] = new Waypoint(new Point2D.Double(15, 10), new Point2D.Double(10, 10));
-		waypoints[3] = new Waypoint(new Point2D.Double(20, 20), new Point2D.Double(20, 10));
-
+		waypoints[0] = new Waypoint(new Point2D.Double(0, 0), new Point2D.Double(2, 0));
+		waypoints[1] = new Waypoint(new Point2D.Double(7, 0), new Point2D.Double(11, 0));
+		waypoints[2] = new Waypoint(new Point2D.Double(14, 20), new Point2D.Double(15, 20));
+		waypoints[3] = new Waypoint(new Point2D.Double(20, 20), new Point2D.Double(22, 20));
 		PathGenerator.getInstance().setPathKCurvature(0.8);
 
-		 Path path = PathGenerator.getInstance().generate(waypoints, PathType.BEZIER_CURVE_PATH,2,5,  200);
+		Path path = PathGenerator.getInstance().generate(waypoints, PathType.CUBIC_HERMITE_PATH,2,5,  200);
 
 		colorByVelocity = new double[path.length()];
 		for (int i = 0; i < path.length(); i++) {

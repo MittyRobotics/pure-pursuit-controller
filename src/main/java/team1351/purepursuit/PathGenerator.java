@@ -2,6 +2,7 @@ package team1351.purepursuit;
 
 import team1351.purepursuit.enums.PathType;
 import team1351.purepursuit.paths.BezierCurvePath;
+import team1351.purepursuit.paths.CubicHermiteSplinePath;
 import team1351.purepursuit.paths.LinearPath;
 
 /**
@@ -66,7 +67,16 @@ public class PathGenerator {
 			path.calculateCurvature();
 			path.calculateVelocities();
 			return path;
-		} else if (type == PathType.LINEAR_PATH) {
+		}else if(type == PathType.CUBIC_HERMITE_PATH){
+			Path path = new Path(maxAcceleration, maxVelocity, startVelocity, endVelocity, new CubicHermiteSplinePath(waypoints, steps));
+			path.setKCurvature(kCurvature);
+			path.generatePath();
+			path.calculateDistances();
+			path.calculateCurvature();
+			path.calculateVelocities();
+			return path;
+		}
+		else if (type == PathType.LINEAR_PATH) {
 			Path path = new Path(maxAcceleration, maxVelocity, startVelocity, endVelocity, new LinearPath(waypoints, steps));
 			path.setKCurvature(kCurvature);
 			path.generatePath();

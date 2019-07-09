@@ -2,6 +2,7 @@ package team1351.purepursuit;
 
 
 import team1351.purepursuit.paths.BezierCurvePath;
+import team1351.purepursuit.paths.CubicHermiteSplinePath;
 import team1351.purepursuit.paths.LinearPath;
 
 /**
@@ -20,6 +21,7 @@ public class Path {
 	private TrajectoryPoint[] points;
     /** Generated bezier curve path object.*/
 	private BezierCurvePath bezierPath;
+	private CubicHermiteSplinePath hermitePath;
 	/** Generated linear path object.*/
 	private LinearPath linearPath;
 
@@ -95,6 +97,25 @@ public class Path {
 	 * @param maxVelocity     Maximum robot velocity.
 	 * @param startVelocity   the robot starting forward velocity.
 	 * @param endVelocity     the robot ending forward velocity.
+	 * @param hermitePath      hermite spline path.
+	 */
+	public Path(double maxAcceleration, double maxVelocity, double startVelocity, double endVelocity, CubicHermiteSplinePath hermitePath) {
+		this.maxAcceleration = maxAcceleration;
+		this.maxVelocity = maxVelocity;
+		this.hermitePath = hermitePath;
+		this.startVelocity = startVelocity;
+		this.endVelocity = endVelocity;
+	}
+
+	/**
+	 * Constructor
+	 * <p>
+	 * Sets up a path with a {@link LinearPath} as the path generation method.
+	 *
+	 * @param maxAcceleration Maximum robot acceleration.
+	 * @param maxVelocity     Maximum robot velocity.
+	 * @param startVelocity   the robot starting forward velocity.
+	 * @param endVelocity     the robot ending forward velocity.
 	 * @param linearPath      linear path.
 	 */
 	public Path(double maxAcceleration, double maxVelocity, double startVelocity, double endVelocity, LinearPath linearPath) {
@@ -113,6 +134,8 @@ public class Path {
 	public void generatePath() {
 		if (bezierPath != null) {
 			points = bezierPath.generate();
+		} else if(hermitePath != null){
+			points = hermitePath.generate();
 		} else if (linearPath != null) {
 			points = linearPath.generate();
 		}
