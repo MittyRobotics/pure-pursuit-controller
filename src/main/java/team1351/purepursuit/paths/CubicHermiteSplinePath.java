@@ -7,9 +7,10 @@ import team1351.purepursuit.Waypoint;
 import java.awt.geom.Point2D;
 
 /**
- * Bezier Curve Path Object.
+ * Cubic Hermite Spline Path Object.
  * <p>
- * Contains functions for generating a bezier curve based on a set of {@link Waypoint}.
+ * Contains functions for generating a cubic hermite spline path based on a set of {@link Waypoint}s. Each waypoint
+ * should contain a point and an angle.
  *
  * @author Owen Leather
  * @version 1.0
@@ -24,7 +25,7 @@ public class CubicHermiteSplinePath {
 	/**
 	 * Constructor.
 	 *
-	 * @param waypoints Array of {@link Waypoint}s that the curve passes through.
+	 * @param waypoints Array of {@link Waypoint}s that the path passes through.
 	 * @param steps Number of points generated. The more steps, the longer it takes to generate but the more accurate the path generation will be.
 	 */
 	public CubicHermiteSplinePath(Waypoint[] waypoints, int steps) {
@@ -38,7 +39,7 @@ public class CubicHermiteSplinePath {
 	 * For each set of {@link Waypoint}s, generate a new segment of the path that passes through those waypoints. Add
 	 * all of the segments together to get the final path, which can be generated based on any number of defining waypoints.
 	 *
-	 * @return Array of {@link TrajectoryPoint}s that create the {@link BezierCurvePath}.
+	 * @return Array of {@link TrajectoryPoint}s that make up the {@link CubicHermiteSplinePath}.
 	 */
 	public TrajectoryPoint[] generate() {
 		TrajectoryPoint[] tradjectoryPoints = new TrajectoryPoint[steps];
@@ -83,18 +84,9 @@ public class CubicHermiteSplinePath {
 		x1 = waypoint1.getWaypoint().getX();
 		y0 = waypoint0.getWaypoint().getY();
 		y1 = waypoint1.getWaypoint().getY();
-		if((waypoint0.getHandle().getX()-x0) == 0){
-			a0 = Math.toRadians(90);
-		}
-		else{
-			a0 = Math.tan((waypoint0.getHandle().getY()-y0)/(waypoint0.getHandle().getX()-x0));
-		}
-		if((waypoint1.getHandle().getX()-x1) == 0){
-			a1 = Math.toRadians(90);
-		}
-		else{
-			a1 = Math.tan((waypoint1.getHandle().getY()-y1)/(waypoint1.getHandle().getX()-x1));
-		}
+
+		a0 = Math.toRadians(waypoint0.getAngle());
+		a1 = Math.toRadians(waypoint1.getAngle());
 
 		d = waypoint0.getWaypoint().distance(waypoint1.getWaypoint());
 		mx0 = Math.cos(a0) * d;

@@ -27,10 +27,14 @@ public class Graph {
 		XYSeries velocitySeries = new XYSeries("velocity", false);
 
 		Waypoint[] waypoints = new Waypoint[4];
-		waypoints[0] = new Waypoint(new Point2D.Double(0, 0), new Point2D.Double(2, 0));
-		waypoints[1] = new Waypoint(new Point2D.Double(7, 0), new Point2D.Double(11, 0));
-		waypoints[2] = new Waypoint(new Point2D.Double(14, 20), new Point2D.Double(15, 20));
-		waypoints[3] = new Waypoint(new Point2D.Double(20, 20), new Point2D.Double(22, 20));
+//		waypoints[0] = new Waypoint(new Point2D.Double(0, 0), new Point2D.Double(2, 0));
+//		waypoints[1] = new Waypoint(new Point2D.Double(7, 0), new Point2D.Double(11, 0));
+//		waypoints[2] = new Waypoint(new Point2D.Double(14, 20), new Point2D.Double(15, 20));
+//		waypoints[3] = new Waypoint(new Point2D.Double(20, 20), new Point2D.Double(22, 20));
+		waypoints[0] = new Waypoint(new Point2D.Double(0, 0));
+		waypoints[1] = new Waypoint(new Point2D.Double(7, 0));
+		waypoints[2] = new Waypoint(new Point2D.Double(14, 20));
+		waypoints[3] = new Waypoint(new Point2D.Double(20, 20));
 		PathGenerator.getInstance().setPathKCurvature(0.8);
 
 		Path path = PathGenerator.getInstance().generate(waypoints, PathType.CUBIC_HERMITE_PATH,2,5,  200);
@@ -59,7 +63,7 @@ public class Graph {
 		for(int i = 0; i < waypoints.length; i++){
 			XYSeries waypointSeries = new XYSeries("waypoint" + i, false);
 			waypointSeries.add(waypoints[i].getWaypoint().getX(),waypoints[i].getWaypoint().getY());
-			waypointSeries.add(waypoints[i].getHandle().getX(),waypoints[i].getHandle().getY());
+			//waypointSeries.add(waypoints[i].getHandle().getX(),waypoints[i].getHandle().getY());
 			positionData.addSeries(waypointSeries);
 		}
 

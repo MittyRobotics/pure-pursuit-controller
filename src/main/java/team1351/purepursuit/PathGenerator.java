@@ -60,6 +60,16 @@ public class PathGenerator {
 	 */
 	public Path generate(Waypoint[] waypoints, PathType type, double maxAcceleration, double maxVelocity, double startVelocity, double endVelocity, int steps) {
 		if (type == PathType.BEZIER_CURVE_PATH) {
+			for(int i = 0; i < waypoints.length; i++){
+				if(waypoints[i].getWaypoint() == null){
+					System.out.println("Waypoint point was not specified at index " + i + "! Message reported from generator.");
+					return null;
+				}
+				if(waypoints[i].getHandle() == null){
+					System.out.println("Waypoint handle was not specified at index " + i + "! Message reported from generator. Attempting to generate linear path instead..." );
+					return generate(waypoints, PathType.LINEAR_PATH, maxAcceleration, maxVelocity, startVelocity, endVelocity, steps);
+				}
+			}
 			Path path = new Path(maxAcceleration, maxVelocity, startVelocity, endVelocity, new BezierCurvePath(waypoints, steps));
 			path.setKCurvature(kCurvature);
 			path.generatePath();
@@ -68,6 +78,12 @@ public class PathGenerator {
 			path.calculateVelocities();
 			return path;
 		}else if(type == PathType.CUBIC_HERMITE_PATH){
+			for(int i = 0; i < waypoints.length; i++){
+				if(waypoints[i].getWaypoint() == null){
+					System.out.println("Waypoint point was not specified at index " + i + "! Message reported from generator.");
+					return null;
+				}
+			}
 			Path path = new Path(maxAcceleration, maxVelocity, startVelocity, endVelocity, new CubicHermiteSplinePath(waypoints, steps));
 			path.setKCurvature(kCurvature);
 			path.generatePath();
@@ -77,6 +93,12 @@ public class PathGenerator {
 			return path;
 		}
 		else if (type == PathType.LINEAR_PATH) {
+			for(int i = 0; i < waypoints.length; i++){
+				if(waypoints[i].getWaypoint() == null) {
+					System.out.println("Waypoint point was not specified at index " + i + "! Message reported from generator.");
+					return null;
+				}
+			}
 			Path path = new Path(maxAcceleration, maxVelocity, startVelocity, endVelocity, new LinearPath(waypoints, steps));
 			path.setKCurvature(kCurvature);
 			path.generatePath();

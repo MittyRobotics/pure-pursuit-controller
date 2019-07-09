@@ -37,18 +37,28 @@ public class LinearPath {
 	 * For each set of {@link Waypoint}s, generate a new segment of the path that passes through those waypoints. Add
 	 * all of the segments together to get the final path, which can be generated based on any number of defining waypoints.
 	 *
-	 * @return Array of {@link TrajectoryPoint}s that create the {@link LinearPath}.
+	 * @return Array of {@link TrajectoryPoint}s that make up the {@link LinearPath}.
 	 */
 	public TrajectoryPoint[] generate() {
 		TrajectoryPoint[] tradjectoryPoints = new TrajectoryPoint[steps];
 		int prevSegmentLength = 0;
-		for (int i = 0; i < waypoints.length - 1; i++) {
+		int stepsPerSegment = steps/(waypoints.length-1);
+		int addedSteps = 0;
 
-			TrajectoryPoint[] segment = generateSegment(waypoints[i], waypoints[i + 1], steps / (waypoints.length - 1), i == 0);
+		if(stepsPerSegment*(waypoints.length-1) < steps){
+			addedSteps = (steps-(stepsPerSegment*(waypoints.length-1)));
+		}
+
+		for (int i = 0; i < waypoints.length - 1; i++) {
+			if(i== waypoints.length-2){
+				stepsPerSegment+=addedSteps;
+			}
+
+			TrajectoryPoint[] segment = generateSegment(waypoints[i], waypoints[i + 1], stepsPerSegment, i == 0);
 			for (int a = 0; a < segment.length; a++) {
 				tradjectoryPoints[a +prevSegmentLength] = segment[a];
-				prevSegmentLength = segment.length+prevSegmentLength;
 			}
+			prevSegmentLength = segment.length+prevSegmentLength;
 		}
 
 		return tradjectoryPoints;
@@ -69,54 +79,22 @@ public class LinearPath {
 	private TrajectoryPoint[] generateSegment(Waypoint waypoint0, Waypoint waypoint1, int steps, boolean firstSegment) {
 		TrajectoryPoint[] tradjectoryPoints = new TrajectoryPoint[steps];
 		Point2D p0, p1, p2, p3;
-		if (firstSegment) {
-			p0 = waypoint0.getWaypoint();
-			p1 = waypoint0.getHandle();
-			p2 = waypoint1.getWaypoint();
-			p3 = waypoint1.getHandle();
-		} else {
-			p0 = waypoint0.getWaypoint();
-			p1 = waypoint0.getOppositeHandle();
-			p2 = waypoint1.getHandle();
-			p3 = waypoint1.getWaypoint();
-		}
-		double d0 = p0.distance(p1);
-		double d1 = p1.distance(p2);
-		double d2 = p2.distance(p3);
-		double dt = d0 + d1 + d2;
-
-		int s0 = (int) ((d0 / dt) * steps);
-		int s1 = (int) ((d1 / dt) * steps);
-		int s2 = (int) ((d2 / dt) * steps);
-
-		if (s0 + s1 + s2 > steps) {
-			s2 = (steps - (s0 + s1));
-		} else if (s0 + s1 + s2 < steps) {
-			s2 = (steps - (s0 + s1));
-		}
-
+		p0 = waypoint0.getWaypoint();
+		p1 = waypoint1.getWaypoint();
+		double d = p0.distance(p1);
 		double t;
-		for (int i = 0; i < s0; i++) {
-			t = (double) i / s0;
-			double a = Math.atan2(p1.getY() - p0.getY(), p1.getX() - p0.getX());
-			double x = p0.getX() + Math.cos(a) * (d0 * t);
-			double y = p0.getY() + Math.sin(a) * (d0 * t);
+		for (int i = 0; i < steps; i++) {
+			double a = 0;
+			double b = steps;
+			t = ((double)i - a) / (b - a);
+			t = Math.max(0, t - 0.01);
+
+			double angle = Math.atan2(p1.getY() - p0.getY(), p1.getX() - p0.getX());
+			double x = p0.getX() + Math.cos(angle) * (d * t);
+			double y = p0.getY() + Math.sin(angle) * (d * t);
 			tradjectoryPoints[i] = new TrajectoryPoint(x, y);
 		}
-		for (int i = s0; i < s1 + s0; i++) {
-			t = (double) i / (s1 + s0);
-			double a = Math.atan2(p2.getY() - p1.getY(), p2.getX() - p1.getX());
-			double x = p1.getX() + Math.cos(a) * (d1 * t);
-			double y = p1.getY() + Math.sin(a) * (d1 * t);
-			tradjectoryPoints[i] = new TrajectoryPoint(x, y);
-		}
-		for (int i = (s1 + s0); i < steps; i++) {
-			t = (double) i / steps;
-			double a = Math.atan2(p3.getY() - p2.getY(), p3.getX() - p2.getX());
-			double x = p2.getX() + Math.cos(a) * (d2 * t);
-			double y = p2.getY() + Math.sin(a) * (d2 * t);
-			tradjectoryPoints[i] = new TrajectoryPoint(x, y);
-		}
+
 		return tradjectoryPoints;
 	}
 }

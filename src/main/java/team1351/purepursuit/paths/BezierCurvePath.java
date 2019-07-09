@@ -38,7 +38,7 @@ public class BezierCurvePath {
 	 * For each set of {@link Waypoint}s, generate a new segment of the path that passes through those waypoints. Add
 	 * all of the segments together to get the final path, which can be generated based on any number of defining waypoints.
 	 *
-	 * @return Array of {@link TrajectoryPoint}s that create the {@link BezierCurvePath}.
+	 * @return Array of {@link TrajectoryPoint}s that make upm  the {@link BezierCurvePath}.
 	 */
 	public TrajectoryPoint[] generate() {
 		TrajectoryPoint[] tradjectoryPoints = new TrajectoryPoint[steps];
