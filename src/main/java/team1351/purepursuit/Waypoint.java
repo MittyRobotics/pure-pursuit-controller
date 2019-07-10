@@ -33,7 +33,7 @@ public class Waypoint {
 		this.waypoint = waypoint;
 		this.handle = handle;
 		this.oppositeHandle = new Point2D.Double(waypoint.getX()+(waypoint.getX()-handle.getX()), waypoint.getY()+(waypoint.getY()-handle.getY()));
-		this.angle = 0;
+		this.angle = Math.toDegrees(Math.atan2(handle.getY()-waypoint.getY(),handle.getX()-waypoint.getX()));
 	}
 
 	/**
