@@ -55,7 +55,7 @@ public class BezierCurvePath {
 				stepsPerSegment+=addedSteps;
 			}
 
-			TrajectoryPoint[] segment = generateSegment(waypoints[i], waypoints[i + 1], stepsPerSegment, i == 0);
+			TrajectoryPoint[] segment = generateSegment(waypoints[i], waypoints[i + 1], stepsPerSegment, i == 0, i == waypoints.length-2);
 			for (int a = 0; a < segment.length; a++) {
 				tradjectoryPoints[a +prevSegmentLength] = segment[a];
 			}
@@ -76,7 +76,7 @@ public class BezierCurvePath {
 	 * @param firstSegment If the segment is the first segment in a path.
 	 * @return An array of {@link TrajectoryPoint}s that create a segment of the path.
 	 */
-	private TrajectoryPoint[] generateSegment(Waypoint waypoint0, Waypoint waypoint1, int steps, boolean firstSegment) {
+	private TrajectoryPoint[] generateSegment(Waypoint waypoint0, Waypoint waypoint1, int steps, boolean firstSegment, boolean lastSegment) {
 		TrajectoryPoint[] tradjectoryPoints = new TrajectoryPoint[steps];
 		Point2D p0, p1, p2, p3;
 		if (firstSegment) {
@@ -93,7 +93,12 @@ public class BezierCurvePath {
 
 		double t;
 		for (int i = 0; i < steps; i++) {
-			t = (double) i / steps;
+			double a = 0;
+			double b = steps-1;
+			t = ((double)i - a) / (b - a);
+			if(!lastSegment){
+				t = Math.max(0, t - 0.01);
+			}
 			double x = Math.pow(1 - t, 3) * p0.getX() + 3 * Math.pow(1 - t, 2) * t * p1.getX() + 3 * (1 - t) * Math.pow(t, 2) * p2.getX() + Math.pow(t, 3) * p3.getX();
 			double y = Math.pow(1 - t, 3) * p0.getY() + 3 * Math.pow(1 - t, 2) * t * p1.getY() + 3 * (1 - t) * Math.pow(t, 2) * p2.getY() + Math.pow(t, 3) * p3.getY();
 			tradjectoryPoints[i] = new TrajectoryPoint(x, y);

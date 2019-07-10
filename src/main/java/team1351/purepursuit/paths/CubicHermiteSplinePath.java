@@ -56,7 +56,7 @@ public class CubicHermiteSplinePath {
 				stepsPerSegment+=addedSteps;
 			}
 
-			TrajectoryPoint[] segment = generateSegment(waypoints[i], waypoints[i + 1], stepsPerSegment, i == 0);
+			TrajectoryPoint[] segment = generateSegment(waypoints[i], waypoints[i + 1], stepsPerSegment, i == 0, i == waypoints.length-2);
 			for (int a = 0; a < segment.length; a++) {
 				tradjectoryPoints[a +prevSegmentLength] = segment[a];
 			}
@@ -77,7 +77,7 @@ public class CubicHermiteSplinePath {
 	 * @param firstSegment If the segment is the first segment in a path.
 	 * @return An array of {@link TrajectoryPoint}s that create a segment of the path.
 	 */
-	private TrajectoryPoint[] generateSegment(Waypoint waypoint0, Waypoint waypoint1, int steps, boolean firstSegment) {
+	private TrajectoryPoint[] generateSegment(Waypoint waypoint0, Waypoint waypoint1, int steps, boolean firstSegment, boolean lastSegment) {
 		TrajectoryPoint[] tradjectoryPoints = new TrajectoryPoint[steps];
 		double x0,x1,y0,y1,a0,a1,d,mx0,mx1,my0,my1;
 		x0 = waypoint0.getWaypoint().getX();
@@ -96,9 +96,11 @@ public class CubicHermiteSplinePath {
 		double t;
 		for (int i = 0; i < steps; i++) {
 			double a = 0;
-			double b = steps;
+			double b = steps-1;
 			t = ((double)i - a) / (b - a);
-			t = Math.max(0, t - 0.01);
+			if(!lastSegment){
+				t = Math.max(0, t - 0.01);
+			}
 
 			double h0,h1,h2,h3;
 
@@ -110,7 +112,6 @@ public class CubicHermiteSplinePath {
 			double x = h0*x0+h1*mx0+h2*x1+h3*mx1;
 			double y = h0*y0+h1*my0+h2*y1+h3*my1;
 			tradjectoryPoints[i] = new TrajectoryPoint(x, y);
-			System.out.println(x + " " + y + " " + t + " " + a0 + " " + a1 + " " + d);
 		}
 
 		return tradjectoryPoints;
