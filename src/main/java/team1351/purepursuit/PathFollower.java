@@ -142,9 +142,11 @@ public class PathFollower {
 		TrajectoryPoint closestPoint = findClosestPoint(x,y);
 		if(path.get(path.length()-1).distance(closestPoint) <= lookaheadDistance + 1){
 			currentLookaheadDistance = lookaheadDistance;
-			double a = Math.tan((path.get(path.length()-1).getY()-path.get(path.length()-2).getY())/(path.get(path.length()-1).getX()-path.get(path.length()-2).getX()));
-			double x1 = Math.cos(a)*lookaheadDistance;
-			double y1 = Math.sin(a)*lookaheadDistance;
+			double a = Math.atan2((path.get(path.length()-1).getY()-path.get(path.length()-2).getY()),(path.get(path.length()-1).getX()-path.get(path.length()-2).getX()));
+			double xOffset = (path.get(path.length()-1).getX()-path.get(path.length()-2).getX());
+			double yOffset = (path.get(path.length()-1).getY()-path.get(path.length()-2).getY());
+			double x1 = path.get(path.length()-1).getX() + xOffset*lookaheadDistance;
+			double y1 =path.get(path.length()-1).getY() + yOffset*lookaheadDistance;
 			System.out.println("lookahead within dist " + currentLookaheadDistance);
 			return new TrajectoryPoint(x1, y1);
 		}
