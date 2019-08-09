@@ -68,6 +68,12 @@ public class PathFollowerPosition {
 		}
 	}
 
+	public void hardSetPos(double x, double y, double heading){
+		this.robotX = x;
+		this.robotY = y;
+		this.robotHeading = heading;
+	}
+
 	/**
 	 * Returns the robot's current X value relative to the start of the path.
 	 * @return the robot's current X value.
