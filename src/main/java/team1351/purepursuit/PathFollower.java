@@ -35,7 +35,7 @@ public class PathFollower {
 
 	private double currentCurvature;
 
-	private TrajectoryPoint currentLLookaheadPoint;
+	private TrajectoryPoint currentLookaheadPoint;
 
 	/**
 	 * Constructor
@@ -93,7 +93,7 @@ public class PathFollower {
 		double b = 1;
 		double c = Math.tan(Math.toRadians(robotHeading))*robotX-robotY;
 		TrajectoryPoint lookaheadPoint = findLookaheadPoint(robotX, robotY);
-		this.currentLLookaheadPoint = lookaheadPoint;
+		this.currentLookaheadPoint = lookaheadPoint;
 		double x = Math.abs(a*lookaheadPoint.getX()+b*lookaheadPoint.getY()+c)/Math.sqrt(Math.pow(a,2) + Math.pow(b,2));
 		double side = Math.signum(Math.sin(Math.toRadians(robotHeading))*(lookaheadPoint.getX()-robotX)-Math.cos(Math.toRadians(robotHeading))*(lookaheadPoint.getY()-robotY));
 		double curvature = 2*x/Math.pow(currentLookaheadDistance,2);
@@ -215,7 +215,7 @@ public class PathFollower {
 	}
 
 	public TrajectoryPoint getCurrentLookaheadPoint(){
-		return currentLLookaheadPoint;
+		return currentLookaheadPoint;
 	}
 
 	/**
