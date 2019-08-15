@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"team1351.purepursuit"},{"l":"team1351.purepursuit.enums"},{"l":"team1351.purepursuit.graph"},{"l":"team1351.purepursuit.paths"}]
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"com.amhsrobotics.purepursuit"},{"l":"com.amhsrobotics.purepursuit.enums"},{"l":"com.amhsrobotics.purepursuit.graph"},{"l":"com.amhsrobotics.purepursuit.paths"}]
