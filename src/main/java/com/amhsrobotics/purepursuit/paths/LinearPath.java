@@ -1,33 +1,32 @@
-package team1351.purepursuit.paths;
+package com.amhsrobotics.purepursuit.paths;
 
-
-import team1351.purepursuit.TrajectoryPoint;
-import team1351.purepursuit.Waypoint;
+import com.amhsrobotics.purepursuit.TrajectoryPoint;
+import com.amhsrobotics.purepursuit.Waypoint;
 
 import java.awt.geom.Point2D;
 
 /**
- * Bezier Curve Path Object.
+ * Linear Path Object.
  * <p>
- * Contains functions for generating a bezier curve based on a set of {@link Waypoint}.
+ * Contains functions for generating a set of lines based on a set of {@link Waypoint}s to create a path.
  *
  * @author Owen Leather
  * @version 1.0
  */
-
-public class BezierCurvePath {
+public class LinearPath {
 	/** Number of points generated. The more steps, the longer it takes to generate but the more accurate the path generation will be.*/
 	private int steps;
 	/** Array of {@link Waypoint}s that the curve passes through. */
 	private Waypoint[] waypoints;
 
+
 	/**
-	 * Constructor.
+	 * Constructor
 	 *
-	 * @param waypoints Array of {@link Waypoint}s that the curve passes through.
+	 * @param waypoints Array of {@link Waypoint}s that are the endpoints of the lines.
 	 * @param steps Number of points generated. The more steps, the longer it takes to generate but the more accurate the path generation will be.
 	 */
-	public BezierCurvePath(Waypoint[] waypoints, int steps) {
+	public LinearPath(Waypoint[] waypoints, int steps) {
 		this.steps = steps;
 		this.waypoints = waypoints;
 	}
@@ -38,7 +37,7 @@ public class BezierCurvePath {
 	 * For each set of {@link Waypoint}s, generate a new segment of the path that passes through those waypoints. Add
 	 * all of the segments together to get the final path, which can be generated based on any number of defining waypoints.
 	 *
-	 * @return Array of {@link TrajectoryPoint}s that make upm  the {@link BezierCurvePath}.
+	 * @return Array of {@link TrajectoryPoint}s that make up the {@link LinearPath}.
 	 */
 	public TrajectoryPoint[] generate() {
 		TrajectoryPoint[] tradjectoryPoints = new TrajectoryPoint[steps];
@@ -68,7 +67,8 @@ public class BezierCurvePath {
 	/**
 	 * Generates a segment of the path.
 	 *
-	 * Each segment of the path is the part of the path between each set of two {@link Waypoint}.
+	 * Each segment of the path is the part of the path between each set of two {@link Waypoint}. For the {@link LinearPath},
+	 * each segment is a set of {@link TrajectoryPoint}s on a line between the two waypoints.
 	 *
 	 * @param waypoint0 First {@link Waypoint} to generate the segment.
 	 * @param waypoint1 Second {@link Waypoint} to generate the segment.
@@ -79,18 +79,9 @@ public class BezierCurvePath {
 	private TrajectoryPoint[] generateSegment(Waypoint waypoint0, Waypoint waypoint1, int steps, boolean firstSegment, boolean lastSegment) {
 		TrajectoryPoint[] tradjectoryPoints = new TrajectoryPoint[steps];
 		Point2D p0, p1, p2, p3;
-		if (firstSegment) {
-			p0 = waypoint0.getWaypoint();
-			p1 = waypoint0.getHandle();
-			p2 = waypoint1.getHandle();
-			p3 = waypoint1.getWaypoint();
-		} else {
-			p0 = waypoint0.getWaypoint();
-			p1 = waypoint0.getOppositeHandle();
-			p2 = waypoint1.getHandle();
-			p3 = waypoint1.getWaypoint();
-		}
-
+		p0 = waypoint0.getWaypoint();
+		p1 = waypoint1.getWaypoint();
+		double d = p0.distance(p1);
 		double t;
 		for (int i = 0; i < steps; i++) {
 			double a = 0;
@@ -99,10 +90,13 @@ public class BezierCurvePath {
 			if(!lastSegment){
 				t = Math.max(0, t - 0.01);
 			}
-			double x = Math.pow(1 - t, 3) * p0.getX() + 3 * Math.pow(1 - t, 2) * t * p1.getX() + 3 * (1 - t) * Math.pow(t, 2) * p2.getX() + Math.pow(t, 3) * p3.getX();
-			double y = Math.pow(1 - t, 3) * p0.getY() + 3 * Math.pow(1 - t, 2) * t * p1.getY() + 3 * (1 - t) * Math.pow(t, 2) * p2.getY() + Math.pow(t, 3) * p3.getY();
+
+			double angle = Math.atan2(p1.getY() - p0.getY(), p1.getX() - p0.getX());
+			double x = p0.getX() + Math.cos(angle) * (d * t);
+			double y = p0.getY() + Math.sin(angle) * (d * t);
 			tradjectoryPoints[i] = new TrajectoryPoint(x, y);
 		}
+
 		return tradjectoryPoints;
 	}
 }

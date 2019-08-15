@@ -1,6 +1,6 @@
-package team1351.purepursuit.enums;
+package com.amhsrobotics.purepursuit.enums;
 
-import team1351.purepursuit.Waypoint;
+import com.amhsrobotics.purepursuit.Waypoint;
 
 /**
  * Path type enum containing all path types.

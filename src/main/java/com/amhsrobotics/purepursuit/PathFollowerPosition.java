@@ -1,4 +1,4 @@
-package team1351.purepursuit;
+package com.amhsrobotics.purepursuit;
 
 /**
  * An object that keeps track of the robot's current position.

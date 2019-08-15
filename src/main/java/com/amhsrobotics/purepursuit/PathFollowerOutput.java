@@ -1,4 +1,4 @@
-package team1351.purepursuit;
+package com.amhsrobotics.purepursuit;
 
 /**
  * Path follower output object.

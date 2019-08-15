@@ -1,4 +1,4 @@
-package team1351.purepursuit;
+package com.amhsrobotics.purepursuit;
 
 /**
  * Path Follower Object that allows the robot to follow the path.

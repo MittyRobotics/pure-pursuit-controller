@@ -1,10 +1,8 @@
-package team1351.purepursuit.paths;
+package com.amhsrobotics.purepursuit.paths;
 
 
-import team1351.purepursuit.TrajectoryPoint;
-import team1351.purepursuit.Waypoint;
-
-import java.awt.geom.Point2D;
+import com.amhsrobotics.purepursuit.TrajectoryPoint;
+import com.amhsrobotics.purepursuit.Waypoint;
 
 /**
  * Cubic Hermite Spline Path Object.

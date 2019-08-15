@@ -1,4 +1,7 @@
-package team1351.purepursuit;
+package com.amhsrobotics.purepursuit;
+
+import com.amhsrobotics.purepursuit.paths.BezierCurvePath;
+import com.amhsrobotics.purepursuit.paths.CubicHermiteSplinePath;
 
 import java.awt.geom.Point2D;
 
@@ -11,13 +14,13 @@ import java.awt.geom.Point2D;
 public class Waypoint {
 	/**The waypoint {@link Point2D}. This is the main position of the waypoint.*/
 	private  Point2D waypoint;
-	/**The handle {@link Point2D}. This is the handle of the waypoint used in {@link team1351.purepursuit.paths.BezierCurvePath}.*/
+	/**The handle {@link Point2D}. This is the handle of the waypoint used in {@link BezierCurvePath}.*/
 	private  Point2D handle;
 	/**The opposite handle {@link Point2D}. This is the point directly opposite of the handle point.*/
 	private  Point2D oppositeHandle;
 	/**
 	 * The angle of the tangent vector at the waypoint in degrees. This is used in
-	 * {@link team1351.purepursuit.paths.CubicHermiteSplinePath} to determine the tangent vector.
+	 * {@link CubicHermiteSplinePath} to determine the tangent vector.
 	 */
 	private double angle;
 

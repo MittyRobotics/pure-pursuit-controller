@@ -1,9 +1,9 @@
-package team1351.purepursuit;
+package com.amhsrobotics.purepursuit;
 
 
-import team1351.purepursuit.paths.BezierCurvePath;
-import team1351.purepursuit.paths.CubicHermiteSplinePath;
-import team1351.purepursuit.paths.LinearPath;
+import com.amhsrobotics.purepursuit.paths.BezierCurvePath;
+import com.amhsrobotics.purepursuit.paths.CubicHermiteSplinePath;
+import com.amhsrobotics.purepursuit.paths.LinearPath;
 
 /**
  * Master Path Object.
