@@ -35,6 +35,9 @@ public class PathFollower {
 
 	private double currentCurvature;
 
+	boolean set = false;
+	double hardSetCurvatureVal = 0;
+
 	private TrajectoryPoint currentLookaheadPoint;
 
 	/**
@@ -67,6 +70,10 @@ public class PathFollower {
 	public PathFollowerOutput update(){
 		double curvature = calculateCurvature(PathFollowerPosition.getInstance().getRobotX(), PathFollowerPosition.getInstance().getRobotY(), PathFollowerPosition.getInstance().getRobotHeading());
 		double targetVelocity = findClosestPoint(PathFollowerPosition.getInstance().getRobotX(), PathFollowerPosition.getInstance().getRobotY()).getVelocity();
+		if(set){
+			curvature=hardSetCurvatureVal;
+		}
+
 		this.currentCurvature = curvature;
 
 		double leftVel = targetVelocity*(2+(curvature*WHEEL_DISTANCE))/2;
@@ -78,6 +85,11 @@ public class PathFollower {
 		}
 
 		return new PathFollowerOutput(leftVel,rightVel);
+	}
+
+	public void hardSetCurvature(boolean set, double val){
+		this.set = set;
+		this.hardSetCurvatureVal = val;
 	}
 
 	/**
