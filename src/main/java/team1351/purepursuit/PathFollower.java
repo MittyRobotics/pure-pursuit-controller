@@ -69,8 +69,8 @@ public class PathFollower {
 		double targetVelocity = findClosestPoint(PathFollowerPosition.getInstance().getRobotX(), PathFollowerPosition.getInstance().getRobotY()).getVelocity();
 		this.currentCurvature = curvature;
 
-		double leftVel = targetVelocity*(2+curvature*WHEEL_DISTANCE)/2;
-		double rightVel = targetVelocity*(2-curvature*WHEEL_DISTANCE)/2;
+		double leftVel = targetVelocity*(2+(curvature*WHEEL_DISTANCE))/2;
+		double rightVel = targetVelocity*(2-(curvature*WHEEL_DISTANCE))/2;
 
 		if(reversed){
 			leftVel = -leftVel;
