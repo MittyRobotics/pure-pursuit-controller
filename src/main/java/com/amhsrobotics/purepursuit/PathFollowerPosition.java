@@ -95,7 +95,12 @@ public class PathFollowerPosition {
 	 * @return the robot's current Y value.
 	 */
 	public double getRobotY(){
-		return robotY ;
+		if(reversed){
+			return -robotY;
+		}
+		else {
+			return robotY;
+		}
 	}
 
 	/**
