@@ -42,8 +42,8 @@ public class PathGenerator {
 	 * @param steps           Number of points generated. The more steps, the longer it takes to generate but the more accurate the path generation will be.
 	 * @return a {@link Path} object generated based on the parameters.
 	 */
-	public Path generate(Waypoint[] waypoints, PathType type, double maxAcceleration, double maxVelocity, int steps) {
-		return generate(waypoints,type,maxAcceleration,maxVelocity,0,0,steps);
+	public Path generate(Waypoint[] waypoints, PathType type, double maxAcceleration, double maxDeceleration, double maxVelocity, int steps) {
+		return generate(waypoints,type,maxAcceleration, maxDeceleration, maxVelocity,0,0,steps);
 	}
 
 	/**
@@ -58,7 +58,7 @@ public class PathGenerator {
 	 * @param steps           Number of points generated. The more steps, the longer it takes to generate but the more accurate the path generation will be.
 	 * @return a {@link Path} object generated based on the parameters.
 	 */
-	public Path generate(Waypoint[] waypoints, PathType type, double maxAcceleration, double maxVelocity, double startVelocity, double endVelocity, int steps) {
+	public Path generate(Waypoint[] waypoints, PathType type, double maxAcceleration, double maxDecelertion, double maxVelocity, double startVelocity, double endVelocity, int steps) {
 		if (type == PathType.BEZIER_CURVE_PATH) {
 			for(int i = 0; i < waypoints.length; i++){
 				if(waypoints[i].getWaypoint() == null){
@@ -67,7 +67,7 @@ public class PathGenerator {
 				}
 				if(waypoints[i].getHandle() == null){
 					System.out.println("Waypoint handle was not specified at index " + i + "! Message reported from generator. Attempting to generate linear path instead..." );
-					return generate(waypoints, PathType.LINEAR_PATH, maxAcceleration, maxVelocity, startVelocity, endVelocity, steps);
+					return generate(waypoints, PathType.LINEAR_PATH, maxAcceleration, 0, maxVelocity, startVelocity, endVelocity, steps);
 				}
 			}
 			Path path = new Path(maxAcceleration, maxVelocity, startVelocity, endVelocity, new BezierCurvePath(waypoints, steps));
@@ -84,7 +84,7 @@ public class PathGenerator {
 					return null;
 				}
 			}
-			Path path = new Path(maxAcceleration, maxVelocity, startVelocity, endVelocity, new CubicHermiteSplinePath(waypoints, steps));
+			Path path = new Path(maxAcceleration, maxDecelertion, maxVelocity, startVelocity, endVelocity, new CubicHermiteSplinePath(waypoints, steps));
 			path.setKCurvature(kCurvature);
 			path.generatePath();
 			path.calculateDistances();

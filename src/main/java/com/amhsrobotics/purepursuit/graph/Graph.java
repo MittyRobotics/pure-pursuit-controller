@@ -1,6 +1,6 @@
 package com.amhsrobotics.purepursuit.graph;
 
-import com.amhsrobotics.purepursuit.Path;
+import com.amhsrobotics.purepursuit.*;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -9,8 +9,6 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import com.amhsrobotics.purepursuit.PathGenerator;
-import com.amhsrobotics.purepursuit.Waypoint;
 import com.amhsrobotics.purepursuit.enums.PathType;
 
 import javax.swing.*;
@@ -32,11 +30,18 @@ public class Graph {
 //		waypoints[2] = new Waypoint(new Point2D.Double(14, 20), new Point2D.Double(15, 20));
 //		waypoints[3] = new Waypoint(new Point2D.Double(20, 20), new Point2D.Double(22, 20));
 		waypoints[0] = new Waypoint(new Point2D.Double(0,0),0);
-		waypoints[1] = new Waypoint(new Point2D.Double(48,-24),0);
+		waypoints[1] = new Waypoint(new Point2D.Double(48,0),0);
 		PathGenerator.getInstance().setPathKCurvature(0.8);
 
-		Path path = PathGenerator.getInstance().generate(waypoints, PathType.CUBIC_HERMITE_PATH,2,5,  200);
 
+
+		Path path = PathGenerator.getInstance().generate(waypoints, PathType.CUBIC_HERMITE_PATH,20,200,  200);
+		PathFollower follower = new PathFollower(path);
+		follower.setLookaheadDistance(15);
+		follower.setWheelDistance(27);
+		PathFollowerPosition.getInstance().hardSetPos(30,.5,0);
+		PathFollowerOutput output = follower.update();
+		System.out.println(output.getLeftVelocity() + " " + output.getRightVelocity() + " " + follower.getCurvature());
 		colorByVelocity = new double[path.length()];
 		for (int i = 0; i < path.length(); i++) {
 			pathSeries.add(path.get(i).getX(), path.get(i).getY());

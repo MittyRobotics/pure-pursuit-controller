@@ -27,6 +27,7 @@ public class Path {
 
 	/** Maximum robot acceleration value. This is used to limit the velocity of each point based on the acceleration.*/
 	private double maxAcceleration;
+	private double maxDeceleration;
 	/** Maximum robot velocity value. This is used to make sure the velocity of each point does not go over the maximum
 	 * velocity of the robot.
 	 */
@@ -126,6 +127,15 @@ public class Path {
 		this.endVelocity = endVelocity;
 	}
 
+	public Path(double maxAcceleration, double maxDeceleration, double maxVelocity, double startVelocity, double endVelocity, CubicHermiteSplinePath hermitePath) {
+		this.maxAcceleration = maxAcceleration;
+		this.maxDeceleration = maxDeceleration;
+		this.maxVelocity = maxVelocity;
+		this.hermitePath = hermitePath;
+		this.startVelocity = startVelocity;
+		this.endVelocity = endVelocity;
+	}
+
 	/**
 	 * Function for calling an individual path generator.
 	 * <p>
@@ -216,7 +226,13 @@ public class Path {
 				points[i].setVelocity(endVelocity);
 			} else {
 				double distance = TrajectoryPoint.distance(points[i + 1], points[i]);
-				double velocity = Math.min(maxVelocityWithCurvature, Math.sqrt(Math.pow(points[i + 1].getVelocity(), 2) + 2 * maxAcceleration * distance));
+				double velocity;
+				if(maxDeceleration != 0){
+					velocity = Math.min(maxVelocityWithCurvature, Math.sqrt(Math.pow(points[i + 1].getVelocity(), 2) + 2 * maxDeceleration * distance));
+				}
+				else {
+					velocity = Math.min(maxVelocityWithCurvature, Math.sqrt(Math.pow(points[i + 1].getVelocity(), 2) + 2 * maxAcceleration * distance));
+				}
 				points[i].setVelocity(velocity);
 			}
 		}
