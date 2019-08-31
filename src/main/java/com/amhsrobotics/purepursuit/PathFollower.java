@@ -81,11 +81,15 @@ public class PathFollower {
 		double rightVel = targetVelocity*(2-(curvature*WHEEL_DISTANCE))/2;
 
 		if(reversed){
-			leftVel = -rightVel;
-			rightVel = -leftVel;
+			leftVel = -leftVel;
+			rightVel = -rightVel;
+			return new PathFollowerOutput(rightVel,leftVel);
+		}
+		else{
+			return new PathFollowerOutput(leftVel,rightVel);
 		}
 
-		return new PathFollowerOutput(leftVel,rightVel);
+
 	}
 
 	public void hardSetCurvature(boolean set, double val){
