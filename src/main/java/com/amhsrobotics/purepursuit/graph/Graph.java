@@ -35,7 +35,7 @@ public class Graph {
 
 
 
-		Path path = PathGenerator.getInstance().generate(waypoints, PathType.CUBIC_HERMITE_PATH,20,200,  200);
+		Path path = PathGenerator.getInstance().generate(waypoints, PathType.CUBIC_HERMITE_PATH,20,10,200,  200);
 		PathFollower follower = new PathFollower(path);
 		follower.setLookaheadDistance(15);
 		follower.setWheelDistance(27);
