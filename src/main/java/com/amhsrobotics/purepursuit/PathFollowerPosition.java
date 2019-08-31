@@ -23,6 +23,8 @@ public class PathFollowerPosition {
 	/**The robot's heading angle (degrees) at the start of the path*/
 	private double resetHeading = 0;
 
+	private boolean reversed = false;
+
 
 	/**
 	 * Returns the singleton instance.
@@ -69,6 +71,7 @@ public class PathFollowerPosition {
 	}
 
 	public void hardSetPos(double x, double y, double heading){
+
 		this.robotX = x;
 		this.robotY = y;
 		this.robotHeading = heading;
@@ -79,7 +82,12 @@ public class PathFollowerPosition {
 	 * @return the robot's current X value.
 	 */
 	public double getRobotX(){
-		return robotX;
+		if(reversed){
+			return -robotX;
+		}
+		else {
+			return robotX;
+		}
 	}
 
 	/**
@@ -96,5 +104,9 @@ public class PathFollowerPosition {
 	 */
 	public double getRobotHeading(){
 		return robotHeading;
+	}
+
+	public void setReversed(boolean reversed){
+		this.reversed = reversed;
 	}
 }

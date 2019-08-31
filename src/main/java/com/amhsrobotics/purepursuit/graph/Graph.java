@@ -30,7 +30,7 @@ public class Graph {
 //		waypoints[2] = new Waypoint(new Point2D.Double(14, 20), new Point2D.Double(15, 20));
 //		waypoints[3] = new Waypoint(new Point2D.Double(20, 20), new Point2D.Double(22, 20));
 		waypoints[0] = new Waypoint(new Point2D.Double(0,0),0);
-		waypoints[1] = new Waypoint(new Point2D.Double(48,0),0);
+		waypoints[1] = new Waypoint(new Point2D.Double(-48,0),0);
 		PathGenerator.getInstance().setPathKCurvature(0.8);
 
 

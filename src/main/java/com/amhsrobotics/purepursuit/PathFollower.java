@@ -58,6 +58,7 @@ public class PathFollower {
 	public PathFollower(Path path, boolean reversed){
 		this.path=path;
 		this.reversed = reversed;
+		PathFollowerPosition.getInstance().setReversed(reversed);
 	}
 
 	/**
@@ -80,8 +81,8 @@ public class PathFollower {
 		double rightVel = targetVelocity*(2-(curvature*WHEEL_DISTANCE))/2;
 
 		if(reversed){
-			leftVel = -leftVel;
-			rightVel = -rightVel;
+			leftVel = -rightVel;
+			rightVel = -leftVel;
 		}
 
 		return new PathFollowerOutput(leftVel,rightVel);
