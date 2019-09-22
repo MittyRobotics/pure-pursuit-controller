@@ -304,9 +304,6 @@ public class Path {
 
 		double velocity = Math.min((initialVelocity + (acceleration*time)), desiredVelocity );
 
-
-		System.out.println(time +  " " + initialVelocity + " " + desiredVelocity + " " + acceleration + " " + distance + " " + velocity);
-
 		return velocity;
 	}
 
