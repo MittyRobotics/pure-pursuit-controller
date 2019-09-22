@@ -220,31 +220,94 @@ public class Path {
 	 */
 
 	public void calculateVelocities() {
-		for (int i = points.length - 1; i > 0; i--) {
-			double maxVelocityWithCurvature = Math.min(maxVelocity, kCurvature / points[i].getCurvature());
-			if (i == points.length - 1) {
-				points[i].setVelocity(endVelocity);
-			} else {
-				double distance = TrajectoryPoint.distance(points[i + 1], points[i]);
-				double velocity;
-				if(maxDeceleration != 0){
-					velocity = Math.min(maxVelocityWithCurvature, Math.sqrt(Math.pow(points[i + 1].getVelocity(), 2) + 2 * maxDeceleration * distance));
-				}
-				else {
-					velocity = Math.min(maxVelocityWithCurvature, Math.sqrt(Math.pow(points[i + 1].getVelocity(), 2) + 2 * maxAcceleration * distance));
-				}
-				points[i].setVelocity(velocity);
-			}
-		}
+
+
+
 		for (int i = 0; i < points.length; i++) {
-			if (i == 0) {
-				points[i].setVelocity(maxAcceleration+startVelocity);
-			} else {
-				double distance = TrajectoryPoint.distance(points[i - 1], points[i]);
-				double velocity = Math.min(points[i].getVelocity(), Math.sqrt(Math.pow(points[i - 1].getVelocity(), 2) + 2 * maxAcceleration * distance));
-				points[i].setVelocity(velocity);
+			if(i == 0){
+				points[i].setVelocity(startVelocity);
+			}
+			else if(i == points.length-1){
+				points[i].setVelocity(endVelocity);
+			}
+			else {
+				points[i].setVelocity(maxVelocity);
 			}
 		}
+
+
+
+		//			double maxVelocityWithCurvature = Math.min(maxVelocity, kCurvature / points[i].getCurvature());
+//			if (i == points.length - 1) {
+//				points[i].setVelocity(endVelocity);
+//			} else {
+//				double distance = TrajectoryPoint.distance(points[i + 1], points[i]);
+//				double velocity;
+//				if(maxDeceleration != 0){
+////					velocity = Math.min(maxVelocityWithCurvature, Math.sqrt(Math.pow(points[i + 1].getVelocity(), 2) + 2 * maxDeceleration * distance));
+//					velocity = limitVelocity(points[i+1].getVelocity(),maxVelocity,maxAcceleration,distance);
+////					System.out.println(points[i + 1].getVelocity());
+//				}
+//				else {
+////					velocity = Math.min(maxVelocityWithCurvature, Math.sqrt(Math.pow(points[i + 1].getVelocity(), 2) + 2 * maxAcceleration * distance));
+//					velocity = limitVelocity(points[i+1].getVelocity(),maxVelocity,maxAcceleration,distance);
+////					System.out.println(points[i + 1].getVelocity());
+//				}
+//				points[i].setVelocity(velocity);
+//			}
+
+
+
+
+		for (int i = 1; i < points.length; i++) {
+			double maxVelocityWithCurvature = kCurvature / points[i].getCurvature();
+
+			maxVelocityWithCurvature = Math.round(maxVelocityWithCurvature/(maxVelocity/5)) *  (maxVelocity/5);
+
+			double distance = TrajectoryPoint.distance(points[i - 1], points[i]);
+			double velocity = limitVelocity(Math.min(points[i-1].getVelocity(),maxVelocityWithCurvature),points[i].getVelocity(),maxAcceleration,distance);
+			points[i].setVelocity(velocity);
+		}
+
+		points[points.length-1].setVelocity(endVelocity);
+
+		for (int i = points.length-2; i > 0; i--) {
+			double maxVelocityWithCurvature = kCurvature / points[i].getCurvature();
+
+			maxVelocityWithCurvature = Math.round(maxVelocityWithCurvature/(maxVelocity/5)) * (maxVelocity/5);
+
+			double distance = TrajectoryPoint.distance(points[i + 1], points[i]);
+			double velocity = Math.min(limitVelocity(Math.min(points[i+1].getVelocity(),maxVelocityWithCurvature),points[i].getVelocity(),maxDeceleration,distance),points[i].getVelocity());
+			points[i].setVelocity(velocity);
+		}
+
+
+
+//		for (int i = 0; i < points.length; i++) {
+//			if (i == 0) {
+//				points[i].setVelocity(maxAcceleration+startVelocity);
+//			} else {
+//				double distance = TrajectoryPoint.distance(points[i - 1], points[i]);
+////				double velocity = Math.min(points[i].getVelocity(), Math.sqrt(Math.pow(points[i - 1].getVelocity(), 2) + 2 * maxAcceleration * distance));
+////				double velocity = limitVelocity(points[i-1].getVelocity(),endVelocity,maxAcceleration,distance);
+//////				System.out.println(points[i - 1].getVelocity());
+////				points[i].setVelocity(velocity);
+//			}
+//		}
+	}
+
+	private double limitVelocity(double initialVelocity, double desiredVelocity, double acceleration, double distance){
+
+		double time = Math.sqrt((2*distance)/acceleration);
+
+		double sign = Math.signum(initialVelocity-desiredVelocity);
+
+		double velocity = Math.min((initialVelocity + (acceleration*time)), desiredVelocity );
+
+
+		System.out.println(time +  " " + initialVelocity + " " + desiredVelocity + " " + acceleration + " " + distance + " " + velocity);
+
+		return velocity;
 	}
 
 	/**

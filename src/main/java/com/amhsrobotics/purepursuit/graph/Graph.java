@@ -30,12 +30,12 @@ public class Graph {
 //		waypoints[2] = new Waypoint(new Point2D.Double(14, 20), new Point2D.Double(15, 20));
 //		waypoints[3] = new Waypoint(new Point2D.Double(20, 20), new Point2D.Double(22, 20));
 		waypoints[0] = new Waypoint(new Point2D.Double(0,0),0);
-		waypoints[1] = new Waypoint(new Point2D.Double(55.8,123),90);
-		PathGenerator.getInstance().setPathKCurvature(2);
+		waypoints[1] = new Waypoint(new Point2D.Double(10,0),0);
+		PathGenerator.getInstance().setPathKCurvature(.3);
 
 
 
-		Path path = PathGenerator.getInstance().generate(waypoints, PathType.CUBIC_HERMITE_PATH,50,50,100, 0,20,  200);
+		Path path = PathGenerator.getInstance().generate(waypoints, PathType.CUBIC_HERMITE_PATH,.1,.1,5, 0,0,  200);
 		PathFollower follower = new PathFollower(path);
 		follower.setLookaheadDistance(15);
 		follower.setWheelDistance(27);
