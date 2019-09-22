@@ -220,7 +220,6 @@ public class Path {
 	 */
 
 	public void calculateVelocities() {
-		double totalDistance;
 		for (int i = points.length - 1; i > 0; i--) {
 			double maxVelocityWithCurvature = Math.min(maxVelocity, kCurvature / points[i].getCurvature());
 			if (i == points.length - 1) {
@@ -229,11 +228,10 @@ public class Path {
 				double distance = TrajectoryPoint.distance(points[i + 1], points[i]);
 				double velocity;
 				if(maxDeceleration != 0){
-					velocity = Math.min(maxVelocityWithCurvature, points[i + 1].getVelocity() +  maxDeceleration * distance);
+					velocity = Math.min(maxVelocityWithCurvature, Math.sqrt(Math.pow(points[i + 1].getVelocity(), 2) + 2 * maxDeceleration * distance));
 				}
 				else {
-					//velocity = Math.min(maxVelocityWithCurvature, Math.sqrt(Math.pow(points[i + 1].getVelocity(), 2) + 2 * maxAcceleration * distance));
-					velocity = Math.min(maxVelocityWithCurvature, points[i + 1].getVelocity() +  maxAcceleration * distance);
+					velocity = Math.min(maxVelocityWithCurvature, Math.sqrt(Math.pow(points[i + 1].getVelocity(), 2) + 2 * maxAcceleration * distance));
 				}
 				points[i].setVelocity(velocity);
 			}
@@ -243,8 +241,7 @@ public class Path {
 				points[i].setVelocity(maxAcceleration+startVelocity);
 			} else {
 				double distance = TrajectoryPoint.distance(points[i - 1], points[i]);
-				//double velocity = Math.min(points[i].getVelocity(), Math.sqrt(Math.pow(points[i - 1].getVelocity(), 2) + 2 * maxAcceleration * distance));
-				double velocity =  Math.min(points[i].getVelocity(), points[i - 1].getVelocity() +   maxAcceleration * distance);
+				double velocity = Math.min(points[i].getVelocity(), Math.sqrt(Math.pow(points[i - 1].getVelocity(), 2) + 2 * maxAcceleration * distance));
 				points[i].setVelocity(velocity);
 			}
 		}
