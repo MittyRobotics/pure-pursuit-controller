@@ -164,7 +164,6 @@ public class PathFollower {
 			double yOffset = (path.get(path.length()-1).getY()-path.get(path.length()-2).getY());
 			double x1 = path.get(path.length()-1).getX() + xOffset*lookaheadDistance;
 			double y1 =path.get(path.length()-1).getY() + yOffset*lookaheadDistance;
-			System.out.println("lookahead within dist " + currentLookaheadDistance);
 			return new TrajectoryPoint(x1, y1);
 		}
 		else {
