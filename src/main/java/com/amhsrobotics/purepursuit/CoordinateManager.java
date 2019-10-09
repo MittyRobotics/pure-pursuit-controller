@@ -25,7 +25,13 @@ public class CoordinateManager {
 		double newY=0;
 		double newAngle;
 		double mappedAngle = mapAngle(coordinate.getAngle());
-		newAngle = mappedAngle - (coordinateSystem.getForwardAngle() - WORLD_COORDINATE_SYSTEM.getForwardAngle());
+		newAngle = mapAngle(mappedAngle - (coordinateSystem.getForwardAngle() - WORLD_COORDINATE_SYSTEM.getForwardAngle()));
+		if(coordinateSystem.getLeftAngle()-coordinateSystem.getForwardAngle() < 0){
+			newAngle = mapAngle(newAngle);
+		}
+		else {
+			newAngle = mapAngle(coordinateSystem.getForwardAngle()-newAngle);
+		}
 		return new Coordinate(newX,newY,newAngle);
 	}
 
