@@ -1,18 +1,16 @@
 package com.amhsrobotics.purepursuit;
 
 public class CoordinateSystem {
+
 	private double forwardAngle;
-	private double leftAngle;
-	private double rightAngle;
-	private double backwardAngle;
+
+	private TurnSign leftTurnSign;
 	private VectorDirection forwardVector;
 	private VectorDirection leftVector;
 
-	public CoordinateSystem(double forwardAngle, double leftAngle, double rightAngle, double backwardAngle, VectorDirection forwardVector, VectorDirection leftVector){
+	public CoordinateSystem(double forwardAngle, TurnSign leftTurnSign, VectorDirection forwardVector, VectorDirection leftVector) {
 		this.forwardAngle = forwardAngle;
-		this.leftAngle = leftAngle;
-		this.rightAngle = rightAngle;
-		this.backwardAngle = backwardAngle;
+		this.leftTurnSign = leftTurnSign;
 		this.forwardVector = forwardVector;
 		this.leftVector = leftVector;
 	}
@@ -25,29 +23,15 @@ public class CoordinateSystem {
 		this.forwardAngle = forwardAngle;
 	}
 
-	public double getLeftAngle() {
-		return leftAngle;
+
+	public TurnSign getLeftTurnSign() {
+		return leftTurnSign;
 	}
 
-	public void setLeftAngle(double leftAngle) {
-		this.leftAngle = leftAngle;
+	public void setLeftTurnSign(TurnSign leftTurnSign) {
+		this.leftTurnSign = leftTurnSign;
 	}
 
-	public double getRightAngle() {
-		return rightAngle;
-	}
-
-	public void setRightAngle(double rightAngle) {
-		this.rightAngle = rightAngle;
-	}
-
-	public double getBackwardAngle() {
-		return backwardAngle;
-	}
-
-	public void setBackwardAngle(double backwardAngle) {
-		this.backwardAngle = backwardAngle;
-	}
 
 	public VectorDirection getForwardVector() {
 		return forwardVector;
