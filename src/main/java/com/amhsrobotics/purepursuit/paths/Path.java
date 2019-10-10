@@ -18,7 +18,12 @@ public class Path {
 	/**The array of generated points that makeup the path*/
 	private TrajectoryPoint[] trajectoryPoints;
 
-	private CoordinateSystem GENERATOR_COORDINATE_SYTEM = new CoordinateSystem(90, TurnSign.NEGATIVE, VectorDirection.NEGATIVE_Y,VectorDirection.NEGATIVE_X);
+	private CoordinateSystem GENERATOR_COORDINATE_SYTEM = new CoordinateSystem(
+			90,
+			TurnSign.POSITIVE,
+			VectorDirection.POSITIVE_Y,
+			VectorDirection.NEGATIVE_X);
+
 
 	/**
 	 * Path constructor

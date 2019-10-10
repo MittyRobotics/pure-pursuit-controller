@@ -14,12 +14,12 @@ public class Main {
         TestGraph graph = new TestGraph();
 
         CoordinateSystem system = new CoordinateSystem(90, TurnSign.POSITIVE, VectorDirection.NEGATIVE_Y, VectorDirection.NEGATIVE_X);
-
-
-        graph.panel2.setLocation(100, 200);
-
-
-        graph.panel4.setLocation(300, 200);
+//
+//
+//        graph.panel2.setLocation(100, 200);
+//
+//
+//        graph.panel4.setLocation(300, 200);
 
 
 //        for (int i = 0; i < 360*3; i++) {
@@ -41,7 +41,7 @@ public class Main {
 //            }
 //        }
 
-        Path path = new CubicHermitePath(new Coordinate[]{new Coordinate(0,0,0),new Coordinate(0,200,0)},new VelocityConstraints(20,20,50,0,0));
+        Path path = new CubicHermitePath(new Coordinate[]{new Coordinate(0,0,90),new Coordinate(0,100,0)},new VelocityConstraints(20,20,50,0,0));
 
         path.generatePoints();
 
@@ -52,7 +52,7 @@ public class Main {
             panel.setSize(new Dimension(10,10));
             panel.setBackground(Color.BLACK);
 
-            panel.setLocation((int) (100 +  path.getTrajectoryPoints()[i].getX()),(int) (400 + path.getTrajectoryPoints()[i].getY()));
+            panel.setLocation((int) (200 +  path.getTrajectoryPoints()[i].getX()),(int) (200 - path.getTrajectoryPoints()[i].getY()));
             graph.add(panel);
 
 
