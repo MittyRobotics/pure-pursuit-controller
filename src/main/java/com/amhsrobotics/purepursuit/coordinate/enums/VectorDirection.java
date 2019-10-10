@@ -1,4 +1,4 @@
-package com.amhsrobotics.purepursuit;
+package com.amhsrobotics.purepursuit.coordinate.enums;
 
 public enum VectorDirection {
 	POSITIVE_X,

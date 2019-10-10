@@ -1,4 +1,6 @@
-package com.amhsrobotics.purepursuit;
+package com.amhsrobotics.purepursuit.coordinate;
+
+import java.awt.geom.Point2D;
 
 public class Coordinate {
 	private double x;
@@ -9,6 +11,14 @@ public class Coordinate {
 		this.x = x;
 		this.y = y;
 		this.angle = angle;
+	}
+
+	public double distance(Coordinate coordinate){
+		return Point2D.distance(getX(),getY(),coordinate.getX(),coordinate.getY());
+	}
+
+	public double distance(Coordinate coordinate1, Coordinate coordinate2){
+		return Point2D.distance(coordinate1.getX(),coordinate1.getY(),coordinate2.getX(),coordinate2.getY());
 	}
 
 	public double getX() {

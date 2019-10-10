@@ -1,4 +1,7 @@
-package com.amhsrobotics.purepursuit;
+package com.amhsrobotics.purepursuit.coordinate;
+
+import com.amhsrobotics.purepursuit.coordinate.enums.TurnSign;
+import com.amhsrobotics.purepursuit.coordinate.enums.VectorDirection;
 
 public class CoordinateManager {
 
@@ -101,7 +104,7 @@ public class CoordinateManager {
 				mappedAngle = -mappedAngle;
 			}
 		}
-		newAngle = mapAngle(mappedAngle - (inputCoordinateSystem.getForwardAngle() - WORLD_COORDINATE_SYSTEM.getForwardAngle()));
+		newAngle = mapAngle(mappedAngle + (inputCoordinateSystem.getForwardAngle() - WORLD_COORDINATE_SYSTEM.getForwardAngle()));
 
 		return new Coordinate(newX,newY,newAngle);
 	}

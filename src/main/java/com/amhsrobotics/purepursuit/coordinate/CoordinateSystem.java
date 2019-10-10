@@ -1,4 +1,7 @@
-package com.amhsrobotics.purepursuit;
+package com.amhsrobotics.purepursuit.coordinate;
+
+import com.amhsrobotics.purepursuit.coordinate.enums.TurnSign;
+import com.amhsrobotics.purepursuit.coordinate.enums.VectorDirection;
 
 public class CoordinateSystem {
 

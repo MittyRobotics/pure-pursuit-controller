@@ -1,12 +1,19 @@
 package com.amhsrobotics.purepursuit;
 
+import com.amhsrobotics.purepursuit.coordinate.*;
+import com.amhsrobotics.purepursuit.coordinate.enums.TurnSign;
+import com.amhsrobotics.purepursuit.coordinate.enums.VectorDirection;
+import com.amhsrobotics.purepursuit.paths.CubicHermitePath;
+import com.amhsrobotics.purepursuit.paths.Path;
+
+import javax.swing.*;
 import java.awt.*;
 
 public class Main {
     public static void main(String[] args) {
         TestGraph graph = new TestGraph();
 
-        CoordinateSystem system = new CoordinateSystem(90,TurnSign.POSITIVE, VectorDirection.NEGATIVE_Y, VectorDirection.NEGATIVE_X);
+        CoordinateSystem system = new CoordinateSystem(90, TurnSign.POSITIVE, VectorDirection.NEGATIVE_Y, VectorDirection.NEGATIVE_X);
 
 
         graph.panel2.setLocation(100, 200);
@@ -34,14 +41,20 @@ public class Main {
 //            }
 //        }
 
-        for (int i = 0; i < 200; i++) {
+        Path path = new CubicHermitePath(new Coordinate[]{new Coordinate(0,0,0),new Coordinate(0,200,0)},new VelocityConstraints(20,20,50,0,0));
 
-            Coordinate inputCoord = new Coordinate(i,i,0);
-            Coordinate newCoord = CoordinateManager.getInstance().coordinateTransformation(inputCoord,system);
+        path.generatePoints();
 
-            graph.panel1.setLocation((int) (100 + newCoord.getX()),(int) (400 + newCoord.getY()));
+//        graph.removeAll();
+        for (int i = 0; i < path.getTrajectoryPoints().length; i++) {
 
-            graph.panel3.setLocation((int) (300 + inputCoord.getX()),(int) (400 + inputCoord.getY()));
+            JPanel panel = new JPanel();
+            panel.setSize(new Dimension(10,10));
+            panel.setBackground(Color.BLACK);
+
+            panel.setLocation((int) (100 +  path.getTrajectoryPoints()[i].getX()),(int) (400 + path.getTrajectoryPoints()[i].getY()));
+            graph.add(panel);
+
 
             graph.repaint();
             graph.revalidate();
@@ -53,9 +66,29 @@ public class Main {
             }
         }
 
-        Coordinate testCoord = new Coordinate(10,0,0);
 
-
-        System.out.println(CoordinateManager.getInstance().coordinateTransformation(testCoord, system).getX() + " " + CoordinateManager.getInstance().coordinateTransformation(testCoord, system).getY() );
+//        for (int i = 0; i < 200; i++) {
+//
+//            Coordinate inputCoord = new Coordinate(i,i,0);
+//            Coordinate newCoord = CoordinateManager.getInstance().coordinateTransformation(inputCoord,system);
+//
+//            graph.panel1.setLocation((int) (100 + newCoord.getX()),(int) (400 + newCoord.getY()));
+//
+//            graph.panel3.setLocation((int) (300 + inputCoord.getX()),(int) (400 + inputCoord.getY()));
+//
+//            graph.repaint();
+//            graph.revalidate();
+//
+//            try {
+//                Thread.sleep(20);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//        Coordinate testCoord = new Coordinate(10,0,0);
+//
+//
+//        System.out.println(CoordinateManager.getInstance().coordinateTransformation(testCoord, system).getX() + " " + CoordinateManager.getInstance().coordinateTransformation(testCoord, system).getY() );
     }
 }
