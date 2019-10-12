@@ -36,6 +36,11 @@ public class Path {
 		}
 		this.coordinates = coordinates;
 		this.velocityConstraints = velocityConstraints;
+
+		generatePoints();
+		calculatePositions();
+		calculateCurvature();
+		calculateVelocities();
 	}
 
 	/**
@@ -48,7 +53,9 @@ public class Path {
 	 * Calculates the position of each point along the path.
 	 */
 	public void calculatePositions(){
+		if(trajectoryPoints != null){
 
+		}
 	}
 
 	/**
