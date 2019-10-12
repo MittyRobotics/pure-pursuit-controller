@@ -14,7 +14,7 @@ public class Coordinate {
 	}
 
 	public double distance(Coordinate coordinate){
-		return Point2D.distance(getX(),getY(),coordinate.getX(),coordinate.getY());
+		return Point2D.distance(getX(),getY(),coordinate.getX(),coordinate .getY());
 	}
 
 	public double distance(Coordinate coordinate1, Coordinate coordinate2){

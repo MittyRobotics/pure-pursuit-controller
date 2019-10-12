@@ -1,7 +1,14 @@
 package com.amhsrobotics.purepursuit;
 
+import com.amhsrobotics.purepursuit.coordinate.Coordinate;
+import com.amhsrobotics.purepursuit.coordinate.CoordinateManager;
+import com.amhsrobotics.purepursuit.coordinate.CoordinateSystem;
+import com.amhsrobotics.purepursuit.coordinate.enums.TurnSign;
+import com.amhsrobotics.purepursuit.coordinate.enums.VectorDirection;
 import com.amhsrobotics.purepursuit.paths.Path;
 import com.amhsrobotics.purepursuit.paths.TrajectoryPoint;
+
+import java.awt.geom.Point2D;
 
 /**
  * Pure Pursuit Controller class
@@ -44,8 +51,50 @@ public class PurePursuitController {
         return angularVelocity*(radius + (trackWidth/2));
     }
 
+    public double calculateRadiusToTarget(double robotAngle){
+
+        robotAngle = CoordinateManager.getInstance().coordinateTransformation(new Coordinate(0,0,robotAngle), new CoordinateSystem(90, TurnSign.POSITIVE, VectorDirection.POSITIVE_X,VectorDirection.POSITIVE_Y)).getAngle();
+
+        Point2D.Double vectorHead = new  Point2D.Double(Math.cos(Math.toRadians(robotAngle)),Math.sin(Math.toRadians(robotAngle)));
+
+        TrajectoryPoint targetPoint = new TrajectoryPoint(40,40);
+
+        double a = targetPoint.getX();
+        double b = targetPoint.getY();
+        double c = vectorHead.getX();
+        double d = vectorHead.getY();
+
+        double x = (d*(a*a+b*b))/(2*((a*d)-(b*c)));
+        double y = -(c*(a*a+b*b))/(2*((a*d)-(b*c)));
+
+        Point2D.Double circleCenter = new Point2D.Double(x,y);
+
+
+
+        System.out.println("Center: " + circleCenter.getX() + " " + circleCenter.getY()+ " " + robotAngle + " " + vectorHead.getX() + " " + vectorHead.getY());
+
+        this.currentRadius = Math.sqrt(circleCenter.getX()*circleCenter.getX() + circleCenter.getY()*circleCenter.getY());
+        return this.currentRadius;
+    }
+
     public void calculateRadiusToTarget(){
-        this.currentRadius = 0;
+
+        double robotAngle = 0;
+
+        robotAngle = CoordinateManager.getInstance().coordinateTransformation(new Coordinate(0,0,robotAngle), new CoordinateSystem(90, TurnSign.POSITIVE, VectorDirection.POSITIVE_X,VectorDirection.POSITIVE_Y)).getAngle();
+
+        Point2D.Double vectorHead = new  Point2D.Double(Math.cos(Math.toRadians(robotAngle))*10,Math.sin(Math.toRadians(robotAngle))*10);
+
+        TrajectoryPoint targetPoint = new TrajectoryPoint(40,40);
+
+        double x = (vectorHead.getY() * (Math.pow(targetPoint.getX(),2)+Math.pow(targetPoint.getY(),2)))/(2*(targetPoint.getX()*vectorHead.getY()-targetPoint.getY()-vectorHead.getX()));
+        double y = (vectorHead.getX() * (Math.pow(targetPoint.getX(),2)+Math.pow(targetPoint.getY(),2)))/(2*(targetPoint.getX()*vectorHead.getY()-targetPoint.getY()-vectorHead.getX()));
+
+        Point2D.Double circleCenter = new Point2D.Double(x,y);
+
+
+
+        this.currentRadius = Math.sqrt(circleCenter.getX()*circleCenter.getX() + circleCenter.getY()+circleCenter.getY());
     }
 
     public void calculateTargetPoint(){
