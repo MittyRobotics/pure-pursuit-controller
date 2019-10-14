@@ -3,6 +3,7 @@ package com.amhsrobotics.purepursuit;
 import com.amhsrobotics.purepursuit.coordinate.*;
 import com.amhsrobotics.purepursuit.coordinate.enums.TurnSign;
 import com.amhsrobotics.purepursuit.coordinate.enums.VectorDirection;
+import com.amhsrobotics.purepursuit.graph.Graph;
 import com.amhsrobotics.purepursuit.paths.CubicHermitePath;
 import com.amhsrobotics.purepursuit.paths.Path;
 
@@ -11,15 +12,20 @@ import java.awt.*;
 
 public class Main {
     public static void main(String[] args) {
-        TestGraph graph = new TestGraph();
+//
+        Graph graph = Graph.getInstance();
+        graph.pack();
+        graph.setVisible(true);
+
+        TestGraph testGraph = new TestGraph();
 
         CoordinateSystem system = new CoordinateSystem(90, TurnSign.POSITIVE, VectorDirection.NEGATIVE_Y, VectorDirection.NEGATIVE_X);
 //
 //
-//        graph.panel2.setLocation(100, 200);
+//        testGraph.panel2.setLocation(100, 200);
 //
 //
-//        graph.panel4.setLocation(300, 200);
+//        testGraph.panel4.setLocation(300, 200);
 
 
 //        for (int i = 0; i < 360*3; i++) {
@@ -27,12 +33,12 @@ public class Main {
 //           double angle = CoordinateManager.getInstance().coordinateTransformation(new Coordinate(0,0,CoordinateManager.getInstance().mapAngle(i)),system).getAngle();
 //            double angle1 = CoordinateManager.getInstance().mapAngle(i);
 //            System.out.println(angle + " " + angle1);
-//            graph.panel1.setLocation((int) (100 + Math.cos(Math.toRadians(angle)) * 100), (int) (200 + Math.sin(Math.toRadians(angle)) * 100));
+//            testGraph.panel1.setLocation((int) (100 + Math.cos(Math.toRadians(angle)) * 100), (int) (200 + Math.sin(Math.toRadians(angle)) * 100));
 //
-//            graph.panel3.setLocation((int) (300 + Math.cos(Math.toRadians(angle1)) * 100), (int) (200 + Math.sin(Math.toRadians(angle1)) * 100));
+//            testGraph.panel3.setLocation((int) (300 + Math.cos(Math.toRadians(angle1)) * 100), (int) (200 + Math.sin(Math.toRadians(angle1)) * 100));
 //
-//            graph.repaint();
-//            graph.revalidate();
+//            testGraph.repaint();
+//            testGraph.revalidate();
 //
 //            try {
 //                Thread.sleep(20);
@@ -43,11 +49,12 @@ public class Main {
 
         Path path = new CubicHermitePath(new Coordinate[]{new Coordinate(0,0,90),new Coordinate(0,100,0)},new VelocityConstraints(20,20,50,0,0));
 
-        PurePursuitController controller = new PurePursuitController(null);
-        controller.update();
-        System.out.println("Left: " + controller.leftVelocityFromRadius() + " Right: " + controller.rightVelocityFromRadius() + " radius " + controller.getCurrentRadius());
+        graph.graphPath(path);
+//        PurePursuitController controller = new PurePursuitController(null);
+//        controller.update();
+//        System.out.println("Left: " + controller.leftVelocityFromRadius() + " Right: " + controller.rightVelocityFromRadius() + " radius " + controller.getCurrentRadius());
 
-//        graph.removeAll();
+//        testGraph.removeAll();
         for (int i = 0; i < path.getTrajectoryPoints().length; i++) {
 
             JPanel panel = new JPanel();
@@ -55,11 +62,11 @@ public class Main {
             panel.setBackground(Color.BLACK);
 
             panel.setLocation((int) (200 +  path.getTrajectoryPoints()[i].getX()),(int) (200 - path.getTrajectoryPoints()[i].getY()));
-            graph.add(panel);
+            testGraph.add(panel);
 
 
-            graph.repaint();
-            graph.revalidate();
+            testGraph.repaint();
+            testGraph.revalidate();
 
             try {
                 Thread.sleep(20);
@@ -74,12 +81,12 @@ public class Main {
 //            Coordinate inputCoord = new Coordinate(i,i,0);
 //            Coordinate newCoord = CoordinateManager.getInstance().coordinateTransformation(inputCoord,system);
 //
-//            graph.panel1.setLocation((int) (100 + newCoord.getX()),(int) (400 + newCoord.getY()));
+//            testGraph.panel1.setLocation((int) (100 + newCoord.getX()),(int) (400 + newCoord.getY()));
 //
-//            graph.panel3.setLocation((int) (300 + inputCoord.getX()),(int) (400 + inputCoord.getY()));
+//            testGraph.panel3.setLocation((int) (300 + inputCoord.getX()),(int) (400 + inputCoord.getY()));
 //
-//            graph.repaint();
-//            graph.revalidate();
+//            testGraph.repaint();
+//            testGraph.revalidate();
 //
 //            try {
 //                Thread.sleep(20);

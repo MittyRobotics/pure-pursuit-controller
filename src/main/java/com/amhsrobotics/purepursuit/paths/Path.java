@@ -18,7 +18,7 @@ public class Path {
 	/**The array of generated points that makeup the path*/
 	private TrajectoryPoint[] trajectoryPoints;
 
-	private CoordinateSystem GENERATOR_COORDINATE_SYTEM = new CoordinateSystem(
+	private CoordinateSystem GENERATOR_COORDINATE_SYSTEM = new CoordinateSystem(
 			90,
 			TurnSign.POSITIVE,
 			VectorDirection.POSITIVE_Y,
@@ -31,7 +31,7 @@ public class Path {
 	public Path(Coordinate[] coordinates, VelocityConstraints velocityConstraints){
 
 		for(int i = 0; i < coordinates.length; i++){
-			coordinates[i] = CoordinateManager.getInstance().coordinateTransformation(coordinates[i],GENERATOR_COORDINATE_SYTEM);
+			coordinates[i] = CoordinateManager.getInstance().coordinateTransformation(coordinates[i], GENERATOR_COORDINATE_SYSTEM);
 			System.out.println(coordinates[i].getX() + " " + coordinates[i].getY() + " " + coordinates[i].getAngle());
 		}
 		this.coordinates = coordinates;

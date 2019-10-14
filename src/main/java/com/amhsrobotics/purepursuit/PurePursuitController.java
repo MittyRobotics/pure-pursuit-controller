@@ -55,7 +55,8 @@ public class PurePursuitController {
     }
 
     public void calculateRadiusToTarget() {
-        final double robotAngle = CoordinateManager.getInstance().coordinateTransformation(new Coordinate(0, 0, PathFollowerPosition.getInstance().getHeading()), new CoordinateSystem(90, TurnSign.POSITIVE, VectorDirection.POSITIVE_X, VectorDirection.POSITIVE_Y)).getAngle();
+
+        final double robotAngle = PathFollowerPosition.getInstance().getPathCentricHeading();
 
         final Point2D.Double vectorHead = new Point2D.Double(Math.cos(Math.toRadians(robotAngle)), Math.sin(Math.toRadians(robotAngle)));
 
@@ -95,7 +96,6 @@ public class PurePursuitController {
             prevTargetIndex = path.getTrajectoryPoints().length - 1;
             currentTargetPoint = new TrajectoryPoint(x, y);
         } else {
-
             int currentClosest = 9999;
             for (int i = prevTargetIndex; i < path.getTrajectoryPoints().length; i++) {
                 if (path.getTrajectoryPoints()[i].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) - lookaheadDistance < currentClosest) {
