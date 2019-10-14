@@ -44,7 +44,8 @@ public class Main {
         Path path = new CubicHermitePath(new Coordinate[]{new Coordinate(0,0,90),new Coordinate(0,100,0)},new VelocityConstraints(20,20,50,0,0));
 
         PurePursuitController controller = new PurePursuitController(null);
-        System.out.println("Left: " + controller.leftVelocityFromRadius(10) + " Right: " + controller.rightVelocityFromRadius(10) + " radius " + controller.calculateRadiusToTarget(-90));
+        controller.update();
+        System.out.println("Left: " + controller.leftVelocityFromRadius() + " Right: " + controller.rightVelocityFromRadius() + " radius " + controller.getCurrentRadius());
 
 //        graph.removeAll();
         for (int i = 0; i < path.getTrajectoryPoints().length; i++) {

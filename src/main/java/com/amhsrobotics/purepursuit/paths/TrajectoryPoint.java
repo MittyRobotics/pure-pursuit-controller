@@ -1,5 +1,9 @@
 package com.amhsrobotics.purepursuit.paths;
 
+import com.amhsrobotics.purepursuit.coordinate.Coordinate;
+
+import java.awt.geom.Point2D;
+
 public class TrajectoryPoint {
 
 	private double x;
@@ -11,6 +15,14 @@ public class TrajectoryPoint {
 	public TrajectoryPoint(double x, double y) {
 		this.x = x;
 		this.y = y;
+	}
+
+	public double distance(TrajectoryPoint trajectoryPoint){
+		return Point2D.distance(getX(),getY(),trajectoryPoint.getX(),trajectoryPoint .getY());
+	}
+
+	public double distance(TrajectoryPoint trajectoryPoint1, TrajectoryPoint trajectoryPoint2){
+		return Point2D.distance(trajectoryPoint1.getX(),trajectoryPoint1.getY(),trajectoryPoint2.getX(),trajectoryPoint2.getY());
 	}
 
 	public double getX() {

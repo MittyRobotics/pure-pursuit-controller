@@ -12,7 +12,7 @@ import java.awt.geom.Point2D;
 
 /**
  * Pure Pursuit Controller class
- *
+ * <p>
  * References: http://www.cs.columbia.edu/~allen/F17/NOTES/icckinematics.pdf
  * http://www8.cs.umu.se/kurser/5DV122/HT13/material/Hellstrom-ForwardKinematics.pdf
  * https://www.ri.cmu.edu/pub_files/pub3/coulter_r_craig_1992_1/coulter_r_craig_1992_1.pdf
@@ -24,81 +24,86 @@ public class PurePursuitController {
     private Path path;
 
     private double currentRadius;
+    private TrajectoryPoint currentClosestPoint;
     private TrajectoryPoint currentTargetPoint;
+    private int prevTargetIndex;
 
-    public PurePursuitController(Path path){
-
+    public PurePursuitController(Path path) {
         this.path = path;
     }
 
-    public PurePursuitOutput update(){
-        return new PurePursuitOutput(leftVelocityFromRadius(currentRadius),rightVelocityFromRadius(currentRadius));
+    public PurePursuitOutput update() {
+        calculateTargetPoint();
+        calculateRadiusToTarget();
+        return new PurePursuitOutput(leftVelocityFromRadius(), rightVelocityFromRadius());
     }
 
-    public double leftVelocityFromRadius(double radius){
-        double baseVelocity = 50;
+    public double leftVelocityFromRadius() {
+        double baseVelocity = currentClosestPoint.getVelocity();
 
-        double angularVelocity = baseVelocity/radius;
+        double angularVelocity = baseVelocity / getCurrentRadius();
 
-        return angularVelocity*(radius - (trackWidth/2));
+        return angularVelocity * (getCurrentRadius() - (trackWidth / 2));
     }
 
-    public double rightVelocityFromRadius(double radius){
-        double baseVelocity = 50;
+    public double rightVelocityFromRadius() {
+        double baseVelocity = currentClosestPoint.getVelocity();
 
-        double angularVelocity = baseVelocity/radius;
+        double angularVelocity = baseVelocity / getCurrentRadius();
 
-        return angularVelocity*(radius + (trackWidth/2));
+        return angularVelocity * (getCurrentRadius() + (trackWidth / 2));
     }
 
-    public double calculateRadiusToTarget(double robotAngle){
+    public void calculateRadiusToTarget() {
+        final double robotAngle = CoordinateManager.getInstance().coordinateTransformation(new Coordinate(0, 0, PathFollowerPosition.getInstance().getHeading()), new CoordinateSystem(90, TurnSign.POSITIVE, VectorDirection.POSITIVE_X, VectorDirection.POSITIVE_Y)).getAngle();
 
-        robotAngle = CoordinateManager.getInstance().coordinateTransformation(new Coordinate(0,0,robotAngle), new CoordinateSystem(90, TurnSign.POSITIVE, VectorDirection.POSITIVE_X,VectorDirection.POSITIVE_Y)).getAngle();
+        final Point2D.Double vectorHead = new Point2D.Double(Math.cos(Math.toRadians(robotAngle)), Math.sin(Math.toRadians(robotAngle)));
 
-        Point2D.Double vectorHead = new  Point2D.Double(Math.cos(Math.toRadians(robotAngle)),Math.sin(Math.toRadians(robotAngle)));
+        final double a = this.currentTargetPoint.getX();
+        final double b = this.currentTargetPoint.getY();
+        final double c = vectorHead.getX();
+        final double d = vectorHead.getY();
 
-        TrajectoryPoint targetPoint = new TrajectoryPoint(40,40);
+        final double v = 2 * ((a * d) - (b * c));
+        final double x = (d * ((a * a) + (b * b))) / v;
+        final double y = -(c * (a * a + b * b)) / v;
 
-        double a = targetPoint.getX();
-        double b = targetPoint.getY();
-        double c = vectorHead.getX();
-        double d = vectorHead.getY();
+        final Point2D.Double circleCenter = new Point2D.Double(x, y);
 
-        double x = (d*(a*a+b*b))/(2*((a*d)-(b*c)));
-        double y = -(c*(a*a+b*b))/(2*((a*d)-(b*c)));
-
-        Point2D.Double circleCenter = new Point2D.Double(x,y);
-
-
-
-        System.out.println("Center: " + circleCenter.getX() + " " + circleCenter.getY()+ " " + robotAngle + " " + vectorHead.getX() + " " + vectorHead.getY());
-
-        this.currentRadius = Math.sqrt(circleCenter.getX()*circleCenter.getX() + circleCenter.getY()*circleCenter.getY());
-        return this.currentRadius;
+        this.currentRadius = Math.sqrt(circleCenter.getX() * circleCenter.getX() + circleCenter.getY() * circleCenter.getY());
     }
 
-    public void calculateRadiusToTarget(){
-
-        double robotAngle = 0;
-
-        robotAngle = CoordinateManager.getInstance().coordinateTransformation(new Coordinate(0,0,robotAngle), new CoordinateSystem(90, TurnSign.POSITIVE, VectorDirection.POSITIVE_X,VectorDirection.POSITIVE_Y)).getAngle();
-
-        Point2D.Double vectorHead = new  Point2D.Double(Math.cos(Math.toRadians(robotAngle))*10,Math.sin(Math.toRadians(robotAngle))*10);
-
-        TrajectoryPoint targetPoint = new TrajectoryPoint(40,40);
-
-        double x = (vectorHead.getY() * (Math.pow(targetPoint.getX(),2)+Math.pow(targetPoint.getY(),2)))/(2*(targetPoint.getX()*vectorHead.getY()-targetPoint.getY()-vectorHead.getX()));
-        double y = (vectorHead.getX() * (Math.pow(targetPoint.getX(),2)+Math.pow(targetPoint.getY(),2)))/(2*(targetPoint.getX()*vectorHead.getY()-targetPoint.getY()-vectorHead.getX()));
-
-        Point2D.Double circleCenter = new Point2D.Double(x,y);
-
-
-
-        this.currentRadius = Math.sqrt(circleCenter.getX()*circleCenter.getX() + circleCenter.getY()+circleCenter.getY());
+    private TrajectoryPoint findClosestPoint() {
+        double currentClosest = 9999;
+        TrajectoryPoint closestPoint = null;
+        for (int i = 0; i < path.getTrajectoryPoints().length; i++) {
+            if (path.getTrajectoryPoints()[i].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) < currentClosest) {
+                currentClosest = path.getTrajectoryPoints()[i].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY()));
+                closestPoint = path.getTrajectoryPoints()[i];
+            }
+        }
+        return closestPoint;
     }
 
-    public void calculateTargetPoint(){
-       currentTargetPoint = new TrajectoryPoint(0,0);
+    public void calculateTargetPoint() {
+        this.currentClosestPoint = findClosestPoint();
+
+        if (path.getTrajectoryPoints()[path.getTrajectoryPoints().length - 1].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) < lookaheadDistance) {
+            final double angle = path.getCoordinates()[path.getCoordinates().length - 1].getAngle();
+            final double x = Math.cos(Math.toRadians(angle)) * lookaheadDistance;
+            final double y = Math.sin(Math.toRadians(angle)) * lookaheadDistance;
+            prevTargetIndex = path.getTrajectoryPoints().length - 1;
+            currentTargetPoint = new TrajectoryPoint(x, y);
+        } else {
+
+            int currentClosest = 9999;
+            for (int i = prevTargetIndex; i < path.getTrajectoryPoints().length; i++) {
+                if (path.getTrajectoryPoints()[i].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) - lookaheadDistance < currentClosest) {
+                    prevTargetIndex = i;
+                    currentTargetPoint = path.getTrajectoryPoints()[i];
+                }
+            }
+        }
     }
 
     public double getLookaheadDistance() {
