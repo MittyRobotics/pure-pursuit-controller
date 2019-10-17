@@ -8,6 +8,7 @@ import com.amhsrobotics.purepursuit.coordinate.enums.VectorDirection;
 import com.amhsrobotics.purepursuit.paths.Path;
 import com.amhsrobotics.purepursuit.paths.TrajectoryPoint;
 
+import java.awt.*;
 import java.awt.geom.Point2D;
 
 /**
@@ -24,9 +25,13 @@ public class PurePursuitController {
     private Path path;
 
     private double currentRadius;
+
+
+
     private TrajectoryPoint currentClosestPoint;
     private TrajectoryPoint currentTargetPoint;
-    private int prevTargetIndex;
+    private Point2D.Double currentCircleCenterPoint;
+    private int prevTargetIndex = 0;
 
     public PurePursuitController(Path path) {
         this.path = path;
@@ -71,6 +76,8 @@ public class PurePursuitController {
 
         final Point2D.Double circleCenter = new Point2D.Double(x, y);
 
+        currentCircleCenterPoint = circleCenter;
+
         this.currentRadius = Math.sqrt(circleCenter.getX() * circleCenter.getX() + circleCenter.getY() * circleCenter.getY());
     }
 
@@ -95,10 +102,12 @@ public class PurePursuitController {
             final double y = Math.sin(Math.toRadians(angle)) * lookaheadDistance;
             prevTargetIndex = path.getTrajectoryPoints().length - 1;
             currentTargetPoint = new TrajectoryPoint(x, y);
+            System.out.println("lookahead within dist");
         } else {
-            int currentClosest = 9999;
+            double currentClosest = 9999;
             for (int i = prevTargetIndex; i < path.getTrajectoryPoints().length; i++) {
-                if (path.getTrajectoryPoints()[i].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) - lookaheadDistance < currentClosest) {
+                if (Math.abs(path.getTrajectoryPoints()[i].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) - lookaheadDistance) < currentClosest) {
+                    currentClosest = Math.abs(path.getTrajectoryPoints()[i].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) - lookaheadDistance);
                     prevTargetIndex = i;
                     currentTargetPoint = path.getTrajectoryPoints()[i];
                 }
@@ -144,5 +153,20 @@ public class PurePursuitController {
 
     public void setCurrentTargetPoint(TrajectoryPoint currentTargetPoint) {
         this.currentTargetPoint = currentTargetPoint;
+    }
+    public TrajectoryPoint getCurrentClosestPoint() {
+        return currentClosestPoint;
+    }
+
+    public void setCurrentClosestPoint(TrajectoryPoint currentClosestPoint) {
+        this.currentClosestPoint = currentClosestPoint;
+    }
+
+    public Point2D.Double getCurrentCircleCenterPoint() {
+        return currentCircleCenterPoint;
+    }
+
+    public void setCurrentCircleCenterPoint(Point2D.Double currentCircleCenterPoint) {
+        this.currentCircleCenterPoint = currentCircleCenterPoint;
     }
 }

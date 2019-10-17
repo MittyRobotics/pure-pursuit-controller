@@ -47,17 +47,21 @@ public class Main {
 //            }
 //        }
 
-        Path path = new CubicHermitePath(new Coordinate[]{new Coordinate(0,0,90),new Coordinate(0,100,0)},new VelocityConstraints(20,20,50,0,0));
+        Path path = new CubicHermitePath(new Coordinate[]{new Coordinate(0,0,0),new Coordinate(0,100,0)},new VelocityConstraints(20,20,50,0,0));
 
         graph.graphPath(path);
         graph.graphCircle(0,0,10);
 
         graph.resizeGraph();
-//        PurePursuitController controller = new PurePursuitController(null);
-//        controller.update();
-//        System.out.println("Left: " + controller.leftVelocityFromRadius() + " Right: " + controller.rightVelocityFromRadius() + " radius " + controller.getCurrentRadius());
 
-//        testGraph.removeAll();
+        PathFollowerPosition.getInstance().update(0,0,90);
+
+        PurePursuitController controller = new PurePursuitController(path);
+        controller.update();
+        //Graph.getInstance().graphCircle(PathFollowerPosition.getInstance().getX(),PathFollowerPosition.getInstance().getY(),10);
+        Graph.getInstance().graphCircle(controller.getCurrentCircleCenterPoint().getX(),controller.getCurrentCircleCenterPoint().getY(),controller.getCurrentRadius());
+
+        System.out.println(controller.getCurrentTargetPoint().getX() + " " + controller.getCurrentTargetPoint().getY()+ " " + controller.getCurrentRadius());
         for (int i = 0; i < path.getTrajectoryPoints().length; i++) {
 
             JPanel panel = new JPanel();
