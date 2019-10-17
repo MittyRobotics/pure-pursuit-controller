@@ -30,6 +30,8 @@ public class Graph extends JFrame {
     private XYSeriesCollection robotDataset;
     private XYSeriesCollection targetPointDataset;
     private XYSeriesCollection velocityDataset;
+    private XYSeriesCollection debugDataset;
+
 
     private XYPlot plot;
     private ChartPanel chart;
@@ -42,6 +44,7 @@ public class Graph extends JFrame {
         robotDataset = new XYSeriesCollection();
         targetPointDataset = new XYSeriesCollection();
         velocityDataset = new XYSeriesCollection();
+        debugDataset = new XYSeriesCollection();
         // Create chart
         JFreeChart chart = ChartFactory.createScatterPlot(
                 "Path graph",
@@ -59,10 +62,12 @@ public class Graph extends JFrame {
 
         this.chart = panel;
 
-        plot.setDataset(0,targetPointDataset);
-        plot.setDataset(1,robotDataset);
-        plot.setDataset(2,velocityDataset);
-        plot.setDataset(3,circleDataset);
+        plot.setDataset(0, debugDataset);
+        plot.setDataset(1,targetPointDataset);
+        plot.setDataset(2,robotDataset);
+        plot.setDataset(3,velocityDataset);
+        plot.setDataset(4,circleDataset);
+
 
 
 
@@ -71,16 +76,19 @@ public class Graph extends JFrame {
 
 
 
-        plot.setRenderer(plot.getDatasetCount()-1, new CustomRenderer(true,true,Color.black, new Rectangle(1,1)));
+        plot.setRenderer(plot.getDatasetCount()-1, new CustomRenderer(false,true,Color.black, new Rectangle(1,1)));
 
-        plot.setRenderer(0,  new CustomRenderer(false,true,Color.GREEN, new Rectangle(4,4)));
-
-        plot.setRenderer(1,  new CustomRenderer(false,true,Color.RED, new Rectangle(4,4)));
-
-        plot.setRenderer(2,  new CustomRenderer(true,true,Color.RED, new Rectangle(1,1)));
+        plot.setRenderer(0,  new CustomRenderer(true,true,Color.MAGENTA, new Rectangle(4,4)));
 
 
-        plot.setRenderer(3,  new CustomRenderer(false,true,Color.BLUE, new Rectangle(1,1)));
+        plot.setRenderer(1,  new CustomRenderer(false,true,Color.GREEN, new Rectangle(4,4)));
+
+        plot.setRenderer(2,  new CustomRenderer(false,true,Color.RED, new Rectangle(4,4)));
+
+        plot.setRenderer(3,  new CustomRenderer(true,true,Color.RED, new Rectangle(1,1)));
+
+
+        plot.setRenderer(4,  new CustomRenderer(false,true,Color.BLUE, new Rectangle(1,1)));
 
 
         this.plot = plot;
@@ -154,6 +162,20 @@ public class Graph extends JFrame {
         velocityDataset.removeAllSeries();
         velocityDataset.addSeries(lSeries);
         velocityDataset.addSeries(rSeries);
+    }
+    public void graphDebug(double x, double y, double x1, double y1, double x2, double y2){
+        XYSeries series = new XYSeries("debug1");
+        XYSeries series1 = new XYSeries("debug2");
+
+        series.add(x,y);
+        series.add(x1,y1);
+        series1.add(x2,y2);
+
+        debugDataset.removeAllSeries();
+
+        debugDataset.addSeries(series);
+        debugDataset.addSeries(series1);
+
     }
 
 

@@ -5,6 +5,7 @@ import com.amhsrobotics.purepursuit.coordinate.CoordinateManager;
 import com.amhsrobotics.purepursuit.coordinate.CoordinateSystem;
 import com.amhsrobotics.purepursuit.coordinate.enums.TurnSign;
 import com.amhsrobotics.purepursuit.coordinate.enums.VectorDirection;
+import com.amhsrobotics.purepursuit.graph.Graph;
 import com.amhsrobotics.purepursuit.paths.Path;
 import com.amhsrobotics.purepursuit.paths.TrajectoryPoint;
 
@@ -65,8 +66,8 @@ public class PurePursuitController {
 
         final Point2D.Double vectorHead = new Point2D.Double(Math.cos(Math.toRadians(robotAngle)), Math.sin(Math.toRadians(robotAngle)));
 
-        final double a = this.currentTargetPoint.getX()-PathFollowerPosition.getInstance().getPathCentricX();
-        final double b = this.currentTargetPoint.getY()-PathFollowerPosition.getInstance().getPathCentricY();
+        final double a = this.currentTargetPoint.getX()-PathFollowerPosition.getInstance().getX();
+        final double b = this.currentTargetPoint.getY()-PathFollowerPosition.getInstance().getY();
         final double c = vectorHead.getX();
         final double d = vectorHead.getY();
 
@@ -77,15 +78,20 @@ public class PurePursuitController {
 
         final Point2D.Double circleCenter = new Point2D.Double(x, y);
 
-        currentCircleCenterPoint = new Point2D.Double(circleCenter.getX() + PathFollowerPosition.getInstance().getPathCentricX(), circleCenter.getY() + PathFollowerPosition.getInstance().getPathCentricY());;
+        currentCircleCenterPoint = new Point2D.Double(circleCenter.getX() + PathFollowerPosition.getInstance().getPathCentricX(), circleCenter.getY() + PathFollowerPosition.getInstance().getPathCentricY());
 
-        Point2D.Double p1 = new Point2D.Double(PathFollowerPosition.getInstance().getPathCentricX(),PathFollowerPosition.getInstance().getPathCentricX());
-        Point2D.Double p2 = new Point2D.Double(PathFollowerPosition.getInstance().getPathCentricX() + Math.cos(Math.toRadians(robotAngle)),PathFollowerPosition.getInstance().getPathCentricX()+ Math.sin(Math.toRadians(robotAngle)));
-        Point2D.Double p3 = circleCenter;
+        Point2D.Double pA = new Point2D.Double(PathFollowerPosition.getInstance().getX(),PathFollowerPosition.getInstance().getY());
+        Point2D.Double pB = new Point2D.Double(PathFollowerPosition.getInstance().getX() + Math.cos(Math.toRadians(robotAngle)) * 20,PathFollowerPosition.getInstance().getY() + Math.sin(Math.toRadians(robotAngle)) * 20);
+        Point2D.Double pC = currentCircleCenterPoint;
 
-        double sign = Math.signum(((p2.getX() - p1.getX())*(p3.getY() -p1.getY()) - (p2.getY() - p1.getY())*(p3.getX() - p1.getX())));
+        double sign = findSide(pC,pA,pB);
 
-        this.currentRadius = Math.sqrt(circleCenter.getX() * circleCenter.getX() + circleCenter.getY() * circleCenter.getY()) * sign;
+        System.out.println(sign + " " + robotAngle + " (" + Math.round(pA.getX())+","+ Math.round(pA.getY())+")"+ " (" + Math.round(pB.getX())+","+ Math.round(pB.getY())+")"+ " (" + Math.round(pC.getX())+","+ Math.round(pC.getY())+")");
+
+        Graph.getInstance().graphDebug(pC.getX(),pC.getY(), pA.getX(), pA.getY(), pB.getX(), pB.getY());
+
+
+        this.currentRadius = Math.abs(Math.sqrt(circleCenter.getX() * circleCenter.getX() + circleCenter.getY() * circleCenter.getY())) * sign;
     }
 
     private TrajectoryPoint findClosestPoint() {
@@ -120,6 +126,16 @@ public class PurePursuitController {
                 }
             }
         }
+    }
+
+    private double findSide(Point2D.Double p, Point2D.Double p1, Point2D.Double p2){
+        double x = p.getX();
+        double y = p.getY();
+        double x1 = p1.getX();
+        double y1 = p1.getY();
+        double x2 = p2.getX();
+        double y2 = p2.getY();
+        return  -Math.signum((x-x1)*(y2-y1)-(y-y1)*(x2-x1));
     }
 
     public double getLookaheadDistance() {

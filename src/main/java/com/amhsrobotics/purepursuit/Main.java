@@ -7,7 +7,7 @@ import com.amhsrobotics.purepursuit.graph.Graph;
 import com.amhsrobotics.purepursuit.paths.CubicHermitePath;
 import com.amhsrobotics.purepursuit.paths.Path;
 import com.amhsrobotics.purepursuit.paths.TrajectoryPoint;
-import jdk.vm.ci.meta.AbstractJavaProfile;
+
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,7 +21,7 @@ public class Main {
 
 
 
-        Path path = new CubicHermitePath(new Coordinate[]{new Coordinate(0,0,0),new Coordinate(-50,100,0)},new VelocityConstraints(20,20,50,0,0));
+        Path path = new CubicHermitePath(new Coordinate[]{new Coordinate(0,0,0),new Coordinate(-100,0,180),new Coordinate(-50,0,90),new Coordinate(-50,-200,180)},new VelocityConstraints(20,20,50,0,0));
 
 //        System.out.println(path.getTrajectoryPoints()[path.getTrajectoryPoints().length-1].getX());
 
@@ -38,7 +38,7 @@ public class Main {
         graph.resizeGraph();
 
         PurePursuitController controller = new PurePursuitController(path);
-        PathFollowerPosition.getInstance().update(0,0,90);
+        PathFollowerPosition.getInstance().update(0,0,0);
 
 
        while(path.getTrajectoryPoints()[path.getTrajectoryPoints().length-1].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) > 1){
@@ -89,7 +89,7 @@ public class Main {
 
         double a = -Math.toDegrees(Math.atan2((y4-y3),(x4-x3))) ;
 
-        System.out.println(a + " " + (y4-y3) + " " + (x4-x3));
+        //System.out.println(a + " " + (y4-y3) + " " + (x4-x3));
 
         CoordinateSystem system = new CoordinateSystem(180, TurnSign.NEGATIVE, VectorDirection.NEGATIVE_Y, VectorDirection.NEGATIVE_X);
 
