@@ -1,5 +1,6 @@
 package com.amhsrobotics.purepursuit.graph;
 
+import com.amhsrobotics.purepursuit.PathFollowerPosition;
 import com.amhsrobotics.purepursuit.paths.Path;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -7,6 +8,8 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -24,6 +27,9 @@ public class Graph extends JFrame {
 
     private XYSeriesCollection pathDataset;
     private XYSeriesCollection circleDataset;
+    private XYSeriesCollection robotDataset;
+    private XYSeriesCollection targetPointDataset;
+    private XYSeriesCollection velocityDataset;
 
     private XYPlot plot;
     private ChartPanel chart;
@@ -33,10 +39,13 @@ public class Graph extends JFrame {
 
         pathDataset = new XYSeriesCollection();
         circleDataset = new XYSeriesCollection();
+        robotDataset = new XYSeriesCollection();
+        targetPointDataset = new XYSeriesCollection();
+        velocityDataset = new XYSeriesCollection();
         // Create chart
         JFreeChart chart = ChartFactory.createScatterPlot(
                 "Path graph",
-                "X-Axis", "Y-Axis", pathDataset);
+                "X-Axis", "Y-Axis", null);
 
 
 
@@ -50,7 +59,30 @@ public class Graph extends JFrame {
 
         this.chart = panel;
 
-        plot.setDataset(1,circleDataset);
+        plot.setDataset(0,targetPointDataset);
+        plot.setDataset(1,robotDataset);
+        plot.setDataset(2,velocityDataset);
+        plot.setDataset(3,circleDataset);
+
+
+
+
+        plot.setDataset(plot.getDatasetCount(),pathDataset);
+
+
+
+        plot.setRenderer(plot.getDatasetCount()-1, new CustomRenderer(true,true,Color.black, new Rectangle(1,1)));
+
+        plot.setRenderer(0,  new CustomRenderer(false,true,Color.GREEN, new Rectangle(4,4)));
+
+        plot.setRenderer(1,  new CustomRenderer(false,true,Color.RED, new Rectangle(4,4)));
+
+        plot.setRenderer(2,  new CustomRenderer(true,true,Color.RED, new Rectangle(1,1)));
+
+
+        plot.setRenderer(3,  new CustomRenderer(false,true,Color.BLUE, new Rectangle(1,1)));
+
+
         this.plot = plot;
 
         panel.setMinimumDrawWidth(0);
@@ -61,6 +93,9 @@ public class Graph extends JFrame {
         panel.setPreferredSize(new Dimension(800,800));
 
         setContentPane(panel);
+
+        pack();
+        setVisible(true);
     }
 
 
@@ -83,6 +118,45 @@ public class Graph extends JFrame {
         circleDataset.removeAllSeries();
         circleDataset.addSeries(series);
     }
+
+
+
+    public void graphRobot(double x, double y){
+        XYSeries series = new XYSeries("Robot");
+        series.add(x,y);
+        robotDataset.removeAllSeries();
+        robotDataset.addSeries(series);
+    }
+
+    public void graphTargetPoint(double x, double y){
+        XYSeries series = new XYSeries("Target Point");
+        series.add(x,y);
+        targetPointDataset.removeAllSeries();
+        targetPointDataset.addSeries(series);
+    }
+
+    public void graphVelocity(double leftVelocity, double rightVelocity){
+        XYSeries lSeries = new XYSeries("Left Velocity");
+        XYSeries rSeries = new XYSeries("Right Velocity");
+        double heading = PathFollowerPosition.getInstance().getPathCentricHeading();
+        double x1 = PathFollowerPosition.getInstance().getPathCentricX() + Math.cos(Math.toRadians(heading-90))*10;
+        double y1 = PathFollowerPosition.getInstance().getPathCentricY() + Math.sin(Math.toRadians(heading-90))*10;
+        double x2 = PathFollowerPosition.getInstance().getPathCentricX() + Math.cos(Math.toRadians(heading+90))*10;
+        double y2 = PathFollowerPosition.getInstance().getPathCentricY() + Math.sin(Math.toRadians(heading+90))*10;
+        double x3 = x1 + Math.cos(Math.toRadians(heading))*(rightVelocity/.1);
+        double y3 = y1 + Math.sin(Math.toRadians(heading))*(rightVelocity/.1);
+        double x4 = x2 + Math.cos(Math.toRadians(heading))*(leftVelocity/.1);
+        double y4 = y2 + Math.sin(Math.toRadians(heading))*(leftVelocity/.1);
+        rSeries.add(x1,y1);
+        lSeries.add(x2,y2);
+        rSeries.add(x3,y3);
+        lSeries.add(x4,y4);
+        velocityDataset.removeAllSeries();
+        velocityDataset.addSeries(lSeries);
+        velocityDataset.addSeries(rSeries);
+    }
+
+
 
     public void resizeGraph(){
         double lowerBound = 9999;
@@ -131,7 +205,6 @@ public class Graph extends JFrame {
         NumberAxis range = (NumberAxis) plot.getRangeAxis();
         range.setRange(lowerRange-10, upperRange+10);
 
-        System.out.println(lowerBound + " " + upperBound);
     }
 
 
@@ -142,5 +215,27 @@ public class Graph extends JFrame {
 
     public void setPathDataset(XYSeriesCollection pathDataset) {
         this.pathDataset = pathDataset;
+    }
+
+    private class CustomRenderer extends XYLineAndShapeRenderer {
+
+        private Color color;
+        private Shape shape;
+
+        public CustomRenderer(boolean lines, boolean shapes, Color itemColor, Shape shape) {
+            super(lines, shapes);
+            this.color = itemColor;
+            this.shape = shape;
+        }
+
+        @Override
+        public Shape getItemShape(int row, int column) {
+            return shape;
+        }
+
+        @Override
+        public Paint getItemPaint(int row, int col) {
+            return color;
+        }
     }
 }

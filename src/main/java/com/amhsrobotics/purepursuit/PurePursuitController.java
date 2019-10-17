@@ -21,7 +21,7 @@ import java.awt.geom.Point2D;
 public class PurePursuitController {
 
     private double lookaheadDistance = 15;
-    private double trackWidth = 27;
+    private double trackWidth = 20;
     private Path path;
 
     private double currentRadius;
@@ -65,8 +65,8 @@ public class PurePursuitController {
 
         final Point2D.Double vectorHead = new Point2D.Double(Math.cos(Math.toRadians(robotAngle)), Math.sin(Math.toRadians(robotAngle)));
 
-        final double a = this.currentTargetPoint.getX();
-        final double b = this.currentTargetPoint.getY();
+        final double a = this.currentTargetPoint.getX()-PathFollowerPosition.getInstance().getPathCentricX();
+        final double b = this.currentTargetPoint.getY()-PathFollowerPosition.getInstance().getPathCentricY();
         final double c = vectorHead.getX();
         final double d = vectorHead.getY();
 
@@ -74,11 +74,18 @@ public class PurePursuitController {
         final double x = (d * ((a * a) + (b * b))) / v;
         final double y = -(c * (a * a + b * b)) / v;
 
+
         final Point2D.Double circleCenter = new Point2D.Double(x, y);
 
-        currentCircleCenterPoint = circleCenter;
+        currentCircleCenterPoint = new Point2D.Double(circleCenter.getX() + PathFollowerPosition.getInstance().getPathCentricX(), circleCenter.getY() + PathFollowerPosition.getInstance().getPathCentricY());;
 
-        this.currentRadius = Math.sqrt(circleCenter.getX() * circleCenter.getX() + circleCenter.getY() * circleCenter.getY());
+        Point2D.Double p1 = new Point2D.Double(PathFollowerPosition.getInstance().getPathCentricX(),PathFollowerPosition.getInstance().getPathCentricX());
+        Point2D.Double p2 = new Point2D.Double(PathFollowerPosition.getInstance().getPathCentricX() + Math.cos(Math.toRadians(robotAngle)),PathFollowerPosition.getInstance().getPathCentricX()+ Math.sin(Math.toRadians(robotAngle)));
+        Point2D.Double p3 = circleCenter;
+
+        double sign = Math.signum(((p2.getX() - p1.getX())*(p3.getY() -p1.getY()) - (p2.getY() - p1.getY())*(p3.getX() - p1.getX())));
+
+        this.currentRadius = Math.sqrt(circleCenter.getX() * circleCenter.getX() + circleCenter.getY() * circleCenter.getY()) * sign;
     }
 
     private TrajectoryPoint findClosestPoint() {
@@ -98,11 +105,11 @@ public class PurePursuitController {
 
         if (path.getTrajectoryPoints()[path.getTrajectoryPoints().length - 1].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) < lookaheadDistance) {
             final double angle = path.getCoordinates()[path.getCoordinates().length - 1].getAngle();
-            final double x = Math.cos(Math.toRadians(angle)) * lookaheadDistance;
-            final double y = Math.sin(Math.toRadians(angle)) * lookaheadDistance;
+            final double newLookahead = lookaheadDistance - path.getTrajectoryPoints()[path.getTrajectoryPoints().length - 1].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY()));
+            final double x = Math.cos(Math.toRadians(angle)) * newLookahead + path.getCoordinates()[path.getCoordinates().length - 1].getX();
+            final double y = Math.sin(Math.toRadians(angle)) * newLookahead + path.getCoordinates()[path.getCoordinates().length - 1].getY();
             prevTargetIndex = path.getTrajectoryPoints().length - 1;
             currentTargetPoint = new TrajectoryPoint(x, y);
-            System.out.println("lookahead within dist");
         } else {
             double currentClosest = 9999;
             for (int i = prevTargetIndex; i < path.getTrajectoryPoints().length; i++) {

@@ -32,7 +32,6 @@ public class Path {
 
 		for(int i = 0; i < coordinates.length; i++){
 			coordinates[i] = CoordinateManager.getInstance().coordinateTransformation(coordinates[i], GENERATOR_COORDINATE_SYSTEM);
-			System.out.println(coordinates[i].getX() + " " + coordinates[i].getY() + " " + coordinates[i].getAngle());
 		}
 		this.coordinates = coordinates;
 		this.velocityConstraints = velocityConstraints;
@@ -62,7 +61,9 @@ public class Path {
 	 * Calculates the base velocity of each point on the path
 	 */
 	public void calculateVelocities(){
-
+		for(int i = 0; i < trajectoryPoints.length; i++){
+			trajectoryPoints[i].setVelocity(1);
+		}
 	}
 
 	/**

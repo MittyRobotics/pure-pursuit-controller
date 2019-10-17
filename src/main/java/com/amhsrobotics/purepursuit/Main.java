@@ -6,105 +6,97 @@ import com.amhsrobotics.purepursuit.coordinate.enums.VectorDirection;
 import com.amhsrobotics.purepursuit.graph.Graph;
 import com.amhsrobotics.purepursuit.paths.CubicHermitePath;
 import com.amhsrobotics.purepursuit.paths.Path;
+import com.amhsrobotics.purepursuit.paths.TrajectoryPoint;
+import jdk.vm.ci.meta.AbstractJavaProfile;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Point2D;
 
 public class Main {
+
     public static void main(String[] args) {
-//
         Graph graph = Graph.getInstance();
-        graph.pack();
-        graph.setVisible(true);
-
-        TestGraph testGraph = new TestGraph();
-
-        CoordinateSystem system = new CoordinateSystem(90, TurnSign.POSITIVE, VectorDirection.NEGATIVE_Y, VectorDirection.NEGATIVE_X);
-//
-//
-//        testGraph.panel2.setLocation(100, 200);
-//
-//
-//        testGraph.panel4.setLocation(300, 200);
 
 
-//        for (int i = 0; i < 360*3; i++) {
-//
-//           double angle = CoordinateManager.getInstance().coordinateTransformation(new Coordinate(0,0,CoordinateManager.getInstance().mapAngle(i)),system).getAngle();
-//            double angle1 = CoordinateManager.getInstance().mapAngle(i);
-//            System.out.println(angle + " " + angle1);
-//            testGraph.panel1.setLocation((int) (100 + Math.cos(Math.toRadians(angle)) * 100), (int) (200 + Math.sin(Math.toRadians(angle)) * 100));
-//
-//            testGraph.panel3.setLocation((int) (300 + Math.cos(Math.toRadians(angle1)) * 100), (int) (200 + Math.sin(Math.toRadians(angle1)) * 100));
-//
-//            testGraph.repaint();
-//            testGraph.revalidate();
-//
-//            try {
-//                Thread.sleep(20);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
 
-        Path path = new CubicHermitePath(new Coordinate[]{new Coordinate(0,0,0),new Coordinate(0,100,0)},new VelocityConstraints(20,20,50,0,0));
+
+        Path path = new CubicHermitePath(new Coordinate[]{new Coordinate(0,0,0),new Coordinate(-50,100,0)},new VelocityConstraints(20,20,50,0,0));
+
+//        System.out.println(path.getTrajectoryPoints()[path.getTrajectoryPoints().length-1].getX());
 
         graph.graphPath(path);
-        graph.graphCircle(0,0,10);
+//        graph.graphCircle(0,0,10);
 
         graph.resizeGraph();
 
-        PathFollowerPosition.getInstance().update(0,0,90);
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        graph.resizeGraph();
 
         PurePursuitController controller = new PurePursuitController(path);
-        controller.update();
-        //Graph.getInstance().graphCircle(PathFollowerPosition.getInstance().getX(),PathFollowerPosition.getInstance().getY(),10);
-        Graph.getInstance().graphCircle(controller.getCurrentCircleCenterPoint().getX(),controller.getCurrentCircleCenterPoint().getY(),controller.getCurrentRadius());
-
-        System.out.println(controller.getCurrentTargetPoint().getX() + " " + controller.getCurrentTargetPoint().getY()+ " " + controller.getCurrentRadius());
-        for (int i = 0; i < path.getTrajectoryPoints().length; i++) {
-
-            JPanel panel = new JPanel();
-            panel.setSize(new Dimension(10,10));
-            panel.setBackground(Color.BLACK);
-
-            panel.setLocation((int) (200 +  path.getTrajectoryPoints()[i].getX()),(int) (200 - path.getTrajectoryPoints()[i].getY()));
-            testGraph.add(panel);
+        PathFollowerPosition.getInstance().update(0,0,90);
 
 
-            testGraph.repaint();
-            testGraph.revalidate();
+       while(path.getTrajectoryPoints()[path.getTrajectoryPoints().length-1].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) > 1){
+
+           PurePursuitOutput output = controller.update();
+
+
+           PathFollowerPosition.getInstance().update(calculateNewRobotPos(output,controller)[0],calculateNewRobotPos(output,controller)[1],calculateNewRobotPos(output,controller)[2]);
+
+           output = controller.update();
+
+
+
+
+            Graph.getInstance().graphCircle(controller.getCurrentCircleCenterPoint().getX(),controller.getCurrentCircleCenterPoint().getY(),controller.getCurrentRadius());
+
+            Graph.getInstance().graphRobot(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY());
+
+            Graph.getInstance().graphTargetPoint(controller.getCurrentTargetPoint().getX(),controller.getCurrentTargetPoint().getY());
+
+            Graph.getInstance().graphVelocity(output.getLeftVelocity(),output.getRightVelocity());
+
+
+//
+//            graph.resizeGraph();
 
             try {
-                Thread.sleep(20);
+                Thread.sleep(40);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+    }
 
+    public static double[] calculateNewRobotPos(PurePursuitOutput output, PurePursuitController controller){
+        double heading = PathFollowerPosition.getInstance().getPathCentricHeading();
+        double x1 = PathFollowerPosition.getInstance().getPathCentricX() + Math.cos(Math.toRadians(heading-90))*10;
+        double y1 = PathFollowerPosition.getInstance().getPathCentricY() + Math.sin(Math.toRadians(heading-90))*10;
+        double x2 = PathFollowerPosition.getInstance().getPathCentricX() + Math.cos(Math.toRadians(heading+90))*10;
+        double y2 = PathFollowerPosition.getInstance().getPathCentricY() + Math.sin(Math.toRadians(heading+90))*10;
+        double x3 = x1 + Math.cos(Math.toRadians(heading))*(output.getRightVelocity());
+        double y3 = y1 + Math.sin(Math.toRadians(heading))*(output.getRightVelocity());
+        double x4 = x2 + Math.cos(Math.toRadians(heading))*(output.getLeftVelocity());
+        double y4 = y2 + Math.sin(Math.toRadians(heading))*(output.getLeftVelocity());
 
-//        for (int i = 0; i < 200; i++) {
-//
-//            Coordinate inputCoord = new Coordinate(i,i,0);
-//            Coordinate newCoord = CoordinateManager.getInstance().coordinateTransformation(inputCoord,system);
-//
-//            testGraph.panel1.setLocation((int) (100 + newCoord.getX()),(int) (400 + newCoord.getY()));
-//
-//            testGraph.panel3.setLocation((int) (300 + inputCoord.getX()),(int) (400 + inputCoord.getY()));
-//
-//            testGraph.repaint();
-//            testGraph.revalidate();
-//
-//            try {
-//                Thread.sleep(20);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//
-//        Coordinate testCoord = new Coordinate(10,0,0);
-//
-//
-//        System.out.println(CoordinateManager.getInstance().coordinateTransformation(testCoord, system).getX() + " " + CoordinateManager.getInstance().coordinateTransformation(testCoord, system).getY() );
+        double x = (x3+x4)/2;
+        double y = (y3+y4)/2;
+
+        double a = -Math.toDegrees(Math.atan2((y4-y3),(x4-x3))) ;
+
+        System.out.println(a + " " + (y4-y3) + " " + (x4-x3));
+
+        CoordinateSystem system = new CoordinateSystem(180, TurnSign.NEGATIVE, VectorDirection.NEGATIVE_Y, VectorDirection.NEGATIVE_X);
+
+        Coordinate coordinate = CoordinateManager.getInstance().coordinateTransformation(new Coordinate(0,0,a),system);
+
+        a = coordinate.getAngle();
+
+        return new double[]{x,y,a};
     }
 }
