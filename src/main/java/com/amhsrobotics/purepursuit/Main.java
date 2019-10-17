@@ -21,7 +21,7 @@ public class Main {
 
 
 
-        Path path = new CubicHermitePath(new Coordinate[]{new Coordinate(0,0,0),new Coordinate(-100,0,180),new Coordinate(-50,0,90),new Coordinate(-50,-200,180)},new VelocityConstraints(20,20,50,0,0));
+        Path path = new CubicHermitePath(new Coordinate[]{new Coordinate(0,0,0),new Coordinate(-100,0,180),new Coordinate(0,-100,180),new Coordinate(-100,-100,0)},new VelocityConstraints(20,20,50,0,0));
 
 //        System.out.println(path.getTrajectoryPoints()[path.getTrajectoryPoints().length-1].getX());
 
@@ -38,7 +38,7 @@ public class Main {
         graph.resizeGraph();
 
         PurePursuitController controller = new PurePursuitController(path);
-        PathFollowerPosition.getInstance().update(0,0,0);
+        PathFollowerPosition.getInstance().update(0,0,180);
 
 
        while(path.getTrajectoryPoints()[path.getTrajectoryPoints().length-1].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) > 1){
