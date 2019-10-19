@@ -92,7 +92,7 @@ private double currentBaseVelocity = 0;
         double sign = findSide(pC,pA,pB);
 
 
-        Graph.getInstance().graphDebug(pC.getX(),pC.getY(), pA.getX(), pA.getY(), pB.getX(), pB.getY());
+        //Graph.getInstance().graphDebug(pC.getX(),pC.getY(), pA.getX(), pA.getY(), pB.getX(), pB.getY());
 
 
         this.currentRadius = Math.abs(Math.sqrt(circleCenter.getX() * circleCenter.getX() + circleCenter.getY() * circleCenter.getY())) * sign;
@@ -100,15 +100,43 @@ private double currentBaseVelocity = 0;
 
     private TrajectoryPoint findClosestPoint() {
         double currentClosest = 9999;
-        TrajectoryPoint closestPoint = null;
+        TrajectoryPoint point = null;
         for (int i = 0; i < path.getTrajectoryPoints().length; i++) {
             if (path.getTrajectoryPoints()[i].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) < currentClosest) {
                 currentClosest = path.getTrajectoryPoints()[i].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY()));
-                closestPoint = path.getTrajectoryPoints()[i];
+                point = path.getTrajectoryPoints()[i];
             }
         }
-        return closestPoint;
+
+        return point;
     }
+
+    private TrajectoryPoint findClosestLookaheadPoint(){
+        TrajectoryPoint point = null;
+        if (path.getTrajectoryPoints()[path.getTrajectoryPoints().length - 1].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) < currentLookaheadDistance) {
+            final double angle = path.getCoordinates()[path.getCoordinates().length - 1].getAngle();
+            final double newLookahead = currentLookaheadDistance - path.getTrajectoryPoints()[path.getTrajectoryPoints().length - 1].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY()));
+            final double x = Math.cos(Math.toRadians(angle)) * newLookahead + path.getCoordinates()[path.getCoordinates().length - 1].getX();
+            final double y = Math.sin(Math.toRadians(angle)) * newLookahead + path.getCoordinates()[path.getCoordinates().length - 1].getY();
+            prevTargetIndex = path.getTrajectoryPoints().length - 1;
+            point = new TrajectoryPoint(x, y);
+        } else {
+            double currentClosest = 9999;
+            for (int i = prevTargetIndex; i < path.getTrajectoryPoints().length; i++) {
+                if (Math.abs(path.getTrajectoryPoints()[i].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) - currentLookaheadDistance) < currentClosest) {
+                    currentClosest = Math.abs(path.getTrajectoryPoints()[i].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) - currentLookaheadDistance);
+                    prevTargetIndex = i;
+                    point = path.getTrajectoryPoints()[i];
+                }
+            }
+        }
+
+
+
+
+        return point;
+    }
+
 
     public void calculateTargetPoint() {
         this.currentClosestPoint = findClosestPoint();
@@ -117,23 +145,7 @@ private double currentBaseVelocity = 0;
 
         double adaptiveLookahead1 = currentLookaheadDistance;
 
-        if (path.getTrajectoryPoints()[path.getTrajectoryPoints().length - 1].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) < currentLookaheadDistance) {
-            final double angle = path.getCoordinates()[path.getCoordinates().length - 1].getAngle();
-            final double newLookahead = currentLookaheadDistance - path.getTrajectoryPoints()[path.getTrajectoryPoints().length - 1].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY()));
-            final double x = Math.cos(Math.toRadians(angle)) * newLookahead + path.getCoordinates()[path.getCoordinates().length - 1].getX();
-            final double y = Math.sin(Math.toRadians(angle)) * newLookahead + path.getCoordinates()[path.getCoordinates().length - 1].getY();
-            prevTargetIndex = path.getTrajectoryPoints().length - 1;
-            currentTargetPoint = new TrajectoryPoint(x, y);
-        } else {
-            double currentClosest = 9999;
-            for (int i = prevTargetIndex; i < path.getTrajectoryPoints().length; i++) {
-                if (Math.abs(path.getTrajectoryPoints()[i].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) - currentLookaheadDistance) < currentClosest) {
-                    currentClosest = Math.abs(path.getTrajectoryPoints()[i].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) - currentLookaheadDistance);
-                    prevTargetIndex = i;
-                    currentTargetPoint = path.getTrajectoryPoints()[i];
-                }
-            }
-        }
+        currentTargetPoint = findClosestLookaheadPoint();
 
 
         calculateAdaptiveLookaheadTarget();
@@ -141,26 +153,11 @@ private double currentBaseVelocity = 0;
         double adaptiveLookahead2 = currentLookaheadDistance;
 
         if(adaptiveLookahead2 < adaptiveLookahead1){
-            if (path.getTrajectoryPoints()[path.getTrajectoryPoints().length - 1].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) < currentLookaheadDistance) {
-                final double angle = path.getCoordinates()[path.getCoordinates().length - 1].getAngle();
-                final double newLookahead = currentLookaheadDistance - path.getTrajectoryPoints()[path.getTrajectoryPoints().length - 1].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY()));
-                final double x = Math.cos(Math.toRadians(angle)) * newLookahead + path.getCoordinates()[path.getCoordinates().length - 1].getX();
-                final double y = Math.sin(Math.toRadians(angle)) * newLookahead + path.getCoordinates()[path.getCoordinates().length - 1].getY();
-                prevTargetIndex = path.getTrajectoryPoints().length - 1;
-                currentTargetPoint = new TrajectoryPoint(x, y);
-            } else {
-                double currentClosest = 9999;
-                for (int i = prevTargetIndex; i < path.getTrajectoryPoints().length; i++) {
-                    if (Math.abs(path.getTrajectoryPoints()[i].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) - currentLookaheadDistance) < currentClosest) {
-                        currentClosest = Math.abs(path.getTrajectoryPoints()[i].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) - currentLookaheadDistance);
-                        prevTargetIndex = i;
-                        currentTargetPoint = path.getTrajectoryPoints()[i];
-                    }
-                }
-            }
+            currentTargetPoint = findClosestLookaheadPoint();
         }
 
     }
+
 
     private double findSide(Point2D.Double p, Point2D.Double p1, Point2D.Double p2){
         double x = p.getX();
@@ -195,7 +192,11 @@ private double currentBaseVelocity = 0;
         double c = minLookahead;
         double d = maxLookahead;
 
-        this.currentLookaheadDistance = (x-a)/(b-a) * (d-c) + c;
+        this.currentLookaheadDistance = map(x,a,b,c,d);
+    }
+
+    public double map(double val, double valMin, double valMax, double desiredMin, double desiredMax){
+        return (val-valMin)/(valMax-valMin) * (desiredMax-desiredMin)+desiredMin;
     }
 
     public double getLookaheadDistance() {

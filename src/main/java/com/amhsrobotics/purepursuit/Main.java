@@ -28,8 +28,8 @@ public class Main {
         VelocityConstraints velocityConstraints = new VelocityConstraints(10,10,30,0,0,1);
         Coordinate[] coordinates = new Coordinate[]{
                 new Coordinate(0,0,0),
-                new Coordinate(0,40,0),
-                new Coordinate(-30,100,-90)
+                new Coordinate(0,100,90),
+                new Coordinate(20,100,90)
         };
 
         Path path = new CubicHermitePath(coordinates,velocityConstraints);
