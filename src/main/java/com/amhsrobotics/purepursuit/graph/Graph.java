@@ -12,7 +12,6 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 
 public class Graph extends JFrame {
@@ -34,6 +33,8 @@ public class Graph extends JFrame {
 
     private XYPlot plot;
     private ChartPanel chart;
+
+    private Path currentPath;
 
     private Graph(){
         super("Graph");
@@ -76,7 +77,7 @@ public class Graph extends JFrame {
 
 
 
-        plot.setRenderer(plot.getDatasetCount()-1, new CustomRenderer(false,true,Color.black, new Rectangle(1,1)));
+        plot.setRenderer(plot.getDatasetCount()-1, new ColorByVelocityRenderer(false,true, new Rectangle(1,1)));
 
         plot.setRenderer(0,  new CustomRenderer(true,true,Color.MAGENTA, new Rectangle(4,4)));
 
@@ -106,20 +107,24 @@ public class Graph extends JFrame {
     }
 
     private ChartPanel createVelocityGraph(){
+
+
+        velocityDataset.addSeries(new XYSeries("Robot Velocity Over Time"));
         // Create chart
         JFreeChart chart = ChartFactory.createScatterPlot(
                 "Velocity graph",
                 "X-Axis", "Y-Axis", velocityDataset);
 
 
+
         //Changes background color
         XYPlot plot = (XYPlot)chart.getPlot();
         plot.setBackgroundPaint(new Color(255,255,255));
-        plot.setRenderer(0, new CustomRenderer(true,false,Color.black, new Rectangle(1,1)));
+        plot.setRenderer(0, new ColorByVelocityRenderer(true,true, new Rectangle(1,1)));
         // Create Panel
         ChartPanel panel = new ChartPanel(chart);
 
-        panel.setPreferredSize(new Dimension(400,400));
+        panel.setPreferredSize(new Dimension(800,800));
 
         return panel;
     }
@@ -127,13 +132,14 @@ public class Graph extends JFrame {
     public void graphPathVelocity(Path path){
         XYSeries series = new XYSeries("Path Velocity");
         for(int i = 0; i < path.getTrajectoryPoints().length; i++){
-            series.add(path.getTrajectoryPoints()[i].getPosition(),path.getTrajectoryPoints()[i].getVelocity());
+            series.add(path.getTrajectoryPoints()[i].getTime(),path.getTrajectoryPoints()[i].getVelocity());
         }
         velocityDataset.addSeries(series);
     }
 
 
     public void graphPath(Path path){
+        this.currentPath = path;
         XYSeries series = new XYSeries("Path");
         for(int i = 0; i < path.getTrajectoryPoints().length; i++){
             series.add(path.getTrajectoryPoints()[i].getX(),path.getTrajectoryPoints()[i].getY());
@@ -189,6 +195,11 @@ public class Graph extends JFrame {
         robotVelocityDataset.addSeries(lSeries);
         robotVelocityDataset.addSeries(rSeries);
     }
+
+    public void graphRobotVelocityOverTime(double avgVelocity, double t){
+        velocityDataset.getSeries(0).add(t,avgVelocity);
+    }
+
     public void graphDebug(double x, double y, double x1, double y1, double x2, double y2){
         XYSeries series = new XYSeries("debug1");
         XYSeries series1 = new XYSeries("debug2");
@@ -284,6 +295,41 @@ public class Graph extends JFrame {
         @Override
         public Paint getItemPaint(int row, int col) {
             return color;
+        }
+    }
+    private class ColorByVelocityRenderer extends XYLineAndShapeRenderer {
+
+        private Shape shape;
+
+        public ColorByVelocityRenderer(boolean lines, boolean shapes, Shape shape) {
+            super(lines, shapes);
+            this.shape = shape;
+        }
+
+        @Override
+        public Shape getItemShape(int row, int column) {
+            return shape;
+        }
+
+        @Override
+        public Paint getItemPaint(int row, int col) {
+            if(row == 1){
+                double velocity = currentPath.getTrajectoryPoints()[col].getVelocity();
+                double upperBounds = 0;
+                for (int i = 0; i < currentPath.getTrajectoryPoints().length; i++) {
+                    if (currentPath.getTrajectoryPoints()[i].getVelocity() > upperBounds) {
+                        upperBounds = currentPath.getTrajectoryPoints()[i].getVelocity();
+                    }
+                }
+
+                return Color.getHSBColor((float) (velocity / upperBounds) / 4, 1f, 0.75f);
+
+
+            }
+            else{
+                return Color.BLACK;
+            }
+
         }
     }
 }

@@ -22,12 +22,13 @@ import java.awt.geom.Point2D;
 public class PurePursuitController {
 
     private double lookaheadDistance = 15;
+    private double currentLookaheadDistance = 15;
     private double trackWidth = 20;
     private Path path;
 
     private double currentRadius;
 
-
+private double currentBaseVelocity = 0;
 
     private TrajectoryPoint currentClosestPoint;
     private TrajectoryPoint currentTargetPoint;
@@ -47,6 +48,8 @@ public class PurePursuitController {
     public double leftVelocityFromRadius() {
         double baseVelocity = currentClosestPoint.getVelocity();
 
+        this.currentBaseVelocity = baseVelocity;
+
         double angularVelocity = baseVelocity / getCurrentRadius();
 
         return angularVelocity * (getCurrentRadius() - (trackWidth / 2));
@@ -54,6 +57,8 @@ public class PurePursuitController {
 
     public double rightVelocityFromRadius() {
         double baseVelocity = currentClosestPoint.getVelocity();
+
+        this.currentBaseVelocity = baseVelocity;
 
         double angularVelocity = baseVelocity / getCurrentRadius();
 
@@ -108,9 +113,13 @@ public class PurePursuitController {
     public void calculateTargetPoint() {
         this.currentClosestPoint = findClosestPoint();
 
-        if (path.getTrajectoryPoints()[path.getTrajectoryPoints().length - 1].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) < lookaheadDistance) {
+        calculateAdaptiveLookaheadClosest();
+
+        double adaptiveLookahead1 = currentLookaheadDistance;
+
+        if (path.getTrajectoryPoints()[path.getTrajectoryPoints().length - 1].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) < currentLookaheadDistance) {
             final double angle = path.getCoordinates()[path.getCoordinates().length - 1].getAngle();
-            final double newLookahead = lookaheadDistance - path.getTrajectoryPoints()[path.getTrajectoryPoints().length - 1].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY()));
+            final double newLookahead = currentLookaheadDistance - path.getTrajectoryPoints()[path.getTrajectoryPoints().length - 1].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY()));
             final double x = Math.cos(Math.toRadians(angle)) * newLookahead + path.getCoordinates()[path.getCoordinates().length - 1].getX();
             final double y = Math.sin(Math.toRadians(angle)) * newLookahead + path.getCoordinates()[path.getCoordinates().length - 1].getY();
             prevTargetIndex = path.getTrajectoryPoints().length - 1;
@@ -118,13 +127,39 @@ public class PurePursuitController {
         } else {
             double currentClosest = 9999;
             for (int i = prevTargetIndex; i < path.getTrajectoryPoints().length; i++) {
-                if (Math.abs(path.getTrajectoryPoints()[i].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) - lookaheadDistance) < currentClosest) {
-                    currentClosest = Math.abs(path.getTrajectoryPoints()[i].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) - lookaheadDistance);
+                if (Math.abs(path.getTrajectoryPoints()[i].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) - currentLookaheadDistance) < currentClosest) {
+                    currentClosest = Math.abs(path.getTrajectoryPoints()[i].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) - currentLookaheadDistance);
                     prevTargetIndex = i;
                     currentTargetPoint = path.getTrajectoryPoints()[i];
                 }
             }
         }
+
+
+        calculateAdaptiveLookaheadTarget();
+
+        double adaptiveLookahead2 = currentLookaheadDistance;
+
+        if(adaptiveLookahead2 < adaptiveLookahead1){
+            if (path.getTrajectoryPoints()[path.getTrajectoryPoints().length - 1].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) < currentLookaheadDistance) {
+                final double angle = path.getCoordinates()[path.getCoordinates().length - 1].getAngle();
+                final double newLookahead = currentLookaheadDistance - path.getTrajectoryPoints()[path.getTrajectoryPoints().length - 1].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY()));
+                final double x = Math.cos(Math.toRadians(angle)) * newLookahead + path.getCoordinates()[path.getCoordinates().length - 1].getX();
+                final double y = Math.sin(Math.toRadians(angle)) * newLookahead + path.getCoordinates()[path.getCoordinates().length - 1].getY();
+                prevTargetIndex = path.getTrajectoryPoints().length - 1;
+                currentTargetPoint = new TrajectoryPoint(x, y);
+            } else {
+                double currentClosest = 9999;
+                for (int i = prevTargetIndex; i < path.getTrajectoryPoints().length; i++) {
+                    if (Math.abs(path.getTrajectoryPoints()[i].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) - currentLookaheadDistance) < currentClosest) {
+                        currentClosest = Math.abs(path.getTrajectoryPoints()[i].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) - currentLookaheadDistance);
+                        prevTargetIndex = i;
+                        currentTargetPoint = path.getTrajectoryPoints()[i];
+                    }
+                }
+            }
+        }
+
     }
 
     private double findSide(Point2D.Double p, Point2D.Double p1, Point2D.Double p2){
@@ -135,6 +170,32 @@ public class PurePursuitController {
         double x2 = p2.getX();
         double y2 = p2.getY();
         return  -Math.signum((x-x1)*(y2-y1)-(y-y1)*(x2-x1));
+    }
+
+    private void calculateAdaptiveLookaheadTarget(){
+        double maxLookahead = lookaheadDistance;
+        double minLookahead = lookaheadDistance/5;
+
+        double x = currentTargetPoint.getVelocity();
+        double a = 0;
+        double b = path.getVelocityConstraints().getMaxVelocity();
+        double c = minLookahead;
+        double d = maxLookahead;
+
+        this.currentLookaheadDistance = (x-a)/(b-a) * (d-c) + c;
+    }
+
+    private void calculateAdaptiveLookaheadClosest(){
+        double maxLookahead = lookaheadDistance;
+        double minLookahead = lookaheadDistance/5;
+
+        double x = currentClosestPoint.getVelocity();
+        double a = 0;
+        double b = path.getVelocityConstraints().getMaxVelocity();
+        double c = minLookahead;
+        double d = maxLookahead;
+
+        this.currentLookaheadDistance = (x-a)/(b-a) * (d-c) + c;
     }
 
     public double getLookaheadDistance() {
@@ -190,5 +251,21 @@ public class PurePursuitController {
 
     public void setCurrentCircleCenterPoint(Point2D.Double currentCircleCenterPoint) {
         this.currentCircleCenterPoint = currentCircleCenterPoint;
+    }
+
+    public double getCurrentLookaheadDistance() {
+        return currentLookaheadDistance;
+    }
+
+    public void setCurrentLookaheadDistance(double currentLookaheadDistance) {
+        this.currentLookaheadDistance = currentLookaheadDistance;
+    }
+
+    public double getCurrentBaseVelocity() {
+        return currentBaseVelocity;
+    }
+
+    public void setCurrentBaseVelocity(double currentBaseVelocity) {
+        this.currentBaseVelocity = currentBaseVelocity;
     }
 }

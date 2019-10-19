@@ -6,13 +6,15 @@ public class VelocityConstraints {
 	private double maxVelocity;
 	private double startVelocity;
 	private double endVelocity;
+	private double kCurvature;
 
-	public VelocityConstraints(double maxAcceleration, double maxDeceleration, double maxVelocity, double startVelocity, double endVelocity){
+	public VelocityConstraints(double maxAcceleration, double maxDeceleration, double maxVelocity, double startVelocity, double endVelocity, double kCurvature){
 		this.maxAcceleration = maxAcceleration;
 		this.maxDeceleration = maxDeceleration;
 		this.maxVelocity = maxVelocity;
 		this.startVelocity = startVelocity;
 		this.endVelocity = endVelocity;
+		this.kCurvature = kCurvature;
 	}
 
 	public double getMaxAcceleration() {
@@ -53,5 +55,13 @@ public class VelocityConstraints {
 
 	public void setEndVelocity(double endVelocity) {
 		this.endVelocity = endVelocity;
+	}
+
+	public double getkCurvature() {
+		return kCurvature;
+	}
+
+	public void setkCurvature(double kCurvature) {
+		this.kCurvature = kCurvature;
 	}
 }

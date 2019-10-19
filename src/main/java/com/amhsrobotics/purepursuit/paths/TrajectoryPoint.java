@@ -11,6 +11,7 @@ public class TrajectoryPoint {
 	private double position;
 	private double velocity;
 	private double curvature;
+	private double time;
 
 	public TrajectoryPoint(double x, double y) {
 		this.x = x;
@@ -65,4 +66,11 @@ public class TrajectoryPoint {
 		this.curvature = curvature;
 	}
 
+	public double getTime() {
+		return time;
+	}
+
+	public void setTime(double time) {
+		this.time = time;
+	}
 }
