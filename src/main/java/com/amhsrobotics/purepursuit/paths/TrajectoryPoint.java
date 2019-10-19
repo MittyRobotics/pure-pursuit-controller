@@ -21,7 +21,7 @@ public class TrajectoryPoint {
 		return Point2D.distance(getX(),getY(),trajectoryPoint.getX(),trajectoryPoint .getY());
 	}
 
-	public double distance(TrajectoryPoint trajectoryPoint1, TrajectoryPoint trajectoryPoint2){
+	public static double distance(TrajectoryPoint trajectoryPoint1, TrajectoryPoint trajectoryPoint2){
 		return Point2D.distance(trajectoryPoint1.getX(),trajectoryPoint1.getY(),trajectoryPoint2.getX(),trajectoryPoint2.getY());
 	}
 

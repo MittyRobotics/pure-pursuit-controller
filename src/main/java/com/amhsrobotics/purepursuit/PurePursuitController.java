@@ -86,7 +86,6 @@ public class PurePursuitController {
 
         double sign = findSide(pC,pA,pB);
 
-        System.out.println(sign + " " + robotAngle + " (" + Math.round(pA.getX())+","+ Math.round(pA.getY())+")"+ " (" + Math.round(pB.getX())+","+ Math.round(pB.getY())+")"+ " (" + Math.round(pC.getX())+","+ Math.round(pC.getY())+")");
 
         Graph.getInstance().graphDebug(pC.getX(),pC.getY(), pA.getX(), pA.getY(), pB.getX(), pB.getY());
 

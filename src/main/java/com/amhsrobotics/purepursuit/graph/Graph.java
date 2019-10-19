@@ -6,15 +6,13 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 
 public class Graph extends JFrame {
@@ -29,8 +27,9 @@ public class Graph extends JFrame {
     private XYSeriesCollection circleDataset;
     private XYSeriesCollection robotDataset;
     private XYSeriesCollection targetPointDataset;
-    private XYSeriesCollection velocityDataset;
+    private XYSeriesCollection robotVelocityDataset;
     private XYSeriesCollection debugDataset;
+    private XYSeriesCollection velocityDataset;
 
 
     private XYPlot plot;
@@ -43,8 +42,9 @@ public class Graph extends JFrame {
         circleDataset = new XYSeriesCollection();
         robotDataset = new XYSeriesCollection();
         targetPointDataset = new XYSeriesCollection();
-        velocityDataset = new XYSeriesCollection();
+        robotVelocityDataset = new XYSeriesCollection();
         debugDataset = new XYSeriesCollection();
+        velocityDataset = new XYSeriesCollection();
         // Create chart
         JFreeChart chart = ChartFactory.createScatterPlot(
                 "Path graph",
@@ -65,7 +65,7 @@ public class Graph extends JFrame {
         plot.setDataset(0, debugDataset);
         plot.setDataset(1,targetPointDataset);
         plot.setDataset(2,robotDataset);
-        plot.setDataset(3,velocityDataset);
+        plot.setDataset(3, robotVelocityDataset);
         plot.setDataset(4,circleDataset);
 
 
@@ -93,17 +93,43 @@ public class Graph extends JFrame {
 
         this.plot = plot;
 
-        panel.setMinimumDrawWidth(0);
-        panel.setMaximumDrawWidth(Integer.MAX_VALUE);
-        panel.setMinimumDrawHeight(0);
-        panel.setMaximumDrawHeight(Integer.MAX_VALUE);
 
         panel.setPreferredSize(new Dimension(800,800));
 
-        setContentPane(panel);
+        setLayout(new BorderLayout());
+
+        add(panel, BorderLayout.EAST);
+        add(createVelocityGraph(), BorderLayout.WEST);
 
         pack();
         setVisible(true);
+    }
+
+    private ChartPanel createVelocityGraph(){
+        // Create chart
+        JFreeChart chart = ChartFactory.createScatterPlot(
+                "Velocity graph",
+                "X-Axis", "Y-Axis", velocityDataset);
+
+
+        //Changes background color
+        XYPlot plot = (XYPlot)chart.getPlot();
+        plot.setBackgroundPaint(new Color(255,255,255));
+        plot.setRenderer(0, new CustomRenderer(true,false,Color.black, new Rectangle(1,1)));
+        // Create Panel
+        ChartPanel panel = new ChartPanel(chart);
+
+        panel.setPreferredSize(new Dimension(400,400));
+
+        return panel;
+    }
+
+    public void graphPathVelocity(Path path){
+        XYSeries series = new XYSeries("Path Velocity");
+        for(int i = 0; i < path.getTrajectoryPoints().length; i++){
+            series.add(path.getTrajectoryPoints()[i].getPosition(),path.getTrajectoryPoints()[i].getVelocity());
+        }
+        velocityDataset.addSeries(series);
     }
 
 
@@ -159,9 +185,9 @@ public class Graph extends JFrame {
         lSeries.add(x2,y2);
         rSeries.add(x3,y3);
         lSeries.add(x4,y4);
-        velocityDataset.removeAllSeries();
-        velocityDataset.addSeries(lSeries);
-        velocityDataset.addSeries(rSeries);
+        robotVelocityDataset.removeAllSeries();
+        robotVelocityDataset.addSeries(lSeries);
+        robotVelocityDataset.addSeries(rSeries);
     }
     public void graphDebug(double x, double y, double x1, double y1, double x2, double y2){
         XYSeries series = new XYSeries("debug1");
