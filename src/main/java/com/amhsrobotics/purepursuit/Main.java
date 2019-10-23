@@ -54,12 +54,12 @@ public class Main {
         while(prevVelocity != 0){
 
 
-            final PurePursuitOutput output = controller.update();
+            final PurePursuitOutput output = controller.update(t);
 
             PathFollowerPosition.getInstance().update(calculateNewRobotPos(output,controller)[0],calculateNewRobotPos(output,controller)[1],calculateNewRobotPos(output,controller)[2]);
 
 
-            final PurePursuitOutput output1 = controller.update();
+            final PurePursuitOutput output1 = controller.update(t);
 
             final double currentT = t;
 

@@ -9,6 +9,7 @@ import com.amhsrobotics.purepursuit.graph.Graph;
 import com.amhsrobotics.purepursuit.paths.Path;
 import com.amhsrobotics.purepursuit.paths.TrajectoryPoint;
 
+import javax.swing.plaf.synth.SynthScrollBarUI;
 import java.awt.*;
 import java.awt.geom.Point2D;
 
@@ -34,12 +35,15 @@ private double currentBaseVelocity = 0;
     private TrajectoryPoint currentTargetPoint;
     private Point2D.Double currentCircleCenterPoint;
     private int prevTargetIndex = 0;
+    private double timeSinceInitialized;
+    private double currentPointAdjustedTime;
 
     public PurePursuitController(Path path) {
         this.path = path;
     }
 
-    public PurePursuitOutput update() {
+    public PurePursuitOutput update(double timeSinceInitialized) {
+        this.timeSinceInitialized = timeSinceInitialized;
         calculateTargetPoint();
         calculateRadiusToTarget();
         return new PurePursuitOutput(leftVelocityFromRadius(), rightVelocityFromRadius());
@@ -98,16 +102,53 @@ private double currentBaseVelocity = 0;
         this.currentRadius = Math.abs(Math.sqrt(circleCenter.getX() * circleCenter.getX() + circleCenter.getY() * circleCenter.getY())) * sign;
     }
 
+
     private TrajectoryPoint findClosestPoint() {
         double currentClosest = 9999;
         TrajectoryPoint point = null;
+        TrajectoryPoint nextPoint = null;
         for (int i = 0; i < path.getTrajectoryPoints().length; i++) {
             if (path.getTrajectoryPoints()[i].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) < currentClosest) {
                 currentClosest = path.getTrajectoryPoints()[i].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY()));
                 point = path.getTrajectoryPoints()[i];
+                if(i < path.getTrajectoryPoints().length-1){
+                    nextPoint = path.getTrajectoryPoints()[i+1];
+                }
             }
         }
 
+
+        if(currentClosestPoint != null){
+            if(currentClosestPoint.getTime() != point.getTime()){
+                currentPointAdjustedTime = timeSinceInitialized;
+            }
+            double localTime = timeSinceInitialized - currentPointAdjustedTime;
+            double initialTimeDifference = currentPointAdjustedTime - currentClosestPoint.getTime();
+            double pointToPointTimeDifference = nextPoint.getTime()-point.getTime();
+            pointToPointTimeDifference += initialTimeDifference;
+            double t = map(localTime, 0, nextPoint.getTime() + initialTimeDifference, 0,1);
+            System.out.println(t + " ");
+        }
+
+
+//        if(prevPoint != null){
+//            double a = prevPoint.distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY()));
+//            double b = point.distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY()));
+//            double c = point.distance(prevPoint);
+//            double s = (a + b + c)/2;
+//            double h = (2 * Math.sqrt(s * (s-a)*(s-b)*(s-c)))/c;
+//            double t;
+//            if(prevPoint.getVelocity() > point.getVelocity()){
+//                t = Math.min(map(Math.sqrt(a*a-h*h), 0, c, prevPoint.getVelocity(),point.getVelocity()),point.getVelocity());
+//            }
+//            else{
+//                t = Math.max(map(Math.sqrt(a*a-h*h), 0, c, point.getVelocity(),prevPoint.getVelocity()),point.getVelocity());
+//            }
+//
+//            System.out.println("T: " + t + " " + Math.sqrt(a*a-h*h) + " " + c + " " + t + " " + point.getTime());
+//
+//            point.setVelocity(t);
+//        }
         return point;
     }
 
@@ -130,9 +171,6 @@ private double currentBaseVelocity = 0;
                 }
             }
         }
-
-
-
 
         return point;
     }
@@ -268,5 +306,21 @@ private double currentBaseVelocity = 0;
 
     public void setCurrentBaseVelocity(double currentBaseVelocity) {
         this.currentBaseVelocity = currentBaseVelocity;
+    }
+
+    public double getTimeSinceInitialized() {
+        return timeSinceInitialized;
+    }
+
+    public void setTimeSinceInitialized(double timeSinceInitialized) {
+        this.timeSinceInitialized = timeSinceInitialized;
+    }
+
+    public double getCurrentPointAdjustedTime() {
+        return currentPointAdjustedTime;
+    }
+
+    public void setCurrentPointAdjustedTime(double currentPointAdjustedTime) {
+        this.currentPointAdjustedTime = currentPointAdjustedTime;
     }
 }
