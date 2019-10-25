@@ -118,17 +118,29 @@ private double currentBaseVelocity = 0;
         }
 
 
-        if(currentClosestPoint != null){
-            if(currentClosestPoint.getTime() != point.getTime()){
-                currentPointAdjustedTime = timeSinceInitialized;
-            }
-            double localTime = timeSinceInitialized - currentPointAdjustedTime;
-            double initialTimeDifference = currentPointAdjustedTime - currentClosestPoint.getTime();
-            double pointToPointTimeDifference = nextPoint.getTime()-point.getTime();
-            pointToPointTimeDifference += initialTimeDifference;
-            double t = map(localTime, 0, nextPoint.getTime() + initialTimeDifference, 0,1);
-            System.out.println(t + " ");
-        }
+//        if(currentClosestPoint != null && nextPoint != null){
+//            if(currentClosestPoint.getTime() != point.getTime()){
+//                currentPointAdjustedTime = timeSinceInitialized;
+//            }
+//
+//            double timeDifference = currentPointAdjustedTime - point.getTime();
+//            double finalTime = nextPoint.getTime() + timeDifference;
+//            double localTime = timeSinceInitialized - currentPointAdjustedTime;
+//
+//            double t = map(localTime,0,finalTime,0,1);
+//            System.out.println(t + " " + localTime + " " + finalTime + " "+ point.getTime() + " " + nextPoint.getTime()) ;
+//
+//            if(Double.isFinite(t) && t < 500){
+//                point.setVelocity(map(t,0,1,point.getVelocity(),nextPoint.getVelocity()));
+//            }
+
+//            double localTime = timeSinceInitialized - currentPointAdjustedTime;
+//            double initialTimeDifference = currentPointAdjustedTime - currentClosestPoint.getTime();
+//            double pointToPointTimeDifference = nextPoint.getTime()-point.getTime();
+//            pointToPointTimeDifference += initialTimeDifference;
+//            double t = map(localTime, 0, nextPoint.getTime() + initialTimeDifference, 0,1);
+//            System.out.println(t + " ");
+//        }
 
 
 //        if(prevPoint != null){
