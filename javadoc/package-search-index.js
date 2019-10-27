@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"pure_pursuit"},{"l":"pure_pursuit.enums"},{"l":"pure_pursuit.paths"}]

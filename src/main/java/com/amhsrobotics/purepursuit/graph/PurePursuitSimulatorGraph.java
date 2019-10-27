@@ -8,17 +8,18 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.title.LegendTitle;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class Graph extends JFrame {
+public class PurePursuitSimulatorGraph extends JFrame {
 
-    private static Graph instance = new Graph();
+    private static PurePursuitSimulatorGraph instance = new PurePursuitSimulatorGraph();
 
-    public static Graph getInstance(){
+    public static PurePursuitSimulatorGraph getInstance(){
         return instance;
     }
 
@@ -36,7 +37,7 @@ public class Graph extends JFrame {
 
     private Path currentPath;
 
-    private Graph(){
+    private PurePursuitSimulatorGraph(){
         super("Graph");
 
         pathDataset = new XYSeriesCollection();
@@ -56,7 +57,7 @@ public class Graph extends JFrame {
 
         //Changes background color
         XYPlot plot = (XYPlot)chart.getPlot();
-        plot.setBackgroundPaint(new Color(255,255,255));
+
 
         // Create Panel
         ChartPanel panel = new ChartPanel(chart);
@@ -104,6 +105,24 @@ public class Graph extends JFrame {
 
         pack();
         setVisible(true);
+    
+        chart.setBackgroundPaint(new Color(71, 71, 71));
+        chart.getTitle().setPaint(new Color(158, 159, 157));
+    
+        chart.getLegend().setBackgroundPaint(new Color(71, 71, 71));
+        LegendTitle title = chart.getLegend();
+        title.setItemPaint(new Color(158, 159, 157));
+    
+        plot.setBackgroundPaint(Color.DARK_GRAY);
+    
+        plot.getDomainAxis().setLabelPaint(new Color(158, 159, 157));
+        plot.getRangeAxis().setLabelPaint(new Color(158, 159, 157));
+        plot.getDomainAxis().setTickLabelPaint(new Color(158, 159, 157));
+        plot.getRangeAxis().setTickLabelPaint(new Color(158, 159, 157));
+    
+        plot.setDomainGridlinePaint(new Color(0,0,0, 180));
+        plot.setRangeGridlinePaint(new Color(0,0,0, 180));
+        panel.setBackground(new Color(71, 71, 71));
     }
 
     private ChartPanel createVelocityGraph(){
@@ -119,13 +138,31 @@ public class Graph extends JFrame {
 
         //Changes background color
         XYPlot plot = (XYPlot)chart.getPlot();
-        plot.setBackgroundPaint(new Color(255,255,255));
+
         plot.setRenderer(0, new ColorByVelocityRenderer(true,true, new Rectangle(1,1)));
         // Create Panel
         ChartPanel panel = new ChartPanel(chart);
 
         panel.setPreferredSize(new Dimension(800,800));
-
+    
+        chart.setBackgroundPaint(new Color(71, 71, 71));
+        chart.getTitle().setPaint(new Color(158, 159, 157));
+    
+        chart.getLegend().setBackgroundPaint(new Color(71, 71, 71));
+        LegendTitle title = chart.getLegend();
+        title.setItemPaint(new Color(158, 159, 157));
+    
+        plot.setBackgroundPaint(Color.DARK_GRAY);
+    
+        plot.getDomainAxis().setLabelPaint(new Color(158, 159, 157));
+        plot.getRangeAxis().setLabelPaint(new Color(158, 159, 157));
+        plot.getDomainAxis().setTickLabelPaint(new Color(158, 159, 157));
+        plot.getRangeAxis().setTickLabelPaint(new Color(158, 159, 157));
+    
+        plot.setDomainGridlinePaint(new Color(0,0,0, 180));
+        plot.setRangeGridlinePaint(new Color(0,0,0, 180));
+    
+        panel.setBackground(new Color(71, 71, 71));
         return panel;
     }
 
@@ -327,7 +364,7 @@ public class Graph extends JFrame {
 
             }
             else{
-                return Color.BLACK;
+                return Color.WHITE;
             }
 
         }
