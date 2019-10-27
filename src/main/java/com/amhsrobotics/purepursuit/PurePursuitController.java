@@ -291,11 +291,11 @@ public class PurePursuitController {
     }
     
     
-    public double isFinished() {
+    public boolean isFinished() {
         return isFinished;
     }
     
-    public void setIsFinished(double isFinished) {
+    public void setIsFinished(boolean isFinished) {
         this.isFinished = isFinished;
     }
 }
