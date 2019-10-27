@@ -5,7 +5,6 @@ import com.amhsrobotics.purepursuit.coordinate.CoordinateManager;
 import com.amhsrobotics.purepursuit.coordinate.CoordinateSystem;
 import com.amhsrobotics.purepursuit.coordinate.enums.TurnSign;
 import com.amhsrobotics.purepursuit.coordinate.enums.VectorDirection;
-import com.amhsrobotics.purepursuit.graph.Graph;
 import com.amhsrobotics.purepursuit.paths.Path;
 import com.amhsrobotics.purepursuit.paths.TrajectoryPoint;
 
@@ -29,7 +28,7 @@ public class PurePursuitController {
 
     private double currentRadius;
 
-private double currentBaseVelocity = 0;
+    private double currentBaseVelocity = 0;
 
     private TrajectoryPoint currentClosestPoint;
     private TrajectoryPoint currentTargetPoint;
@@ -37,6 +36,9 @@ private double currentBaseVelocity = 0;
     private int prevTargetIndex = 0;
     private double timeSinceInitialized;
     private double currentPointAdjustedTime;
+
+    
+    private boolean isFinished;
 
     public PurePursuitController(Path path) {
         this.path = path;
@@ -46,6 +48,10 @@ private double currentBaseVelocity = 0;
         this.timeSinceInitialized = timeSinceInitialized;
         calculateTargetPoint();
         calculateRadiusToTarget();
+        
+        double endThreshold = 1;
+        isFinished = currentClosestPoint.distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) < endThreshold;
+        
         return new PurePursuitOutput(leftVelocityFromRadius(), rightVelocityFromRadius());
     }
 
@@ -95,10 +101,6 @@ private double currentBaseVelocity = 0;
 
         double sign = findSide(pC,pA,pB);
 
-
-        //Graph.getInstance().graphDebug(pC.getX(),pC.getY(), pA.getX(), pA.getY(), pB.getX(), pB.getY());
-
-
         this.currentRadius = Math.abs(Math.sqrt(circleCenter.getX() * circleCenter.getX() + circleCenter.getY() * circleCenter.getY())) * sign;
     }
 
@@ -106,61 +108,13 @@ private double currentBaseVelocity = 0;
     private TrajectoryPoint findClosestPoint() {
         double currentClosest = 9999;
         TrajectoryPoint point = null;
-        TrajectoryPoint nextPoint = null;
         for (int i = 0; i < path.getTrajectoryPoints().length; i++) {
             if (path.getTrajectoryPoints()[i].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) < currentClosest) {
                 currentClosest = path.getTrajectoryPoints()[i].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY()));
                 point = path.getTrajectoryPoints()[i];
-                if(i < path.getTrajectoryPoints().length-1){
-                    nextPoint = path.getTrajectoryPoints()[i+1];
-                }
             }
         }
-
-
-//        if(currentClosestPoint != null && nextPoint != null){
-//            if(currentClosestPoint.getTime() != point.getTime()){
-//                currentPointAdjustedTime = timeSinceInitialized;
-//            }
-//
-//            double timeDifference = currentPointAdjustedTime - point.getTime();
-//            double finalTime = nextPoint.getTime() + timeDifference;
-//            double localTime = timeSinceInitialized - currentPointAdjustedTime;
-//
-//            double t = map(localTime,0,finalTime,0,1);
-//            System.out.println(t + " " + localTime + " " + finalTime + " "+ point.getTime() + " " + nextPoint.getTime()) ;
-//
-//            if(Double.isFinite(t) && t < 500){
-//                point.setVelocity(map(t,0,1,point.getVelocity(),nextPoint.getVelocity()));
-//            }
-
-//            double localTime = timeSinceInitialized - currentPointAdjustedTime;
-//            double initialTimeDifference = currentPointAdjustedTime - currentClosestPoint.getTime();
-//            double pointToPointTimeDifference = nextPoint.getTime()-point.getTime();
-//            pointToPointTimeDifference += initialTimeDifference;
-//            double t = map(localTime, 0, nextPoint.getTime() + initialTimeDifference, 0,1);
-//            System.out.println(t + " ");
-//        }
-
-
-//        if(prevPoint != null){
-//            double a = prevPoint.distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY()));
-//            double b = point.distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY()));
-//            double c = point.distance(prevPoint);
-//            double s = (a + b + c)/2;
-//            double h = (2 * Math.sqrt(s * (s-a)*(s-b)*(s-c)))/c;
-//            double t;
-//            if(prevPoint.getVelocity() > point.getVelocity()){
-//                t = Math.min(map(Math.sqrt(a*a-h*h), 0, c, prevPoint.getVelocity(),point.getVelocity()),point.getVelocity());
-//            }
-//            else{
-//                t = Math.max(map(Math.sqrt(a*a-h*h), 0, c, point.getVelocity(),prevPoint.getVelocity()),point.getVelocity());
-//            }
-//
-//            System.out.println("T: " + t + " " + Math.sqrt(a*a-h*h) + " " + c + " " + t + " " + point.getTime());
-//
-//            point.setVelocity(t);
-//        }
+        
         return point;
     }
 
@@ -334,5 +288,14 @@ private double currentBaseVelocity = 0;
 
     public void setCurrentPointAdjustedTime(double currentPointAdjustedTime) {
         this.currentPointAdjustedTime = currentPointAdjustedTime;
+    }
+    
+    
+    public double isFinished() {
+        return isFinished;
+    }
+    
+    public void setIsFinished(double isFinished) {
+        this.isFinished = isFinished;
     }
 }
