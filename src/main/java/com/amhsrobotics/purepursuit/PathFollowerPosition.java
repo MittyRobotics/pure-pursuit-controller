@@ -1,117 +1,95 @@
 package com.amhsrobotics.purepursuit;
 
-/**
- * An object that keeps track of the robot's current position.
- *
- * @author Owen Leather
- * @version 1.0
- */
+import com.amhsrobotics.purepursuit.coordinate.Coordinate;
+import com.amhsrobotics.purepursuit.coordinate.CoordinateManager;
+import com.amhsrobotics.purepursuit.coordinate.CoordinateSystem;
+import com.amhsrobotics.purepursuit.coordinate.enums.TurnSign;
+import com.amhsrobotics.purepursuit.coordinate.enums.VectorDirection;
+
 public class PathFollowerPosition {
-	private static PathFollowerPosition ourInstance = new PathFollowerPosition();
+    private static PathFollowerPosition ourInstance = new PathFollowerPosition();
 
-	/**The robot's current X position relative to the starting point of the path.*/
-	private double robotX = 0;
-	/**The robot's current Y position relative to the starting point of the path.*/
-	private double robotY = 0;
-	/**The robot's current heading angle (degrees) relative to the starting point of the path.*/
-	private double robotHeading = 0;
+    public static PathFollowerPosition getInstance() {
+        return ourInstance;
+    }
 
-	/**The robot's X position at the start of the path*/
-	private double resetX = 0;
-	/**The robot's Y position at the start of the path*/
-	private double resetY = 0;
-	/**The robot's heading angle (degrees) at the start of the path*/
-	private double resetHeading = 0;
+    private PathFollowerPosition() {
+    }
 
-	private boolean reversed = false;
+    private double x;
+    private double y;
+    private double heading;
+    private double pathCentricX;
+    private double pathCentricY;
+    private double pathCentricHeading;
 
+    private CoordinateSystem PATH_COORDINATE_SYSTEM = new CoordinateSystem(
+            90,
+            TurnSign.POSITIVE,
+            VectorDirection.POSITIVE_Y,
+            VectorDirection.NEGATIVE_X);
 
-	/**
-	 * Returns the singleton instance.
-	 * @return the instance of the {@link PathFollowerPosition}.
-	 */
-	public static PathFollowerPosition getInstance() {
-		return ourInstance;
-	}
+    /**
+     * Updates the path follower's position with the robot's position
+     * @param x         X position of the robot
+     * @param y         Y position of the robot
+     * @param heading   Heading of the robot/
+     */
+    public void update(double x, double y, double heading){
+        this.x = x;
+        this.y = y;
+        this.heading = heading;
+        Coordinate pathCentricCoordinate = CoordinateManager.getInstance().coordinateTransformation(new Coordinate(x,y,heading),PATH_COORDINATE_SYSTEM);
+        this.pathCentricX = pathCentricCoordinate.getX();
+        this.pathCentricY = pathCentricCoordinate.getY();
+        this.pathCentricHeading = pathCentricCoordinate.getAngle();
+    }
 
-	/**
-	 * Constructor
-	 */
-	private PathFollowerPosition() {
-	}
+    public double getX() {
+        return x;
+    }
 
-	/**
-	 * Resets the position of the robot.
-	 * @param currentX the current robot X position.
-	 * @param currentY the current robot Y position.
-	 * @param currentHeading the current robot heading angle (degrees).
-	 */
-	public void resetPos(double currentX, double currentY, double currentHeading){
-		this.resetX = currentX;
-		this.resetY = currentY;
-		this.resetHeading = currentHeading;
-	}
+    public void setX(double x) {
+        this.x = x;
+    }
 
-	/**
-	 * Updates the position of the robot relative to the start of the path.
-	 *
-	 * This calculates the robot's current position relative to the start of the path, meaning the robot's initial
-	 * position once the path following starts is (0,0,0).
-	 * @param x the robot's current X value.
-	 * @param y the robot's current Y value.
-	 * @param heading the robot's current heading angle (degrees).
-	 */
-	public void updatePos(double x, double y, double heading){
-		this.robotX = x-resetX;
-		this.robotY = y-resetY;
-		this.robotHeading = heading-resetHeading;
-		if(this.robotHeading < 0){
-			this.robotHeading = robotHeading+360;
-		}
-	}
+    public double getY() {
+        return y;
+    }
 
-	public void hardSetPos(double x, double y, double heading){
+    public void setY(double y) {
+        this.y = y;
+    }
 
-		this.robotX = x;
-		this.robotY = y;
-		this.robotHeading = heading;
-	}
+    public double getHeading() {
+        return heading;
+    }
 
-	/**
-	 * Returns the robot's current X value relative to the start of the path.
-	 * @return the robot's current X value.
-	 */
-	public double getRobotX(){
-		if(reversed){
-			return -robotX;
-		}
-		else {
-			return robotX;
-		}
-	}
+    public void setHeading(double heading) {
+        this.heading = heading;
+    }
 
-	/**
-	 * Returns the robot's current Y value relative to the start of the path.
-	 * @return the robot's current Y value.
-	 */
-	public double getRobotY(){
-		if(reversed){
-			return -robotY;
-		}
-		else {
-			return robotY;
-		}
-	}
+    public double getPathCentricX() {
+        return pathCentricX;
+    }
 
-	/**
-	 * Returns the robot's current heading angle relative to the start of the path.
-	 * @return the robot's current heading angle (degrees).
-	 */
-	public double getRobotHeading(){
-		return robotHeading;
-	}
+    public void setPathCentricX(double pathCentricX) {
+        this.pathCentricX = pathCentricX;
+    }
 
-	public void setReversed(boolean reversed){
-		this.reversed = reversed;
-	}
+    public double getPathCentricY() {
+        return pathCentricY;
+    }
+
+    public void setPathCentricY(double pathCentricY) {
+        this.pathCentricY = pathCentricY;
+    }
+
+    public double getPathCentricHeading() {
+        return pathCentricHeading;
+    }
+
+    public void setPathCentricHeading(double pathCentricHeading) {
+        this.pathCentricHeading = pathCentricHeading;
+    }
 }

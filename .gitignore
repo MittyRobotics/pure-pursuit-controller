@@ -10,6 +10,9 @@ out
 # IntelliJ
 .idea
 
+# docs
+docs
+
 # MacOSX
 .DS_Store
 pure-persuit-controller.iml
