@@ -45,12 +45,12 @@ public class PurePursuitSimulator extends Thread {
 		while(prevVelocity != 0 && running){
 			
 			
-			final PurePursuitOutput output = controller.update(t / 1000);
+			final PurePursuitOutput output = controller.update();
 			
 			PathFollowerPosition.getInstance().update(calculateNewRobotPos(output,controller)[0],calculateNewRobotPos(output,controller)[1],calculateNewRobotPos(output,controller)[2]);
 			
 			
-			final PurePursuitOutput output1 = controller.update(t / 1000);
+			final PurePursuitOutput output1 = controller.update();
 			
 			final double currentT = t;
 			

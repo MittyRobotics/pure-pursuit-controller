@@ -1,23 +1,20 @@
 package com.amhsrobotics.purepursuit;
 
-import com.amhsrobotics.purepursuit.coordinate.Coordinate;
-import com.amhsrobotics.purepursuit.coordinate.CoordinateManager;
-import com.amhsrobotics.purepursuit.coordinate.CoordinateSystem;
-import com.amhsrobotics.purepursuit.coordinate.enums.TurnSign;
-import com.amhsrobotics.purepursuit.coordinate.enums.VectorDirection;
 import com.amhsrobotics.purepursuit.paths.Path;
 import com.amhsrobotics.purepursuit.paths.TrajectoryPoint;
 
-import javax.swing.plaf.synth.SynthScrollBarUI;
-import java.awt.*;
 import java.awt.geom.Point2D;
 
 /**
  * Pure Pursuit Controller class
  * <p>
- * References: http://www.cs.columbia.edu/~allen/F17/NOTES/icckinematics.pdf
+ * References:
+ * Differential drive kinematics:
+ * http://www.cs.columbia.edu/~allen/F17/NOTES/icckinematics.pdf
  * http://www8.cs.umu.se/kurser/5DV122/HT13/material/Hellstrom-ForwardKinematics.pdf
+ * Pure pursuit controller algorithm:
  * https://www.ri.cmu.edu/pub_files/pub3/coulter_r_craig_1992_1/coulter_r_craig_1992_1.pdf
+ * https://www.chiefdelphi.com/t/paper-implementation-of-the-adaptive-pure-pursuit-controller/166552
  */
 public class PurePursuitController {
 
@@ -34,27 +31,40 @@ public class PurePursuitController {
     private TrajectoryPoint currentTargetPoint;
     private Point2D.Double currentCircleCenterPoint;
     private int prevTargetIndex = 0;
-    private double timeSinceInitialized;
-    private double currentPointAdjustedTime;
 
-    
+
     private boolean isFinished;
 
+    /**
+     * Constructor
+     * @param path the {@link Path} object to follow
+     */
     public PurePursuitController(Path path) {
         this.path = path;
     }
 
-    public PurePursuitOutput update(double timeSinceInitialized) {
-        this.timeSinceInitialized = timeSinceInitialized;
+    /**
+     * Updates the pure pursuit controller and returns a {@link PurePursuitOutput} object containing the left and right wheel velocities
+     *
+     * @return a {@link PurePursuitOutput} object containing the left and right wheel velocities;
+     */
+    public PurePursuitOutput update() {
         calculateTargetPoint();
         calculateRadiusToTarget();
-        
+
         double endThreshold = 1;
         isFinished = currentClosestPoint.distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) < endThreshold;
-        
+
         return new PurePursuitOutput(leftVelocityFromRadius(), rightVelocityFromRadius());
     }
 
+    /**
+     * Returns the left wheel velocity
+     * <p>
+     * Applies differential drive kinematics to get the left wheel velocity from the current radius towards the lookahead point.
+     *
+     * @return the left wheel velocity
+     */
     public double leftVelocityFromRadius() {
         double baseVelocity = currentClosestPoint.getVelocity();
 
@@ -65,6 +75,13 @@ public class PurePursuitController {
         return angularVelocity * (getCurrentRadius() - (trackWidth / 2));
     }
 
+    /**
+     * Returns the right wheel velocity
+     * <p>
+     * Applies differential drive kinematics to get the right wheel velocity from the current radius towards the lookahead point.
+     *
+     * @return the right wheel velocity
+     */
     public double rightVelocityFromRadius() {
         double baseVelocity = currentClosestPoint.getVelocity();
 
@@ -81,8 +98,8 @@ public class PurePursuitController {
 
         final Point2D.Double vectorHead = new Point2D.Double(Math.cos(Math.toRadians(robotAngle)), Math.sin(Math.toRadians(robotAngle)));
 
-        final double a = this.currentTargetPoint.getX()-PathFollowerPosition.getInstance().getX();
-        final double b = this.currentTargetPoint.getY()-PathFollowerPosition.getInstance().getY();
+        final double a = this.currentTargetPoint.getX() - PathFollowerPosition.getInstance().getX();
+        final double b = this.currentTargetPoint.getY() - PathFollowerPosition.getInstance().getY();
         final double c = vectorHead.getX();
         final double d = vectorHead.getY();
 
@@ -95,11 +112,11 @@ public class PurePursuitController {
 
         currentCircleCenterPoint = new Point2D.Double(circleCenter.getX() + PathFollowerPosition.getInstance().getPathCentricX(), circleCenter.getY() + PathFollowerPosition.getInstance().getPathCentricY());
 
-        Point2D.Double pA = new Point2D.Double(PathFollowerPosition.getInstance().getX(),PathFollowerPosition.getInstance().getY());
-        Point2D.Double pB = new Point2D.Double(PathFollowerPosition.getInstance().getX() + Math.cos(Math.toRadians(robotAngle)) * 20,PathFollowerPosition.getInstance().getY() + Math.sin(Math.toRadians(robotAngle)) * 20);
+        Point2D.Double pA = new Point2D.Double(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY());
+        Point2D.Double pB = new Point2D.Double(PathFollowerPosition.getInstance().getX() + Math.cos(Math.toRadians(robotAngle)) * 20, PathFollowerPosition.getInstance().getY() + Math.sin(Math.toRadians(robotAngle)) * 20);
         Point2D.Double pC = currentCircleCenterPoint;
 
-        double sign = findSide(pC,pA,pB);
+        double sign = findSide(pC, pA, pB);
 
         this.currentRadius = Math.abs(Math.sqrt(circleCenter.getX() * circleCenter.getX() + circleCenter.getY() * circleCenter.getY())) * sign;
     }
@@ -114,11 +131,11 @@ public class PurePursuitController {
                 point = path.getTrajectoryPoints()[i];
             }
         }
-        
+
         return point;
     }
 
-    private TrajectoryPoint findClosestLookaheadPoint(){
+    private TrajectoryPoint findClosestLookaheadPoint() {
         TrajectoryPoint point = null;
         if (path.getTrajectoryPoints()[path.getTrajectoryPoints().length - 1].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) < currentLookaheadDistance) {
             final double angle = path.getCoordinates()[path.getCoordinates().length - 1].getAngle();
@@ -156,26 +173,24 @@ public class PurePursuitController {
 
         double adaptiveLookahead2 = currentLookaheadDistance;
 
-        if(adaptiveLookahead2 < adaptiveLookahead1){
+        if (adaptiveLookahead2 < adaptiveLookahead1) {
             currentTargetPoint = findClosestLookaheadPoint();
         }
-
     }
 
-
-    private double findSide(Point2D.Double p, Point2D.Double p1, Point2D.Double p2){
+    private double findSide(Point2D.Double p, Point2D.Double p1, Point2D.Double p2) {
         double x = p.getX();
         double y = p.getY();
         double x1 = p1.getX();
         double y1 = p1.getY();
         double x2 = p2.getX();
         double y2 = p2.getY();
-        return  -Math.signum((x-x1)*(y2-y1)-(y-y1)*(x2-x1));
+        return -Math.signum((x - x1) * (y2 - y1) - (y - y1) * (x2 - x1));
     }
 
-    private void calculateAdaptiveLookaheadTarget(){
+    private void calculateAdaptiveLookaheadTarget() {
         double maxLookahead = lookaheadDistance;
-        double minLookahead = lookaheadDistance/5;
+        double minLookahead = lookaheadDistance / 5;
 
         double x = currentTargetPoint.getVelocity();
         double a = 0;
@@ -183,12 +198,12 @@ public class PurePursuitController {
         double c = minLookahead;
         double d = maxLookahead;
 
-        this.currentLookaheadDistance = (x-a)/(b-a) * (d-c) + c;
+        this.currentLookaheadDistance = (x - a) / (b - a) * (d - c) + c;
     }
 
-    private void calculateAdaptiveLookaheadClosest(){
+    private void calculateAdaptiveLookaheadClosest() {
         double maxLookahead = lookaheadDistance;
-        double minLookahead = lookaheadDistance/5;
+        double minLookahead = lookaheadDistance / 5;
 
         double x = currentClosestPoint.getVelocity();
         double a = 0;
@@ -196,11 +211,11 @@ public class PurePursuitController {
         double c = minLookahead;
         double d = maxLookahead;
 
-        this.currentLookaheadDistance = map(x,a,b,c,d);
+        this.currentLookaheadDistance = map(x, a, b, c, d);
     }
 
-    public double map(double val, double valMin, double valMax, double desiredMin, double desiredMax){
-        return (val-valMin)/(valMax-valMin) * (desiredMax-desiredMin)+desiredMin;
+    public double map(double val, double valMin, double valMax, double desiredMin, double desiredMax) {
+        return (val - valMin) / (valMax - valMin) * (desiredMax - desiredMin) + desiredMin;
     }
 
     public double getLookaheadDistance() {
@@ -242,6 +257,7 @@ public class PurePursuitController {
     public void setCurrentTargetPoint(TrajectoryPoint currentTargetPoint) {
         this.currentTargetPoint = currentTargetPoint;
     }
+
     public TrajectoryPoint getCurrentClosestPoint() {
         return currentClosestPoint;
     }
@@ -274,27 +290,10 @@ public class PurePursuitController {
         this.currentBaseVelocity = currentBaseVelocity;
     }
 
-    public double getTimeSinceInitialized() {
-        return timeSinceInitialized;
-    }
-
-    public void setTimeSinceInitialized(double timeSinceInitialized) {
-        this.timeSinceInitialized = timeSinceInitialized;
-    }
-
-    public double getCurrentPointAdjustedTime() {
-        return currentPointAdjustedTime;
-    }
-
-    public void setCurrentPointAdjustedTime(double currentPointAdjustedTime) {
-        this.currentPointAdjustedTime = currentPointAdjustedTime;
-    }
-    
-    
     public boolean isFinished() {
         return isFinished;
     }
-    
+
     public void setIsFinished(boolean isFinished) {
         this.isFinished = isFinished;
     }
