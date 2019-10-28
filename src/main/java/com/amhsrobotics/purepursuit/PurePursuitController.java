@@ -18,7 +18,8 @@ import java.awt.geom.Point2D;
  */
 public class PurePursuitController {
 
-    private double lookaheadDistance = 15;
+    private double lookaheadDistance;
+    private double minLookaheadDist;
     private double currentLookaheadDistance = 15;
     private double trackWidth = 20;
     private Path path;
@@ -40,7 +41,17 @@ public class PurePursuitController {
      * @param path the {@link Path} object to follow
      */
     public PurePursuitController(Path path) {
+        this(path,15,10);
+    }
+
+    /**
+     * Constructor
+     * @param path the {@link Path} object to follow
+     */
+    public PurePursuitController(Path path, double defaultLookaheadDistance, double minLookaheadDist) {
         this.path = path;
+        this.lookaheadDistance = defaultLookaheadDistance;
+        this.minLookaheadDist = minLookaheadDist;
     }
 
     /**
@@ -154,7 +165,6 @@ public class PurePursuitController {
                 }
             }
         }
-
         return point;
     }
 
@@ -189,29 +199,36 @@ public class PurePursuitController {
     }
 
     private void calculateAdaptiveLookaheadTarget() {
-        double maxLookahead = lookaheadDistance;
-        double minLookahead = lookaheadDistance / 5;
-
         double x = currentTargetPoint.getVelocity();
         double a = 0;
         double b = path.getVelocityConstraints().getMaxVelocity();
-        double c = minLookahead;
-        double d = maxLookahead;
+        double c = minLookaheadDist;
+        double d = lookaheadDistance;
 
-        this.currentLookaheadDistance = (x - a) / (b - a) * (d - c) + c;
+        this.currentLookaheadDistance = limitLookaheadJump(map(x, a, b, c, d),1);
     }
 
     private void calculateAdaptiveLookaheadClosest() {
-        double maxLookahead = lookaheadDistance;
-        double minLookahead = lookaheadDistance / 5;
 
         double x = currentClosestPoint.getVelocity();
         double a = 0;
         double b = path.getVelocityConstraints().getMaxVelocity();
-        double c = minLookahead;
-        double d = maxLookahead;
+        double c = lookaheadDistance;
+        double d = minLookaheadDist;
 
-        this.currentLookaheadDistance = map(x, a, b, c, d);
+        this.currentLookaheadDistance = limitLookaheadJump(map(x, a, b, c, d),1);
+    }
+
+    private double limitLookaheadJump(double desired, double rateLimit){
+        if(Math.abs(currentLookaheadDistance - desired) < rateLimit){
+            return desired;
+        }
+        else if(desired < currentLookaheadDistance){
+            return currentLookaheadDistance - rateLimit;
+        }
+        else{
+            return currentLookaheadDistance + rateLimit;
+        }
     }
 
     public double map(double val, double valMin, double valMax, double desiredMin, double desiredMax) {

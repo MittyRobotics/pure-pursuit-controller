@@ -14,7 +14,7 @@ public class Main {
 
     public static void main(String[] args) {
     
-        VelocityConstraints velocityConstraints = new VelocityConstraints(10, 10, 30, 0, 0, 1);
+        VelocityConstraints velocityConstraints = new VelocityConstraints(10, 10, 20, 0, 0, 1);
     
         Coordinate[] coordinates = new Coordinate[]{
                 new Coordinate(0, 0, 0),
@@ -24,7 +24,7 @@ public class Main {
     
         Path path = new CubicHermitePath(coordinates, velocityConstraints);
     
-        PurePursuitController controller = new PurePursuitController(path);
+        PurePursuitController controller = new PurePursuitController(path,15,5);
         PathFollowerPosition.getInstance().update(0, 0, 0);
         
         PurePursuitSimulator simulator = new PurePursuitSimulator(controller);
