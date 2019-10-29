@@ -25,12 +25,12 @@ public class Main {
     
         Path path = new CubicHermitePath(coordinates, velocityConstraints);
         
-        double trackWidth = 20;
         
-        PurePursuitController controller = new PurePursuitController(path,15,5, trackWidth);
+        PurePursuitController controller = new PurePursuitController(path,15,5);
         PathFollowerPosition.getInstance().update(0, 0, 0);
+        PathFollowerPosition.getInstance().setupRobot(20);
         
-        PurePursuitSimulator simulator = new PurePursuitSimulator(controller,60,trackWidth);
+        PurePursuitSimulator simulator = new PurePursuitSimulator(controller,60,PathFollowerPosition.getInstance().getTrackWidth());
         simulator.start();
         
     }

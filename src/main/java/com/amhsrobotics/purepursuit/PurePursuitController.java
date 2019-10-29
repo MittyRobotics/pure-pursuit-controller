@@ -21,7 +21,6 @@ public class PurePursuitController {
     private double lookaheadDistance;
     private double minLookaheadDistance;
     private double currentLookaheadDistance;
-    private double trackWidth;
     private Path path;
     private double currentRadius;
     private double currentBaseVelocity;
@@ -49,21 +48,6 @@ public class PurePursuitController {
         this.minLookaheadDistance = minLookaheadDistance;
     }
     
-    /**
-     * Constructor
-     * @param path the {@link Path} object to follow
-     */
-    public PurePursuitController(Path path, double defaultLookaheadDistance, double minLookaheadDistance, double trackWidth) {
-        this.path = path;
-        this.lookaheadDistance = defaultLookaheadDistance;
-        this.minLookaheadDistance = minLookaheadDistance;
-        setupRobot(trackWidth);
-    }
-    
-    
-    public void setupRobot(double trackWidth){
-        this.trackWidth = trackWidth;
-    }
 
     /**
      * Updates the pure pursuit controller and returns a {@link PurePursuitOutput} object containing the left and right wheel velocities
@@ -94,8 +78,8 @@ public class PurePursuitController {
 
         double angularVelocity = baseVelocity / getCurrentRadius();
 
-        if(trackWidth != 0){
-            return angularVelocity * (getCurrentRadius() - (trackWidth / 2));
+        if(PathFollowerPosition.getInstance().getTrackWidth() != 0){
+            return angularVelocity * (getCurrentRadius() - (PathFollowerPosition.getInstance().getTrackWidth() / 2));
         }
         else{
             System.out.println("Pure pursuit controller trackWidth not setup!");
@@ -118,8 +102,8 @@ public class PurePursuitController {
 
         double angularVelocity = baseVelocity / getCurrentRadius();
         
-        if(trackWidth != 0){
-            return angularVelocity * (getCurrentRadius() + (trackWidth / 2));
+        if(PathFollowerPosition.getInstance().getTrackWidth() != 0){
+            return angularVelocity * (getCurrentRadius() + (PathFollowerPosition.getInstance().getTrackWidth() / 2));
         }
         else{
             System.out.println("Pure pursuit controller trackWidth not setup!");
@@ -235,14 +219,6 @@ public class PurePursuitController {
 
     public void setLookaheadDistance(double lookaheadDistance) {
         this.lookaheadDistance = lookaheadDistance;
-    }
-
-    public double getTrackWidth() {
-        return trackWidth;
-    }
-
-    public void setTrackWidth(double trackWidth) {
-        this.trackWidth = trackWidth;
     }
 
     public Path getPath() {

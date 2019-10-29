@@ -22,6 +22,7 @@ public class PathFollowerPosition {
     private double pathCentricX;
     private double pathCentricY;
     private double pathCentricHeading;
+    private double trackWidth;
 
     private CoordinateSystem PATH_COORDINATE_SYSTEM = new CoordinateSystem(
             90,
@@ -29,6 +30,11 @@ public class PathFollowerPosition {
             VectorDirection.POSITIVE_Y,
             VectorDirection.NEGATIVE_X);
 
+    public void setupRobot(double trackWidth){
+        setTrackWidth(trackWidth);
+    }
+    
+    
     /**
      * Updates the path follower's position with the robot's position
      * @param x         X position of the robot
@@ -91,5 +97,13 @@ public class PathFollowerPosition {
 
     public void setPathCentricHeading(double pathCentricHeading) {
         this.pathCentricHeading = pathCentricHeading;
+    }
+    
+    public double getTrackWidth() {
+        return trackWidth;
+    }
+    
+    public void setTrackWidth(double trackWidth) {
+        this.trackWidth = trackWidth;
     }
 }
