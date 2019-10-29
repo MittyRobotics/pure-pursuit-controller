@@ -198,7 +198,7 @@ public class PurePursuitSimulatorGraph extends JFrame {
 
 
 
-    public void graphRobot(double x, double y){
+    public void graphRobotPoint(double x, double y){
         XYSeries series = new XYSeries("Robot");
         series.add(x,y);
         robotDataset.removeAllSeries();
@@ -212,14 +212,14 @@ public class PurePursuitSimulatorGraph extends JFrame {
         targetPointDataset.addSeries(series);
     }
 
-    public void graphVelocity(double leftVelocity, double rightVelocity){
+    public void graphVelocity(double leftVelocity, double rightVelocity, double robotWidth){
         XYSeries lSeries = new XYSeries("Left Velocity");
         XYSeries rSeries = new XYSeries("Right Velocity");
         double heading = PathFollowerPosition.getInstance().getPathCentricHeading();
-        double x1 = PathFollowerPosition.getInstance().getPathCentricX() + Math.cos(Math.toRadians(heading-90))*10;
-        double y1 = PathFollowerPosition.getInstance().getPathCentricY() + Math.sin(Math.toRadians(heading-90))*10;
-        double x2 = PathFollowerPosition.getInstance().getPathCentricX() + Math.cos(Math.toRadians(heading+90))*10;
-        double y2 = PathFollowerPosition.getInstance().getPathCentricY() + Math.sin(Math.toRadians(heading+90))*10;
+        double x1 = PathFollowerPosition.getInstance().getPathCentricX() + Math.cos(Math.toRadians(heading-90))*(robotWidth/2);
+        double y1 = PathFollowerPosition.getInstance().getPathCentricY() + Math.sin(Math.toRadians(heading-90))*(robotWidth/2);
+        double x2 = PathFollowerPosition.getInstance().getPathCentricX() + Math.cos(Math.toRadians(heading+90))*(robotWidth/2);
+        double y2 = PathFollowerPosition.getInstance().getPathCentricY() + Math.sin(Math.toRadians(heading+90))*(robotWidth/2);
         double x3 = x1 + Math.cos(Math.toRadians(heading))*(rightVelocity/.1);
         double y3 = y1 + Math.sin(Math.toRadians(heading))*(rightVelocity/.1);
         double x4 = x2 + Math.cos(Math.toRadians(heading))*(leftVelocity/.1);

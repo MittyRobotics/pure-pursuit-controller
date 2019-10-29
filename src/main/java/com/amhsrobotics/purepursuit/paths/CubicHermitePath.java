@@ -58,7 +58,7 @@ public class CubicHermitePath extends Path {
 			double b = steps-1;
 			t = ((double)i - a) / (b - a);
 			if(!lastSegment){
-				t = Math.max(0, t - 0.001);
+				t = Math.max(0, t - .01);
 			}
 
 			double h0,h1,h2,h3;

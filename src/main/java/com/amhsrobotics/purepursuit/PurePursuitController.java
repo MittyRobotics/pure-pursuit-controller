@@ -19,21 +19,16 @@ import java.awt.geom.Point2D;
 public class PurePursuitController {
 
     private double lookaheadDistance;
-    private double minLookaheadDist;
-    private double currentLookaheadDistance = 15;
-    private double trackWidth = 20;
+    private double minLookaheadDistance;
+    private double currentLookaheadDistance;
+    private double trackWidth;
     private Path path;
-
     private double currentRadius;
-
-    private double currentBaseVelocity = 0;
-
+    private double currentBaseVelocity;
     private TrajectoryPoint currentClosestPoint;
     private TrajectoryPoint currentTargetPoint;
     private Point2D.Double currentCircleCenterPoint;
-    private int prevTargetIndex = 0;
-
-
+    private int prevTargetIndex;
     private boolean isFinished;
 
     /**
@@ -48,10 +43,26 @@ public class PurePursuitController {
      * Constructor
      * @param path the {@link Path} object to follow
      */
-    public PurePursuitController(Path path, double defaultLookaheadDistance, double minLookaheadDist) {
+    public PurePursuitController(Path path, double defaultLookaheadDistance, double minLookaheadDistance) {
         this.path = path;
         this.lookaheadDistance = defaultLookaheadDistance;
-        this.minLookaheadDist = minLookaheadDist;
+        this.minLookaheadDistance = minLookaheadDistance;
+    }
+    
+    /**
+     * Constructor
+     * @param path the {@link Path} object to follow
+     */
+    public PurePursuitController(Path path, double defaultLookaheadDistance, double minLookaheadDistance, double trackWidth) {
+        this.path = path;
+        this.lookaheadDistance = defaultLookaheadDistance;
+        this.minLookaheadDistance = minLookaheadDistance;
+        setupRobot(trackWidth);
+    }
+    
+    
+    public void setupRobot(double trackWidth){
+        this.trackWidth = trackWidth;
     }
 
     /**
@@ -83,7 +94,14 @@ public class PurePursuitController {
 
         double angularVelocity = baseVelocity / getCurrentRadius();
 
-        return angularVelocity * (getCurrentRadius() - (trackWidth / 2));
+        if(trackWidth != 0){
+            return angularVelocity * (getCurrentRadius() - (trackWidth / 2));
+        }
+        else{
+            System.out.println("Pure pursuit controller trackWidth not setup!");
+            return 0;
+        }
+        
     }
 
     /**
@@ -99,8 +117,14 @@ public class PurePursuitController {
         this.currentBaseVelocity = baseVelocity;
 
         double angularVelocity = baseVelocity / getCurrentRadius();
-
-        return angularVelocity * (getCurrentRadius() + (trackWidth / 2));
+        
+        if(trackWidth != 0){
+            return angularVelocity * (getCurrentRadius() + (trackWidth / 2));
+        }
+        else{
+            System.out.println("Pure pursuit controller trackWidth not setup!");
+            return 0;
+        }
     }
 
     public void calculateRadiusToTarget() {
@@ -172,20 +196,11 @@ public class PurePursuitController {
     public void calculateTargetPoint() {
         this.currentClosestPoint = findClosestPoint();
 
-        calculateAdaptiveLookaheadClosest();
-
-        double adaptiveLookahead1 = currentLookaheadDistance;
+        calculateAdaptiveLookahead();
 
         currentTargetPoint = findClosestLookaheadPoint();
 
 
-        calculateAdaptiveLookaheadTarget();
-
-        double adaptiveLookahead2 = currentLookaheadDistance;
-
-        if (adaptiveLookahead2 < adaptiveLookahead1) {
-            currentTargetPoint = findClosestLookaheadPoint();
-        }
     }
 
     private double findSide(Point2D.Double p, Point2D.Double p1, Point2D.Double p2) {
@@ -197,39 +212,18 @@ public class PurePursuitController {
         double y2 = p2.getY();
         return -Math.signum((x - x1) * (y2 - y1) - (y - y1) * (x2 - x1));
     }
-
-    private void calculateAdaptiveLookaheadTarget() {
-        double x = currentTargetPoint.getVelocity();
-        double a = 0;
-        double b = path.getVelocityConstraints().getMaxVelocity();
-        double c = minLookaheadDist;
-        double d = lookaheadDistance;
-
-        this.currentLookaheadDistance = limitLookaheadJump(map(x, a, b, c, d),1);
-    }
-
-    private void calculateAdaptiveLookaheadClosest() {
+    
+    private void calculateAdaptiveLookahead() {
 
         double x = currentClosestPoint.getVelocity();
         double a = 0;
         double b = path.getVelocityConstraints().getMaxVelocity();
-        double c = lookaheadDistance;
-        double d = minLookaheadDist;
+        double c = minLookaheadDistance;
+        double d = lookaheadDistance;
 
-        this.currentLookaheadDistance = limitLookaheadJump(map(x, a, b, c, d),1);
+        this.currentLookaheadDistance = map(x, a, b, c, d);
     }
 
-    private double limitLookaheadJump(double desired, double rateLimit){
-        if(Math.abs(currentLookaheadDistance - desired) < rateLimit){
-            return desired;
-        }
-        else if(desired < currentLookaheadDistance){
-            return currentLookaheadDistance - rateLimit;
-        }
-        else{
-            return currentLookaheadDistance + rateLimit;
-        }
-    }
 
     public double map(double val, double valMin, double valMax, double desiredMin, double desiredMax) {
         return (val - valMin) / (valMax - valMin) * (desiredMax - desiredMin) + desiredMin;

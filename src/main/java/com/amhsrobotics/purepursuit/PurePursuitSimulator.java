@@ -8,11 +8,11 @@ import com.amhsrobotics.purepursuit.coordinate.enums.VectorDirection;
 import com.amhsrobotics.purepursuit.graph.PurePursuitSimulatorGraph;
 
 import javax.swing.*;
-import java.awt.event.WindowEvent;
 
 public class PurePursuitSimulator extends Thread {
-	private double loopsPerSecond = 60;
+	private double loopsPerSecond;
 	
+	private double robotWidth;
 
 	private boolean running;
 	
@@ -24,10 +24,12 @@ public class PurePursuitSimulator extends Thread {
 	
 	private PurePursuitController controller;
 	
-	public PurePursuitSimulator(PurePursuitController controller){
+	public PurePursuitSimulator(PurePursuitController controller, double loopsPerSecond, double robotWidth){
 		this.controller = controller;
-		running = true;
-		setup = false;
+		this.running = true;
+		this.setup = false;
+		this.loopsPerSecond = loopsPerSecond;
+		this.robotWidth = robotWidth;
 	}
 	
 	public void run(){
@@ -58,11 +60,11 @@ public class PurePursuitSimulator extends Thread {
 			SwingUtilities.invokeLater(() -> {
 				PurePursuitSimulatorGraph.getInstance().graphCircle(controller.getCurrentCircleCenterPoint().getX(),controller.getCurrentCircleCenterPoint().getY(),controller.getCurrentRadius());
 				
-				PurePursuitSimulatorGraph.getInstance().graphRobot(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY());
+				PurePursuitSimulatorGraph.getInstance().graphRobotPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY());
 				
 				PurePursuitSimulatorGraph.getInstance().graphTargetPoint(controller.getCurrentTargetPoint().getX(),controller.getCurrentTargetPoint().getY());
 				
-				PurePursuitSimulatorGraph.getInstance().graphVelocity(output1.getLeftVelocity()/loopsPerSecond,output1.getRightVelocity()/loopsPerSecond);
+				PurePursuitSimulatorGraph.getInstance().graphVelocity(output1.getLeftVelocity()/loopsPerSecond,output1.getRightVelocity()/loopsPerSecond, robotWidth);
 				
 				PurePursuitSimulatorGraph.getInstance().graphRobotVelocityOverTime((output1.getLeftVelocity() + output1.getRightVelocity())/2, currentT/1000);
 			});
@@ -106,10 +108,10 @@ public class PurePursuitSimulator extends Thread {
 
 	public double[] calculateNewRobotPos(PurePursuitOutput output, PurePursuitController controller){
 		double heading = PathFollowerPosition.getInstance().getPathCentricHeading();
-		double x1 = PathFollowerPosition.getInstance().getPathCentricX() + Math.cos(Math.toRadians(heading-90))*10;
-		double y1 = PathFollowerPosition.getInstance().getPathCentricY() + Math.sin(Math.toRadians(heading-90))*10;
-		double x2 = PathFollowerPosition.getInstance().getPathCentricX() + Math.cos(Math.toRadians(heading+90))*10;
-		double y2 = PathFollowerPosition.getInstance().getPathCentricY() + Math.sin(Math.toRadians(heading+90))*10;
+		double x1 = PathFollowerPosition.getInstance().getPathCentricX() + Math.cos(Math.toRadians(heading-90))*(robotWidth/2);
+		double y1 = PathFollowerPosition.getInstance().getPathCentricY() + Math.sin(Math.toRadians(heading-90))*(robotWidth/2);
+		double x2 = PathFollowerPosition.getInstance().getPathCentricX() + Math.cos(Math.toRadians(heading+90))*(robotWidth/2);
+		double y2 = PathFollowerPosition.getInstance().getPathCentricY() + Math.sin(Math.toRadians(heading+90))*(robotWidth/2);
 		double x3 = x1 + Math.cos(Math.toRadians(heading))*(output.getRightVelocity())/loopsPerSecond;
 		double y3 = y1 + Math.sin(Math.toRadians(heading))*(output.getRightVelocity())/loopsPerSecond;
 		double x4 = x2 + Math.cos(Math.toRadians(heading))*(output.getLeftVelocity())/loopsPerSecond;
