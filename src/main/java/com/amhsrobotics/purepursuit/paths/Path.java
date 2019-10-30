@@ -102,7 +102,7 @@ public class Path {
 	 */
 	public void calculateVelocities(){
 		for (int i = trajectoryPoints.length - 1; i > -1; i--) {
-			double maxVelocityWithCurvature = Math.max(Math.min(velocityConstraints.getMaxVelocity(), kCurvature / trajectoryPoints[i].getCurvature()),velocityConstraints.getMaxVelocity()/2);
+			double maxVelocityWithCurvature = Math.max(Math.min(velocityConstraints.getMaxVelocity(), kCurvature / trajectoryPoints[i].getCurvature()),velocityConstraints.getMinVelocity());
 			if (i == trajectoryPoints.length - 1) {
 				trajectoryPoints[i].setVelocity(velocityConstraints.getEndVelocity());
 			} else {

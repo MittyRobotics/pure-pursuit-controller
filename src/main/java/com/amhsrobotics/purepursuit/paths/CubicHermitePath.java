@@ -11,7 +11,7 @@ public class CubicHermitePath extends Path {
 
 	@Override
 	public void generatePoints() {
-		int steps = 200;
+		int steps = 400;
 		TrajectoryPoint[] tradjectoryPoints = new TrajectoryPoint[steps];
 		int prevSegmentLength = 0;
 		int stepsPerSegment = steps/(getCoordinates().length-1);

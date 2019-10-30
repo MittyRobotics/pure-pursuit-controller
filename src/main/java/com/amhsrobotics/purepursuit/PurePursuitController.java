@@ -28,6 +28,7 @@ public class PurePursuitController {
     private TrajectoryPoint currentTargetPoint;
     private Point2D.Double currentCircleCenterPoint;
     private int prevTargetIndex;
+    private double minSlowdownVelocity;
     private boolean isFinished;
 
     /**
@@ -46,6 +47,7 @@ public class PurePursuitController {
         this.path = path;
         this.lookaheadDistance = defaultLookaheadDistance;
         this.minLookaheadDistance = minLookaheadDistance;
+        this.minSlowdownVelocity = path.getVelocityConstraints().getMaxVelocity()/2;
     }
     
 
@@ -183,8 +185,6 @@ public class PurePursuitController {
         calculateAdaptiveLookahead();
 
         currentTargetPoint = findClosestLookaheadPoint();
-
-
     }
 
     private double findSide(Point2D.Double p, Point2D.Double p1, Point2D.Double p2) {
@@ -200,14 +200,13 @@ public class PurePursuitController {
     private void calculateAdaptiveLookahead() {
 
         double x = currentClosestPoint.getVelocity();
-        double a = 0;
+        double a = path.getVelocityConstraints().getMinVelocity();
         double b = path.getVelocityConstraints().getMaxVelocity();
         double c = minLookaheadDistance;
         double d = lookaheadDistance;
 
-        this.currentLookaheadDistance = map(x, a, b, c, d);
+        this.currentLookaheadDistance = Math.max(map(x, a, b, c, d), minLookaheadDistance);
     }
-
 
     public double map(double val, double valMin, double valMax, double desiredMin, double desiredMax) {
         return (val - valMin) / (valMax - valMin) * (desiredMax - desiredMin) + desiredMin;

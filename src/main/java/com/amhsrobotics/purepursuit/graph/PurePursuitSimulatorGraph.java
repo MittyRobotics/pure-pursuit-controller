@@ -198,10 +198,25 @@ public class PurePursuitSimulatorGraph extends JFrame {
 
 
 
-    public void graphRobotPoint(double x, double y){
-        XYSeries series = new XYSeries("Robot");
+    public void graphRobotPoint(double x, double y, boolean showTrail){
+       XYSeries series;
+       if(showTrail){
+           if(robotDataset.getSeries().size() == 0){
+               series = new XYSeries("Robot");
+
+           } else{
+               series = robotDataset.getSeries(0);
+           }
+       }
+       else{
+           series = new XYSeries("Robot");
+       }
+
+
         series.add(x,y);
-        robotDataset.removeAllSeries();
+       if(showTrail){
+           robotDataset.removeAllSeries();
+       }
         robotDataset.addSeries(series);
     }
 

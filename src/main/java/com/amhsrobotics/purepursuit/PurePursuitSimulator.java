@@ -43,7 +43,11 @@ public class PurePursuitSimulator extends Thread {
 		t =previousT;
 		
 		double prevVelocity = 1;
-		
+		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		while(prevVelocity != 0 && running){
 			
 			
@@ -60,7 +64,7 @@ public class PurePursuitSimulator extends Thread {
 			SwingUtilities.invokeLater(() -> {
 				PurePursuitSimulatorGraph.getInstance().graphCircle(controller.getCurrentCircleCenterPoint().getX(),controller.getCurrentCircleCenterPoint().getY(),controller.getCurrentRadius());
 				
-				PurePursuitSimulatorGraph.getInstance().graphRobotPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY());
+				PurePursuitSimulatorGraph.getInstance().graphRobotPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY(), true);
 				
 				PurePursuitSimulatorGraph.getInstance().graphTargetPoint(controller.getCurrentTargetPoint().getX(),controller.getCurrentTargetPoint().getY());
 				
@@ -72,13 +76,19 @@ public class PurePursuitSimulator extends Thread {
 			prevVelocity = (output1.getLeftVelocity() + output1.getRightVelocity())/2;
 			
 			t += 1000/loopsPerSecond;
-			
+
+			if(Math.abs(prevVelocity) <  1){
+				break;
+			}
+
 			try {
 				Thread.sleep((long)1000/(long)loopsPerSecond);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
+		System.out.println("test");
+		stopSimulator();
 	}
 	
 	
@@ -97,7 +107,7 @@ public class PurePursuitSimulator extends Thread {
 	private void setupGraph(){
 		
 		PurePursuitSimulatorGraph.getInstance().graphPathVelocity(controller.getPath());
-		
+
 		PurePursuitSimulatorGraph.getInstance().graphPath(controller.getPath());
 		
 		PurePursuitSimulatorGraph.getInstance().resizeGraph();
