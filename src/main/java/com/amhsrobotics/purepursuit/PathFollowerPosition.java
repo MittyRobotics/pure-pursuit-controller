@@ -19,6 +19,8 @@ public class PathFollowerPosition {
     private double x;
     private double y;
     private double heading;
+    private double leftVelocity;
+    private double rightVelocity;
     private double pathCentricX;
     private double pathCentricY;
     private double pathCentricHeading;
@@ -33,22 +35,25 @@ public class PathFollowerPosition {
     public void setupRobot(double trackWidth){
         setTrackWidth(trackWidth);
     }
-    
-    
+
+
     /**
      * Updates the path follower's position with the robot's position
      * @param x         X position of the robot
      * @param y         Y position of the robot
      * @param heading   Heading of the robot/
      */
-    public void update(double x, double y, double heading){
+    public void update(double x, double y, double heading, double leftVelocity, double rightVelocity){
         this.x = x;
         this.y = y;
         this.heading = heading;
+        this.leftVelocity = leftVelocity;
+        this.rightVelocity = rightVelocity;
         Coordinate pathCentricCoordinate = CoordinateManager.getInstance().coordinateTransformation(new Coordinate(x,y,heading),PATH_COORDINATE_SYSTEM);
         this.pathCentricX = pathCentricCoordinate.getX();
         this.pathCentricY = pathCentricCoordinate.getY();
         this.pathCentricHeading = pathCentricCoordinate.getAngle();
+
     }
 
     public double getX() {
@@ -79,31 +84,35 @@ public class PathFollowerPosition {
         return pathCentricX;
     }
 
-    public void setPathCentricX(double pathCentricX) {
-        this.pathCentricX = pathCentricX;
-    }
-
     public double getPathCentricY() {
         return pathCentricY;
-    }
-
-    public void setPathCentricY(double pathCentricY) {
-        this.pathCentricY = pathCentricY;
     }
 
     public double getPathCentricHeading() {
         return pathCentricHeading;
     }
 
-    public void setPathCentricHeading(double pathCentricHeading) {
-        this.pathCentricHeading = pathCentricHeading;
-    }
-    
     public double getTrackWidth() {
         return trackWidth;
     }
-    
+
     public void setTrackWidth(double trackWidth) {
         this.trackWidth = trackWidth;
+    }
+
+    public double getLeftVelocity() {
+        return leftVelocity;
+    }
+
+    public void setLeftVelocity(double leftVelocity) {
+        this.leftVelocity = leftVelocity;
+    }
+
+    public double getRightVelocity() {
+        return rightVelocity;
+    }
+
+    public void setRightVelocity(double rightVelocity) {
+        this.rightVelocity = rightVelocity;
     }
 }

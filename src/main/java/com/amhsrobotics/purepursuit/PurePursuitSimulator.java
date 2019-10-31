@@ -51,13 +51,10 @@ public class PurePursuitSimulator extends Thread {
 		while(prevVelocity != 0 && running){
 			
 			
-			final PurePursuitOutput output = controller.update();
+			final PurePursuitOutput output = controller.update(t/1000);
 			
-			PathFollowerPosition.getInstance().update(calculateNewRobotPos(output,controller)[0],calculateNewRobotPos(output,controller)[1],calculateNewRobotPos(output,controller)[2]);
-			
-			
-			final PurePursuitOutput output1 = controller.update();
-			
+			PathFollowerPosition.getInstance().update(calculateNewRobotPos(output,controller)[0],calculateNewRobotPos(output,controller)[1],calculateNewRobotPos(output,controller)[2], output.getLeftVelocity(), output.getRightVelocity());
+
 			final double currentT = t;
 			
 			double finalPrevVelocity = prevVelocity;
@@ -68,12 +65,12 @@ public class PurePursuitSimulator extends Thread {
 				
 				PurePursuitSimulatorGraph.getInstance().graphTargetPoint(controller.getCurrentTargetPoint().getX(),controller.getCurrentTargetPoint().getY());
 				
-				PurePursuitSimulatorGraph.getInstance().graphVelocity(output1.getLeftVelocity()/loopsPerSecond,output1.getRightVelocity()/loopsPerSecond, robotWidth);
+				PurePursuitSimulatorGraph.getInstance().graphVelocity(output.getLeftVelocity()/loopsPerSecond,output.getRightVelocity()/loopsPerSecond, robotWidth);
 				
-				PurePursuitSimulatorGraph.getInstance().graphRobotVelocityOverTime((output1.getLeftVelocity() + output1.getRightVelocity())/2, currentT/1000);
+				PurePursuitSimulatorGraph.getInstance().graphRobotVelocityOverTime((output.getLeftVelocity() + output.getRightVelocity())/2, currentT/1000);
 			});
 			
-			prevVelocity = (output1.getLeftVelocity() + output1.getRightVelocity())/2;
+			prevVelocity = (output.getLeftVelocity() + output.getRightVelocity())/2;
 			
 			t += 1000/loopsPerSecond;
 
@@ -126,20 +123,20 @@ public class PurePursuitSimulator extends Thread {
 		double y3 = y1 + Math.sin(Math.toRadians(heading))*(output.getRightVelocity())/loopsPerSecond;
 		double x4 = x2 + Math.cos(Math.toRadians(heading))*(output.getLeftVelocity())/loopsPerSecond;
 		double y4 = y2 + Math.sin(Math.toRadians(heading))*(output.getLeftVelocity())/loopsPerSecond;
-		
+
 		double x = (x3+x4)/2;
 		double y = (y3+y4)/2;
-		
+
 		double a = -Math.toDegrees(Math.atan2((y4-y3),(x4-x3))) ;
-		
+
 		//System.out.println(a + " " + (y4-y3) + " " + (x4-x3));
-		
+
 		CoordinateSystem system = new CoordinateSystem(180, TurnSign.NEGATIVE, VectorDirection.NEGATIVE_Y, VectorDirection.NEGATIVE_X);
-		
+
 		Coordinate coordinate = CoordinateManager.getInstance().coordinateTransformation(new Coordinate(0,0,a),system);
-		
+
 		a = coordinate.getAngle();
-		
+
 		return new double[]{x,y,a};
 	}
 	

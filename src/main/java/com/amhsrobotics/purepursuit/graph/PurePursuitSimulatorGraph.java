@@ -85,7 +85,7 @@ public class PurePursuitSimulatorGraph extends JFrame {
 
         plot.setRenderer(1,  new CustomRenderer(false,true,Color.GREEN, new Rectangle(4,4)));
 
-        plot.setRenderer(2,  new CustomRenderer(false,true,Color.RED, new Rectangle(4,4)));
+        plot.setRenderer(2,  new CustomRenderer(true,true,Color.RED, new Rectangle(1,1)));
 
         plot.setRenderer(3,  new CustomRenderer(true,true,Color.RED, new Rectangle(1,1)));
 
@@ -174,7 +174,6 @@ public class PurePursuitSimulatorGraph extends JFrame {
         velocityDataset.addSeries(series);
     }
 
-
     public void graphPath(Path path){
         this.currentPath = path;
         XYSeries series = new XYSeries("Path",false);
@@ -202,21 +201,19 @@ public class PurePursuitSimulatorGraph extends JFrame {
        XYSeries series;
        if(showTrail){
            if(robotDataset.getSeries().size() == 0){
-               series = new XYSeries("Robot");
+               series = new XYSeries("Robot",false);
 
            } else{
                series = robotDataset.getSeries(0);
            }
        }
        else{
-           series = new XYSeries("Robot");
+           series = new XYSeries("Robot",false);
        }
 
 
         series.add(x,y);
-       if(showTrail){
-           robotDataset.removeAllSeries();
-       }
+        robotDataset.removeAllSeries();
         robotDataset.addSeries(series);
     }
 
