@@ -36,14 +36,16 @@ public class PurePursuitController {
 
     /**
      * Constructor
+     *
      * @param path the {@link Path} object to follow
      */
     public PurePursuitController(Path path, boolean reversed) {
-        this(path,15,10, reversed);
+        this(path, 15, 10, reversed);
     }
 
     /**
      * Constructor
+     *
      * @param path the {@link Path} object to follow
      */
     public PurePursuitController(Path path, double defaultLookaheadDistance, double minLookaheadDistance, boolean reversed) {
@@ -52,7 +54,7 @@ public class PurePursuitController {
         this.minLookaheadDistance = minLookaheadDistance;
         this.reversed = reversed;
     }
-    
+
 
     /**
      * Updates the pure pursuit controller and returns a {@link PurePursuitOutput} object containing the left and right wheel velocities
@@ -71,11 +73,11 @@ public class PurePursuitController {
         double left = leftVelocityFromRadius();
         double right = rightVelocityFromRadius();
 
-        if(reversed){
+        if (reversed) {
             left = -left;
             right = -right;
         }
-        
+
         this.prevTime = time;
 
         return new PurePursuitOutput(left, right);
@@ -95,10 +97,9 @@ public class PurePursuitController {
 
         double angularVelocity = baseVelocity / getCurrentRadius();
 
-        if(PathFollowerPosition.getInstance().getTrackWidth() != 0){
+        if (PathFollowerPosition.getInstance().getTrackWidth() != 0) {
             return angularVelocity * (getCurrentRadius() - (PathFollowerPosition.getInstance().getTrackWidth() / 2));
-        }
-        else{
+        } else {
             System.out.println("Pure pursuit controller trackWidth not setup!");
             return 0;
         }
@@ -117,68 +118,65 @@ public class PurePursuitController {
         this.currentBaseVelocity = baseVelocity;
 
         double angularVelocity = baseVelocity / getCurrentRadius();
-        
-        if(PathFollowerPosition.getInstance().getTrackWidth() != 0){
+
+        if (PathFollowerPosition.getInstance().getTrackWidth() != 0) {
             return angularVelocity * (getCurrentRadius() + (PathFollowerPosition.getInstance().getTrackWidth() / 2));
-        }
-        else{
+        } else {
             System.out.println("Pure pursuit controller trackWidth not setup!");
             return 0;
         }
     }
 
-    private double limitLeftVelocityToConstraints(double desiredVelocity){
-        double timeDifference = time-prevTime;
+    /**
+     * Limits the output velocity for the left wheel to the velocity constraints.
+     *
+     * @param desiredVelocity the desired left wheel velocity
+     * @return the limited left wheel velocity
+     */
+    private double limitLeftVelocityToConstraints(double desiredVelocity) {
+        return limitVelocity(desiredVelocity, PathFollowerPosition.getInstance().getLeftVelocity());
+    }
+
+    /**
+     * Limits the output velocity for the right wheel to the velocity constraints.
+     *
+     * @param desiredVelocity the desired right wheel velocity
+     * @return the limited right wheel velocity
+     */
+    private double limitRightVelocityToConstraints(double desiredVelocity) {
+        return limitVelocity(desiredVelocity, PathFollowerPosition.getInstance().getRightVelocity());
+    }
+
+    /**
+     * Limits the output velocity to the velocity constraints.
+     *
+     * @param desiredVelocity the desired wheel velocity
+     * @return the limited wheel velocity
+     */
+    private double limitVelocity(double desiredVelocity, double currentVelocity){
+        double timeDifference = time - prevTime;
         double acceleration = path.getVelocityConstraints().getMaxAcceleration() * timeDifference;
         double deceleration = path.getVelocityConstraints().getMaxDeceleration() * timeDifference;
 
-        if(prevTime == 0){
+        if (prevTime == 0) {
             return desiredVelocity;
-        }
-        else if(PathFollowerPosition.getInstance().getLeftVelocity()<desiredVelocity){
-            if(Math.abs(PathFollowerPosition.getInstance().getLeftVelocity()-desiredVelocity) < acceleration){
+        } else if (currentVelocity < desiredVelocity) {
+            if (Math.abs(currentVelocity - desiredVelocity) < acceleration) {
                 return desiredVelocity;
+            } else {
+                return currentVelocity + acceleration;
             }
-            else{
-                return PathFollowerPosition.getInstance().getLeftVelocity() + acceleration;
-            }
-        }
-        else{
-            if(Math.abs(PathFollowerPosition.getInstance().getLeftVelocity()-desiredVelocity) < deceleration){
+        } else {
+            if (Math.abs(currentVelocity - desiredVelocity) < deceleration) {
                 return desiredVelocity;
-            }
-            else{
-                return PathFollowerPosition.getInstance().getLeftVelocity() - deceleration;
+            } else {
+                return currentVelocity - deceleration;
             }
         }
     }
-
-    private double limitRightVelocityToConstraints(double desiredVelocity){
-        double timeDifference = time-prevTime;
-        double acceleration = path.getVelocityConstraints().getMaxAcceleration() * timeDifference;
-        double deceleration = path.getVelocityConstraints().getMaxDeceleration() * timeDifference;
-
-        if(prevTime == 0){
-            return desiredVelocity;
-        }
-        else if(PathFollowerPosition.getInstance().getRightVelocity()<desiredVelocity){
-            if(Math.abs(PathFollowerPosition.getInstance().getRightVelocity()-desiredVelocity) < acceleration){
-                return desiredVelocity;
-            }
-            else{
-                return PathFollowerPosition.getInstance().getRightVelocity() + acceleration;
-            }
-        }
-        else{
-            if(Math.abs(PathFollowerPosition.getInstance().getRightVelocity()-desiredVelocity) < deceleration){
-                return desiredVelocity;
-            }
-            else{
-                return PathFollowerPosition.getInstance().getRightVelocity() - deceleration;
-            }
-        }
-    }
-
+    /**
+     * Calculates the radius for the robot to follow to the current target point
+     */
     private void calculateRadiusToTarget() {
 
         final double robotAngle = PathFollowerPosition.getInstance().getPathCentricHeading();
@@ -208,7 +206,11 @@ public class PurePursuitController {
         this.currentRadius = Math.abs(Math.sqrt(circleCenter.getX() * circleCenter.getX() + circleCenter.getY() * circleCenter.getY())) * sign;
     }
 
-
+    /**
+     * Finds the closest point to the robot.
+     *
+     * @return the closest point to the robot
+     */
     private TrajectoryPoint findClosestPoint() {
         double currentClosest = 9999;
         TrajectoryPoint point = null;
@@ -222,6 +224,11 @@ public class PurePursuitController {
         return point;
     }
 
+    /**
+     * Finds the closest point that is currentLookaheadDistance away from the robot. This becomes the targetPoint
+     *
+     * @return
+     */
     private TrajectoryPoint findClosestLookaheadPoint() {
         TrajectoryPoint point = null;
         if (path.getTrajectoryPoints()[path.getTrajectoryPoints().length - 1].distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) < currentLookaheadDistance) {
@@ -244,7 +251,9 @@ public class PurePursuitController {
         return point;
     }
 
-
+    /**
+     * Calculates the target point
+     */
     private void calculateTargetPoint() {
         this.currentClosestPoint = findClosestPoint();
 
@@ -253,6 +262,14 @@ public class PurePursuitController {
         currentTargetPoint = findClosestLookaheadPoint();
     }
 
+    /**
+     * Finds which side of a line the point is on
+     *
+     * @param p  point
+     * @param p1 point 1 of the line
+     * @param p2 point 2 of the line
+     * @return a -1 or 1 value based on which side the point is on
+     */
     private double findSide(Point2D.Double p, Point2D.Double p1, Point2D.Double p2) {
         double x = p.getX();
         double y = p.getY();
@@ -262,7 +279,12 @@ public class PurePursuitController {
         double y2 = p2.getY();
         return -Math.signum((x - x1) * (y2 - y1) - (y - y1) * (x2 - x1));
     }
-    
+
+    /**
+     * Calculates the adaptive lookahead distance
+     * <p>
+     * The adaptive lookahead distance is based on the velocity of the current point.
+     */
     private void calculateAdaptiveLookahead() {
 
         double x = currentClosestPoint.getVelocity();
@@ -274,6 +296,16 @@ public class PurePursuitController {
         this.currentLookaheadDistance = Math.max(map(x, a, b, c, d), minLookaheadDistance);
     }
 
+    /**
+     * Maps a value between valMin and valMax to desiredMin and desiredMax
+     *
+     * @param val        the value to map
+     * @param valMin     the minimum range of the value
+     * @param valMax     the maximum range of the value
+     * @param desiredMin the mapped minimum range of the value
+     * @param desiredMax the mapped maximum range of the value
+     * @return the value between valMin and valMax mapped between desiredMin and desiredMax
+     */
     private double map(double val, double valMin, double valMax, double desiredMin, double desiredMax) {
         return (val - valMin) / (valMax - valMin) * (desiredMax - desiredMin) + desiredMin;
     }
@@ -365,11 +397,11 @@ public class PurePursuitController {
     public void setPrevTime(double prevTime) {
         this.prevTime = prevTime;
     }
-    
+
     public boolean isReversed() {
         return reversed;
     }
-    
+
     public void setReversed(boolean reversed) {
         this.reversed = reversed;
     }
