@@ -30,6 +30,7 @@ public class PurePursuitController {
     private int prevTargetIndex;
     private double time;
     private double prevTime;
+    private boolean reversed;
     private boolean isFinished;
 
 
@@ -37,18 +38,19 @@ public class PurePursuitController {
      * Constructor
      * @param path the {@link Path} object to follow
      */
-    public PurePursuitController(Path path) {
-        this(path,15,10);
+    public PurePursuitController(Path path, boolean reversed) {
+        this(path,15,10, reversed);
     }
 
     /**
      * Constructor
      * @param path the {@link Path} object to follow
      */
-    public PurePursuitController(Path path, double defaultLookaheadDistance, double minLookaheadDistance) {
+    public PurePursuitController(Path path, double defaultLookaheadDistance, double minLookaheadDistance, boolean reversed) {
         this.path = path;
         this.lookaheadDistance = defaultLookaheadDistance;
         this.minLookaheadDistance = minLookaheadDistance;
+        this.reversed = reversed;
     }
     
 
@@ -69,6 +71,11 @@ public class PurePursuitController {
         double left = leftVelocityFromRadius();
         double right = rightVelocityFromRadius();
 
+        if(reversed){
+            left = -left;
+            right = -right;
+        }
+        
         this.prevTime = time;
 
         return new PurePursuitOutput(left, right);
@@ -357,5 +364,13 @@ public class PurePursuitController {
 
     public void setPrevTime(double prevTime) {
         this.prevTime = prevTime;
+    }
+    
+    public boolean isReversed() {
+        return reversed;
+    }
+    
+    public void setReversed(boolean reversed) {
+        this.reversed = reversed;
     }
 }

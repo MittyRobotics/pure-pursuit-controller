@@ -20,7 +20,7 @@ public class Main {
         };
         Path path = new CubicHermitePath(coordinates, velocityConstraints);
 
-        PurePursuitController controller = new PurePursuitController(path, 20, 10);
+        PurePursuitController controller = new PurePursuitController(path, 20, 10, false);
         PathFollowerPosition.getInstance().update(0, 0, 0, 0, 0);
         PathFollowerPosition.getInstance().setupRobot(27);
 
