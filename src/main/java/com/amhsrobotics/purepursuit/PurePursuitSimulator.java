@@ -66,8 +66,8 @@ public class PurePursuitSimulator extends Thread {
 		ControlLoop controlLoop = new ControlLoop(ControlLoopType.VELOCITY, maxVoltage, 0.06D);
 		controlLoop.setupVelocityController(3.3, 0.0, 0);
 		ControlType controlType = ControlType.VELOCITY;
-		MotorSimulator leftMotorSimulator = new MotorSimulator(new CIMMotor(), 2.0D, mass, gearRatio, wheelRadius, controlLoop, controlType, "CIM motor");
-		MotorSimulator rightMotorSimulator = new MotorSimulator(new CIMMotor(), 2.0D, mass, gearRatio, wheelRadius, controlLoop, controlType, "CIM motor");
+		MotorSimulator leftMotorSimulator = new MotorSimulator(new CIMMotor(), 2.0D, mass/2, gearRatio, wheelRadius, controlLoop, controlType, "CIM motor");
+		MotorSimulator rightMotorSimulator = new MotorSimulator(new CIMMotor(), 2.0D, mass/2, gearRatio, wheelRadius, controlLoop, controlType, "CIM motor");
 		
 		Graph leftGraph = new Graph("Left CIM Motors");
 		Graph rightGraph = new Graph("Right CIM Motors");
