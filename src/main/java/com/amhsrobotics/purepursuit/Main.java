@@ -8,8 +8,8 @@ public class Main {
     
     public static void main(String[] args) {
 
-        VelocityConstraints pathVelocityConstraints = new VelocityConstraints(20, 10, 50, 0, 0, 1);
-        VelocityConstraints wheelVelocityConstraints = new VelocityConstraints(1000, 1000, 150);
+        VelocityConstraints pathVelocityConstraints = new VelocityConstraints(30, 10, 100, 0, 0, 1);
+        VelocityConstraints wheelVelocityConstraints = new VelocityConstraints(100000, 100000, 150);
 
         Coordinate[] coordinates = new Coordinate[]{
                 new Coordinate(0, 0, 0),
@@ -25,7 +25,7 @@ public class Main {
         PathFollowerPosition.getInstance().update(0, 0, 0,  0, 0);
         PathFollowerPosition.getInstance().setupRobot(27);
 
-        PurePursuitSimulator simulator = new PurePursuitSimulator(controller, 50000, PathFollowerPosition.getInstance().getTrackWidth());
+        PurePursuitSimulator simulator = new PurePursuitSimulator(controller, 0.02, PathFollowerPosition.getInstance().getTrackWidth());
         simulator.start();
     }
 }

@@ -18,7 +18,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class PurePursuitSimulator extends Thread {
-	private double loopsPerSecond;
+
 	
 	private double robotWidth;
 
@@ -32,13 +32,15 @@ public class PurePursuitSimulator extends Thread {
 	
 	private PurePursuitController controller;
 	
-	private double iterationTime = 0.02;
+	private double iterationTime;
+	private double loopsPerSecond = 50;
 	
-	public PurePursuitSimulator(PurePursuitController controller, double loopsPerSecond, double robotWidth){
+	public PurePursuitSimulator(PurePursuitController controller, double iterationTime, double robotWidth){
 		this.controller = controller;
 		this.running = true;
 		this.setup = false;
-		this.loopsPerSecond = loopsPerSecond;
+		this.iterationTime = iterationTime;
+		this.loopsPerSecond = 1/iterationTime;
 		this.robotWidth = robotWidth;
 	}
 	
@@ -52,7 +54,7 @@ public class PurePursuitSimulator extends Thread {
 		
 		double prevVelocity = 1;
 		try {
-			Thread.sleep(200);
+			Thread.sleep(100);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -63,7 +65,7 @@ public class PurePursuitSimulator extends Thread {
 		double gearRatio = 7.954545454545454;
 		double wheelRadius = 2.0 * Conversions.IN_TO_M;
 		double maxVoltage = 12.0;
-		ControlLoop controlLoop = new ControlLoop(ControlLoopType.VELOCITY, maxVoltage, 0.06D);
+		ControlLoop controlLoop = new ControlLoop(ControlLoopType.VELOCITY, maxVoltage, iterationTime);
 		controlLoop.setupVelocityController(3.3, 0.0, 0);
 		ControlType controlType = ControlType.VELOCITY;
 		MotorSimulator leftMotorSimulator = new MotorSimulator(new CIMMotor(), 2.0D, mass/2, gearRatio, wheelRadius, controlLoop, controlType, "CIM motor");
@@ -129,7 +131,7 @@ public class PurePursuitSimulator extends Thread {
 			}
 
 			try {
-				Thread.sleep((long) (1000/60));
+				Thread.sleep((long) (1000/loopsPerSecond));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -167,10 +169,10 @@ public class PurePursuitSimulator extends Thread {
 		double y1 = PathFollowerPosition.getInstance().getPathCentricY() + Math.sin(Math.toRadians(heading-90))*(robotWidth/2);
 		double x2 = PathFollowerPosition.getInstance().getPathCentricX() + Math.cos(Math.toRadians(heading+90))*(robotWidth/2);
 		double y2 = PathFollowerPosition.getInstance().getPathCentricY() + Math.sin(Math.toRadians(heading+90))*(robotWidth/2);
-		double x3 = x1 + Math.cos(Math.toRadians(heading))*(output.getRightVelocity())/60;
-		double y3 = y1 + Math.sin(Math.toRadians(heading))*(output.getRightVelocity())/60;
-		double x4 = x2 + Math.cos(Math.toRadians(heading))*(output.getLeftVelocity())/60;
-		double y4 = y2 + Math.sin(Math.toRadians(heading))*(output.getLeftVelocity())/60;
+		double x3 = x1 + Math.cos(Math.toRadians(heading))*(output.getRightVelocity())/loopsPerSecond;
+		double y3 = y1 + Math.sin(Math.toRadians(heading))*(output.getRightVelocity())/loopsPerSecond;
+		double x4 = x2 + Math.cos(Math.toRadians(heading))*(output.getLeftVelocity())/loopsPerSecond;
+		double y4 = y2 + Math.sin(Math.toRadians(heading))*(output.getLeftVelocity())/loopsPerSecond;
 
 		double x = (x3+x4)/2;
 		double y = (y3+y4)/2;
