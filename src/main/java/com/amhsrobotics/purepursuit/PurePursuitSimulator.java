@@ -1,5 +1,12 @@
 package com.amhsrobotics.purepursuit;
 
+import com.amhsrobotics.motorsim.graph.Graph;
+import com.amhsrobotics.motorsim.math.Conversions;
+import com.amhsrobotics.motorsim.motors.CIMMotor;
+import com.amhsrobotics.motorsim.simulator.ControlLoop;
+import com.amhsrobotics.motorsim.simulator.ControlLoopType;
+import com.amhsrobotics.motorsim.simulator.ControlType;
+import com.amhsrobotics.motorsim.simulator.MotorSimulator;
 import com.amhsrobotics.purepursuit.coordinate.Coordinate;
 import com.amhsrobotics.purepursuit.coordinate.CoordinateManager;
 import com.amhsrobotics.purepursuit.coordinate.CoordinateSystem;
@@ -8,6 +15,7 @@ import com.amhsrobotics.purepursuit.coordinate.enums.VectorDirection;
 import com.amhsrobotics.purepursuit.graph.PurePursuitSimulatorGraph;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class PurePursuitSimulator extends Thread {
 	private double loopsPerSecond;
@@ -24,6 +32,8 @@ public class PurePursuitSimulator extends Thread {
 	
 	private PurePursuitController controller;
 	
+	private double iterationTime = 0.02;
+	
 	public PurePursuitSimulator(PurePursuitController controller, double loopsPerSecond, double robotWidth){
 		this.controller = controller;
 		this.running = true;
@@ -37,8 +47,6 @@ public class PurePursuitSimulator extends Thread {
 		if(!setup){
 			setupGraph();
 		}
-
-		
 		
 		t =previousT;
 		
@@ -48,16 +56,58 @@ public class PurePursuitSimulator extends Thread {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		
+
+		
+		double mass = 40.0 * Conversions.LBS_TO_KG;
+		double gearRatio = 7.954545454545454;
+		double wheelRadius = 2.0 * Conversions.IN_TO_M;
+		double maxVoltage = 12.0;
+		ControlLoop controlLoop = new ControlLoop(ControlLoopType.VELOCITY, maxVoltage, 0.06D);
+		controlLoop.setupVelocityController(3.3, 0.0, 0);
+		ControlType controlType = ControlType.VELOCITY;
+		MotorSimulator leftMotorSimulator = new MotorSimulator(new CIMMotor(), 2.0D, mass, gearRatio, wheelRadius, controlLoop, controlType, "CIM motor");
+		MotorSimulator rightMotorSimulator = new MotorSimulator(new CIMMotor(), 2.0D, mass, gearRatio, wheelRadius, controlLoop, controlType, "CIM motor");
+		
+		Graph leftGraph = new Graph("Left CIM Motors");
+		Graph rightGraph = new Graph("Right CIM Motors");
+		
+		leftGraph.setVisible(false);
+		rightGraph.setVisible(false);
+		
+		leftGraph.getContentPane().setPreferredSize(new Dimension(400,400));
+		rightGraph.getContentPane().setPreferredSize(new Dimension(400,400));
+		
+		PurePursuitSimulatorGraph.getInstance().add(leftGraph.getContentPane());
+		PurePursuitSimulatorGraph.getInstance().add(rightGraph.getContentPane());
+		
+		PurePursuitSimulatorGraph.getInstance().pack();
+		
 		while(prevVelocity != 0 && running){
 			
+			final PurePursuitOutput output = controller.update(t);
+			leftMotorSimulator.update(output.getLeftVelocity() * Conversions.IN_TO_M,iterationTime);
+			rightMotorSimulator.update(output.getRightVelocity() * Conversions.IN_TO_M,iterationTime);
 			
-			final PurePursuitOutput output = controller.update(t/1000);
+			leftGraph.addSetpoint(output.getLeftVelocity() * Conversions.IN_TO_M,t);
+			leftGraph.addVelocity(leftMotorSimulator.getVelocity(),t);
+			leftGraph.addPosition(leftMotorSimulator.getPosition(),t);
+			leftGraph.addVoltage(leftMotorSimulator.getVoltage(),t);
 			
-			PathFollowerPosition.getInstance().update(calculateNewRobotPos(output,controller)[0],calculateNewRobotPos(output,controller)[1],calculateNewRobotPos(output,controller)[2], output.getLeftVelocity(), output.getRightVelocity());
+			rightGraph.addSetpoint(output.getRightVelocity() * Conversions.IN_TO_M,t);
+			rightGraph.addVelocity(rightMotorSimulator.getVelocity(),t);
+			rightGraph.addPosition(rightMotorSimulator.getPosition(),t);
+			rightGraph.addVoltage(rightMotorSimulator.getVoltage(),t);
+			
+			PurePursuitOutput output1 = new PurePursuitOutput(leftMotorSimulator.getVelocity() * Conversions.M_TO_IN, rightMotorSimulator.getVelocity()* Conversions.M_TO_IN);
+			
+			PathFollowerPosition.getInstance().update(calculateNewRobotPos(output1)[0],calculateNewRobotPos(output1)[1],calculateNewRobotPos(output1)[2], output1.getLeftVelocity(), output1.getRightVelocity());
 
+			
 			final double currentT = t;
 			
 			double finalPrevVelocity = prevVelocity;
+			
 			SwingUtilities.invokeLater(() -> {
 				PurePursuitSimulatorGraph.getInstance().graphCircle(controller.getCurrentCircleCenterPoint().getX(),controller.getCurrentCircleCenterPoint().getY(),controller.getCurrentRadius());
 				
@@ -67,19 +117,19 @@ public class PurePursuitSimulator extends Thread {
 				
 				PurePursuitSimulatorGraph.getInstance().graphVelocity(output.getLeftVelocity()/loopsPerSecond,output.getRightVelocity()/loopsPerSecond, robotWidth);
 				
-				PurePursuitSimulatorGraph.getInstance().graphRobotVelocityOverTime((output.getLeftVelocity() + output.getRightVelocity())/2, currentT/1000);
+				PurePursuitSimulatorGraph.getInstance().graphRobotVelocityOverTime((output.getLeftVelocity() + output.getRightVelocity())/2, t);
 			});
 			
 			prevVelocity = (output.getLeftVelocity() + output.getRightVelocity())/2;
 			
-			t += 1000/loopsPerSecond;
+			t += iterationTime;
 
 			if(Math.abs(prevVelocity) <  1){
 				break;
 			}
 
 			try {
-				Thread.sleep((long)1000/(long)loopsPerSecond);
+				Thread.sleep((long) (1000/60));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -87,8 +137,6 @@ public class PurePursuitSimulator extends Thread {
 		System.out.println("test");
 		stopSimulator();
 	}
-	
-	
 	
 	
 	public void stopSimulator(){
@@ -113,16 +161,16 @@ public class PurePursuitSimulator extends Thread {
 	}
 	
 
-	public double[] calculateNewRobotPos(PurePursuitOutput output, PurePursuitController controller){
+	public double[] calculateNewRobotPos(PurePursuitOutput output){
 		double heading = PathFollowerPosition.getInstance().getPathCentricHeading();
 		double x1 = PathFollowerPosition.getInstance().getPathCentricX() + Math.cos(Math.toRadians(heading-90))*(robotWidth/2);
 		double y1 = PathFollowerPosition.getInstance().getPathCentricY() + Math.sin(Math.toRadians(heading-90))*(robotWidth/2);
 		double x2 = PathFollowerPosition.getInstance().getPathCentricX() + Math.cos(Math.toRadians(heading+90))*(robotWidth/2);
 		double y2 = PathFollowerPosition.getInstance().getPathCentricY() + Math.sin(Math.toRadians(heading+90))*(robotWidth/2);
-		double x3 = x1 + Math.cos(Math.toRadians(heading))*(output.getRightVelocity())/loopsPerSecond;
-		double y3 = y1 + Math.sin(Math.toRadians(heading))*(output.getRightVelocity())/loopsPerSecond;
-		double x4 = x2 + Math.cos(Math.toRadians(heading))*(output.getLeftVelocity())/loopsPerSecond;
-		double y4 = y2 + Math.sin(Math.toRadians(heading))*(output.getLeftVelocity())/loopsPerSecond;
+		double x3 = x1 + Math.cos(Math.toRadians(heading))*(output.getRightVelocity())/60;
+		double y3 = y1 + Math.sin(Math.toRadians(heading))*(output.getRightVelocity())/60;
+		double x4 = x2 + Math.cos(Math.toRadians(heading))*(output.getLeftVelocity())/60;
+		double y4 = y2 + Math.sin(Math.toRadians(heading))*(output.getLeftVelocity())/60;
 
 		double x = (x3+x4)/2;
 		double y = (y3+y4)/2;

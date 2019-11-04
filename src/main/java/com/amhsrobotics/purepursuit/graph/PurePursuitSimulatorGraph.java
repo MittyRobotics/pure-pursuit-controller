@@ -96,12 +96,13 @@ public class PurePursuitSimulatorGraph extends JFrame {
         this.plot = plot;
 
 
-        panel.setPreferredSize(new Dimension(800,800));
-
-        setLayout(new BorderLayout());
-
-        add(panel, BorderLayout.EAST);
-        add(createVelocityGraph(), BorderLayout.WEST);
+        panel.setPreferredSize(new Dimension(600,600));
+        
+        setLayout(new GridLayout(2,2));
+        
+        
+        add(panel);
+        add(createVelocityGraph());
 
         pack();
         setVisible(true);
@@ -163,6 +164,7 @@ public class PurePursuitSimulatorGraph extends JFrame {
         plot.setRangeGridlinePaint(new Color(0,0,0, 180));
     
         panel.setBackground(new Color(71, 71, 71));
+        panel.setPreferredSize(new Dimension(400,400));
         return panel;
     }
 

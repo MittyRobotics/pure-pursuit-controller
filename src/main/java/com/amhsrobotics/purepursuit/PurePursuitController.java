@@ -32,6 +32,7 @@ public class PurePursuitController {
     private double prevTime;
     private boolean reversed;
     private boolean isFinished;
+    private VelocityConstraints wheelVelocityConstraints;
 
 
     /**
@@ -39,8 +40,8 @@ public class PurePursuitController {
      *
      * @param path the {@link Path} object to follow
      */
-    public PurePursuitController(Path path, boolean reversed) {
-        this(path, 15, 10, reversed);
+    public PurePursuitController(Path path, VelocityConstraints wheelVelocityConstraints, boolean reversed) {
+        this(path, 15, 10, wheelVelocityConstraints, reversed);
     }
 
     /**
@@ -48,10 +49,11 @@ public class PurePursuitController {
      *
      * @param path the {@link Path} object to follow
      */
-    public PurePursuitController(Path path, double defaultLookaheadDistance, double minLookaheadDistance, boolean reversed) {
+    public PurePursuitController(Path path, double defaultLookaheadDistance, double minLookaheadDistance, VelocityConstraints wheelVelocityConstraints, boolean reversed) {
         this.path = path;
         this.lookaheadDistance = defaultLookaheadDistance;
         this.minLookaheadDistance = minLookaheadDistance;
+        this.wheelVelocityConstraints = wheelVelocityConstraints;
         this.reversed = reversed;
     }
 
@@ -98,7 +100,7 @@ public class PurePursuitController {
         double angularVelocity = baseVelocity / getCurrentRadius();
 
         if (PathFollowerPosition.getInstance().getTrackWidth() != 0) {
-            return angularVelocity * (getCurrentRadius() - (PathFollowerPosition.getInstance().getTrackWidth() / 2));
+            return limitLeftVelocityToConstraints(angularVelocity * (getCurrentRadius() - (PathFollowerPosition.getInstance().getTrackWidth() / 2)));
         } else {
             System.out.println("Pure pursuit controller trackWidth not setup!");
             return 0;
@@ -120,7 +122,7 @@ public class PurePursuitController {
         double angularVelocity = baseVelocity / getCurrentRadius();
 
         if (PathFollowerPosition.getInstance().getTrackWidth() != 0) {
-            return angularVelocity * (getCurrentRadius() + (PathFollowerPosition.getInstance().getTrackWidth() / 2));
+            return limitRightVelocityToConstraints(angularVelocity * (getCurrentRadius() + (PathFollowerPosition.getInstance().getTrackWidth() / 2)));
         } else {
             System.out.println("Pure pursuit controller trackWidth not setup!");
             return 0;
@@ -155,22 +157,22 @@ public class PurePursuitController {
      */
     private double limitVelocity(double desiredVelocity, double currentVelocity){
         double timeDifference = time - prevTime;
-        double acceleration = path.getVelocityConstraints().getMaxAcceleration() * timeDifference;
-        double deceleration = path.getVelocityConstraints().getMaxDeceleration() * timeDifference;
-
+        double acceleration = wheelVelocityConstraints.getMaxAcceleration() * timeDifference;
+        double deceleration = wheelVelocityConstraints.getMaxDeceleration() * timeDifference;
+        
         if (prevTime == 0) {
             return desiredVelocity;
         } else if (currentVelocity < desiredVelocity) {
             if (Math.abs(currentVelocity - desiredVelocity) < acceleration) {
-                return desiredVelocity;
+                return Math.max(-wheelVelocityConstraints.getMaxVelocity(),Math.min(wheelVelocityConstraints.getMaxVelocity(),desiredVelocity));
             } else {
-                return currentVelocity + acceleration;
+                return Math.max(-wheelVelocityConstraints.getMaxVelocity(),Math.min(wheelVelocityConstraints.getMaxVelocity(),currentVelocity + deceleration));
             }
         } else {
             if (Math.abs(currentVelocity - desiredVelocity) < deceleration) {
-                return desiredVelocity;
+                return Math.max(-wheelVelocityConstraints.getMaxVelocity(),Math.min(wheelVelocityConstraints.getMaxVelocity(),desiredVelocity));
             } else {
-                return currentVelocity - deceleration;
+                return  Math.max(-wheelVelocityConstraints.getMaxVelocity(),Math.min(wheelVelocityConstraints.getMaxVelocity(),currentVelocity - deceleration));
             }
         }
     }
