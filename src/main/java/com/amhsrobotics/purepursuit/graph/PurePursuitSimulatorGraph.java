@@ -291,10 +291,11 @@ public class PurePursuitSimulatorGraph extends JFrame {
                 }
             }
         }
-
+        
         double lowerRange=0;
         double upperRange=0;
-
+        
+        
         if(lowerBound < leftBound){
             lowerRange = lowerBound;
         }
@@ -309,11 +310,13 @@ public class PurePursuitSimulatorGraph extends JFrame {
             upperRange = rightBound;
         }
 
+        
+        
         NumberAxis domain = (NumberAxis) plot.getDomainAxis();
-        domain.setRange(lowerRange-10, upperRange+10);
+        domain.setRange(lowerRange-20, upperRange+20);
         domain.setVerticalTickLabels(true);
         NumberAxis range = (NumberAxis) plot.getRangeAxis();
-        range.setRange(lowerRange-10, upperRange+10);
+        range.setRange(lowerRange-20, upperRange+20);
 
     }
 

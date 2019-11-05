@@ -122,8 +122,8 @@ public class Path {
 			if(i == 0){
 				trajectoryPoints[i].setTime(0);
 			}
-			if (i <= 5) {
-				trajectoryPoints[i].setVelocity(velocityConstraints.getMaxAcceleration()+velocityConstraints.getStartVelocity());
+			if (i <= 0) {
+				trajectoryPoints[i].setVelocity(velocityConstraints.getStartVelocity());
 			} else {
 				double distance = TrajectoryPoint.distance(trajectoryPoints[i - 1], trajectoryPoints[i]);
 				double velocity = Math.min(trajectoryPoints[i].getVelocity(), Math.sqrt(Math.pow(trajectoryPoints[i - 1].getVelocity(), 2) + 2 * velocityConstraints.getMaxAcceleration() * distance));
@@ -138,6 +138,7 @@ public class Path {
 				trajectoryPoints[i].setTime(trajectoryPoints[i-1].getTime() + time);
 			}
 		}
+		trajectoryPoints[0].setVelocity(trajectoryPoints[1].getVelocity());
 	}
 
 	public Coordinate[] getCoordinates() {

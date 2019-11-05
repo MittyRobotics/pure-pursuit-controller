@@ -8,8 +8,8 @@ public class Main {
     
     public static void main(String[] args) {
 
-        VelocityConstraints pathVelocityConstraints = new VelocityConstraints(30, 10, 100, 0, 0, 1);
-        VelocityConstraints wheelVelocityConstraints = new VelocityConstraints(100000, 100000, 150);
+        VelocityConstraints pathVelocityConstraints = new VelocityConstraints(40, 40, 100, 0, 0, 1);
+        VelocityConstraints wheelVelocityConstraints = new VelocityConstraints(10000, 10000, 150);
 
         Coordinate[] coordinates = new Coordinate[]{
                 new Coordinate(0, 0, 0),
