@@ -11,24 +11,23 @@ import com.amhsrobotics.motorsim.simulator.MotorSimulator;
 public class TestMain {
     public static void main(String[] args) {
         double mass = 40.0 * Conversions.LBS_TO_KG; //Kg
-        double gearRatio = 5.867;
+        double gearRatio = 7;
         double wheelRadius = 2 * Conversions.IN_TO_M; //Meters
         double maxVoltage = 12;
 
         double iterationTime = 0.02;
 
         ControlLoop controlLoop = new ControlLoop(ControlLoopType.VELOCITY, maxVoltage, iterationTime);
-        controlLoop.setupVelocityController(1, 0, 0);
+        controlLoop.setupVelocityController(.073, 0, 0.01);
         ControlType controlType = ControlType.VELOCITY;
 
         MotorSimulator motorSimulator = new MotorSimulator(new CIMMotor(), 4, mass, gearRatio, wheelRadius, controlLoop, controlType, "CIM motor");
         Graph graph = new Graph("CIM Motor");
 
-        double setpoint = 10 * Conversions.IN_TO_M;
+        double setpoint = 48 * Conversions.IN_TO_M;
 
         double t = 0.0;
-
-
+        
         while (t < 20) {
             motorSimulator.update(setpoint, iterationTime);
             graph.addPosition(motorSimulator.getPosition(), t);
