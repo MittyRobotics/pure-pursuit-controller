@@ -18,13 +18,13 @@ public class TestMain {
         double iterationTime = 0.02;
 
         ControlLoop controlLoop = new ControlLoop(ControlLoopType.VELOCITY, maxVoltage, iterationTime);
-        controlLoop.setupVelocityController(.073, 0, 0.01);
+        controlLoop.setupVelocityController(0.073, 0, 0);
         ControlType controlType = ControlType.VELOCITY;
 
         MotorSimulator motorSimulator = new MotorSimulator(new CIMMotor(), 4, mass, gearRatio, wheelRadius, controlLoop, controlType, "CIM motor");
         Graph graph = new Graph("CIM Motor");
 
-        double setpoint = 48 * Conversions.IN_TO_M;
+        double setpoint = 10 * Conversions.IN_TO_M;
 
         double t = 0.0;
         
