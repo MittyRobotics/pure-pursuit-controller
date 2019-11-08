@@ -24,8 +24,8 @@ public class Main {
         PurePursuitController controller = new PurePursuitController(path, 20, 10, wheelVelocityConstraints, false);
         PathFollowerPosition.getInstance().update(0, 0, 0,  0, 0);
         PathFollowerPosition.getInstance().setupRobot(27);
-
-        PurePursuitSimulator simulator = new PurePursuitSimulator(controller, 0.02, PathFollowerPosition.getInstance().getTrackWidth());
-        simulator.start();
+//
+//        PurePursuitSimulator simulator = new PurePursuitSimulator(controller, 0.02, PathFollowerPosition.getInstance().getTrackWidth());
+//        simulator.start();
     }
 }
