@@ -32,16 +32,14 @@ public class PurePursuitController {
     private double prevTime;
     private boolean reversed;
     private boolean isFinished;
-    private VelocityConstraints wheelVelocityConstraints;
-
 
     /**
      * Constructor
      *
      * @param path the {@link Path} object to follow
      */
-    public PurePursuitController(Path path, VelocityConstraints wheelVelocityConstraints, boolean reversed) {
-        this(path, 15, 10, wheelVelocityConstraints, reversed);
+    public PurePursuitController(Path path, boolean reversed) {
+        this(path, 15, 10, reversed);
     }
 
     /**
@@ -49,11 +47,10 @@ public class PurePursuitController {
      *
      * @param path the {@link Path} object to follow
      */
-    public PurePursuitController(Path path, double defaultLookaheadDistance, double minLookaheadDistance, VelocityConstraints wheelVelocityConstraints, boolean reversed) {
+    public PurePursuitController(Path path, double defaultLookaheadDistance, double minLookaheadDistance, boolean reversed) {
         this.path = path;
         this.lookaheadDistance = defaultLookaheadDistance;
         this.minLookaheadDistance = minLookaheadDistance;
-        this.wheelVelocityConstraints = wheelVelocityConstraints;
         this.reversed = reversed;
     }
 
@@ -136,7 +133,7 @@ public class PurePursuitController {
      * @return the limited left wheel velocity
      */
     private double limitLeftVelocityToConstraints(double desiredVelocity) {
-        return limitVelocity(desiredVelocity, PathFollowerPosition.getInstance().getLeftVelocity());
+        return desiredVelocity;
     }
 
     /**
@@ -146,36 +143,9 @@ public class PurePursuitController {
      * @return the limited right wheel velocity
      */
     private double limitRightVelocityToConstraints(double desiredVelocity) {
-        return limitVelocity(desiredVelocity, PathFollowerPosition.getInstance().getRightVelocity());
+        return desiredVelocity;
     }
-
-    /**
-     * Limits the output velocity to the velocity constraints.
-     *
-     * @param desiredVelocity the desired wheel velocity
-     * @return the limited wheel velocity
-     */
-    private double limitVelocity(double desiredVelocity, double currentVelocity){
-        double timeDifference = time - prevTime;
-        double acceleration = wheelVelocityConstraints.getMaxAcceleration() * timeDifference;
-        double deceleration = wheelVelocityConstraints.getMaxDeceleration() * timeDifference;
-        
-        if (prevTime == 0) {
-            return desiredVelocity;
-        } else if (currentVelocity < desiredVelocity) {
-            if (Math.abs(currentVelocity - desiredVelocity) < acceleration) {
-                return Math.max(-wheelVelocityConstraints.getMaxVelocity(),Math.min(wheelVelocityConstraints.getMaxVelocity(),desiredVelocity));
-            } else {
-                return Math.max(-wheelVelocityConstraints.getMaxVelocity(),Math.min(wheelVelocityConstraints.getMaxVelocity(),currentVelocity + deceleration));
-            }
-        } else {
-            if (Math.abs(currentVelocity - desiredVelocity) < deceleration) {
-                return Math.max(-wheelVelocityConstraints.getMaxVelocity(),Math.min(wheelVelocityConstraints.getMaxVelocity(),desiredVelocity));
-            } else {
-                return  Math.max(-wheelVelocityConstraints.getMaxVelocity(),Math.min(wheelVelocityConstraints.getMaxVelocity(),currentVelocity - deceleration));
-            }
-        }
-    }
+    
     /**
      * Calculates the radius for the robot to follow to the current target point
      */

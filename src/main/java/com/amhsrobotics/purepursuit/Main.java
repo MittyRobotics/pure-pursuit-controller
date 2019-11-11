@@ -9,7 +9,6 @@ public class Main {
     public static void main(String[] args) {
 
         VelocityConstraints pathVelocityConstraints = new VelocityConstraints(40, 40, 100, 0, 0, 1);
-        VelocityConstraints wheelVelocityConstraints = new VelocityConstraints(10000, 10000, 150);
 
         Coordinate[] coordinates = new Coordinate[]{
                 new Coordinate(0, 0, 0),
@@ -21,7 +20,7 @@ public class Main {
         };
         Path path = new CubicHermitePath(coordinates, pathVelocityConstraints);
 
-        PurePursuitController controller = new PurePursuitController(path, 20, 10, wheelVelocityConstraints, false);
+        PurePursuitController controller = new PurePursuitController(path, 20, 10, false);
         PathFollowerPosition.getInstance().update(0, 0, 0,  0, 0);
         PathFollowerPosition.getInstance().setupRobot(27);
 
