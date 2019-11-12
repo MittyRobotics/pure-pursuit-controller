@@ -101,7 +101,7 @@ public class PurePursuitSimulator extends Thread {
 			rightGraph.addPosition(rightMotorSimulator.getPosition(),t);
 			rightGraph.addVoltage(rightMotorSimulator.getVoltage(),t);
 			
-			PurePursuitOutput output1 = new PurePursuitOutput(leftMotorSimulator.getVelocity() * Conversions.M_TO_IN, rightMotorSimulator.getVelocity()* Conversions.M_TO_IN);
+			PurePursuitOutput output1 = new PurePursuitOutput(leftMotorSimulator.getVelocity() * Conversions.M_TO_IN, rightMotorSimulator.getVelocity()* Conversions.M_TO_IN, 0);
 			
 			PathFollowerPosition.getInstance().update(calculateNewRobotPos(output1)[0],calculateNewRobotPos(output1)[1],calculateNewRobotPos(output1)[2], output1.getLeftVelocity(), output1.getRightVelocity());
 

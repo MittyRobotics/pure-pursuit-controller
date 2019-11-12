@@ -4,11 +4,12 @@ public class PurePursuitOutput {
 
     private double leftVelocity;
     private double rightVelocity;
+    private double angleToLookahead;
 
-    public PurePursuitOutput(double leftVelocity, double rightVelocity){
-
+    public PurePursuitOutput(double leftVelocity, double rightVelocity, double angleToLookahead){
         this.leftVelocity = leftVelocity;
         this.rightVelocity = rightVelocity;
+        this.angleToLookahead = angleToLookahead;
     }
 
     public double getLeftVelocity() {
@@ -25,5 +26,13 @@ public class PurePursuitOutput {
 
     public void setRightVelocity(double rightVelocity) {
         this.rightVelocity = rightVelocity;
+    }
+
+    public double getAngleToLookahead() {
+        return angleToLookahead;
+    }
+
+    public void setAngleToLookahead(double angleToLookahead) {
+        this.angleToLookahead = angleToLookahead;
     }
 }

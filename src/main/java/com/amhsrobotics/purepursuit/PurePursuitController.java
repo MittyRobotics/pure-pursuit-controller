@@ -79,7 +79,7 @@ public class PurePursuitController {
 
         this.prevTime = time;
 
-        return new PurePursuitOutput(left, right);
+        return new PurePursuitOutput(left, right,calculateAngleToLookahead());
     }
 
     /**
@@ -280,6 +280,23 @@ public class PurePursuitController {
      */
     private double map(double val, double valMin, double valMax, double desiredMin, double desiredMax) {
         return (val - valMin) / (valMax - valMin) * (desiredMax - desiredMin) + desiredMin;
+    }
+
+    /**
+     * Returns the angle from the robot's current angle to the lookahead point
+     *
+     * @return the angle from the robot's current angle to the lookahead point
+     */
+    private double calculateAngleToLookahead(){
+        double robotAngle = PathFollowerPosition.getInstance().getPathCentricHeading();
+        double rx = PathFollowerPosition.getInstance().getPathCentricX();
+        double ry = PathFollowerPosition.getInstance().getPathCentricY();
+        double lx = currentTargetPoint.getX();
+        double ly = currentTargetPoint.getY();
+        double x = lx - rx;
+        double y = ly - ry;
+        double angleToLookahead = robotAngle - Math.toDegrees(Math.atan2(y,x));
+        return angleToLookahead;
     }
 
     public double getLookaheadDistance() {

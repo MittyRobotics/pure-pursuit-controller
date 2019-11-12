@@ -27,7 +27,7 @@ public class TestMain {
         double setpoint = 10 * Conversions.IN_TO_M;
 
         double t = 0.0;
-        
+
         while (t < 20) {
             motorSimulator.update(setpoint, iterationTime);
             graph.addPosition(motorSimulator.getPosition(), t);
@@ -36,5 +36,13 @@ public class TestMain {
             graph.addSetpoint(setpoint, t);
             t += iterationTime;
         }
+        System.out.println(calculateAngleToLookahead(0,10,10,5,5));
+    }
+
+    public static double calculateAngleToLookahead(double robotAngle, double lx, double ly, double rx, double ry){
+        double x = lx - rx;
+        double y = ly - ry;
+        double angleToLookahead = robotAngle - Math.toDegrees(Math.atan2(y,x));
+        return angleToLookahead;
     }
 }
