@@ -61,12 +61,12 @@ public class PurePursuitSimulator extends Thread {
 		
 
 		
-		double mass = 40.0 * Conversions.LBS_TO_KG;
-		double gearRatio = 7.954545454545454;
+		double mass = 30.0 * Conversions.LBS_TO_KG;
+		double gearRatio = 7;
 		double wheelRadius = 2.0 * Conversions.IN_TO_M;
 		double maxVoltage = 12.0;
 		ControlLoop controlLoop = new ControlLoop(ControlLoopType.VELOCITY, maxVoltage, iterationTime);
-		controlLoop.setupVelocityController(.085, 0.0, 0.01);
+		controlLoop.setupVelocityController(3, 0.0, 0.01);
 		ControlType controlType = ControlType.VELOCITY;
 		MotorSimulator leftMotorSimulator = new MotorSimulator(new CIMMotor(), 2.0D, mass/2, gearRatio, wheelRadius, controlLoop, controlType, "CIM motor");
 		MotorSimulator rightMotorSimulator = new MotorSimulator(new CIMMotor(), 2.0D, mass/2, gearRatio, wheelRadius, controlLoop, controlType, "CIM motor");

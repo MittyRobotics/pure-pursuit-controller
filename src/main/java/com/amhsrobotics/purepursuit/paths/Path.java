@@ -18,6 +18,16 @@ public class Path {
 	/**The array of generated points that makeup the path*/
 	private TrajectoryPoint[] trajectoryPoints;
 
+	/**
+	 * Number of points at the end of the graph that are reduced
+	 */
+	private double slowdownPoints;
+
+	/**
+	 * Number divided by the velocity at the slowdown points.
+	 */
+	private double slowdownFactor;
+
 	private double kCurvature = 1;
 
 	private CoordinateSystem GENERATOR_COORDINATE_SYSTEM = new CoordinateSystem(
@@ -26,11 +36,17 @@ public class Path {
 			VectorDirection.POSITIVE_Y,
 			VectorDirection.NEGATIVE_X);
 
-
 	/**
 	 * Path constructor
 	 */
 	public Path(Coordinate[] coordinates, VelocityConstraints velocityConstraints){
+		this(coordinates,velocityConstraints,0,0);
+	}
+
+	/**
+	 * Path constructor
+	 */
+	public Path(Coordinate[] coordinates, VelocityConstraints velocityConstraints, double slowdownPoints, double slowdownFactor){
 
 		for(int i = 0; i < coordinates.length; i++){
 			coordinates[i] = CoordinateManager.getInstance().coordinateTransformation(coordinates[i], GENERATOR_COORDINATE_SYSTEM);
@@ -38,6 +54,8 @@ public class Path {
 		this.coordinates = coordinates;
 		this.velocityConstraints = velocityConstraints;
 		this.kCurvature = velocityConstraints.getkCurvature();
+		this.slowdownPoints = slowdownPoints;
+		this.slowdownFactor = slowdownFactor;
 
 		generatePoints();
 		calculatePositions();
@@ -139,6 +157,9 @@ public class Path {
 			}
 		}
 		trajectoryPoints[0].setVelocity(trajectoryPoints[1].getVelocity());
+		for(int i = trajectoryPoints.length-1; i > trajectoryPoints.length-1-slowdownPoints; i--){
+			trajectoryPoints[i].setVelocity(Math.min(Math.max(velocityConstraints.getMinVelocity(),trajectoryPoints[i].getVelocity()/slowdownFactor),trajectoryPoints[i].getVelocity()));
+		}
 	}
 
 	public Coordinate[] getCoordinates() {

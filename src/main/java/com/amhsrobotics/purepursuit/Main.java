@@ -8,19 +8,17 @@ public class Main {
     
     public static void main(String[] args) {
 
-        VelocityConstraints pathVelocityConstraints = new VelocityConstraints(40, 40, 100, 0, 0, 1);
+        VelocityConstraints pathVelocityConstraints = new VelocityConstraints(40, 30, 150, 20,30, 0, 2);
 
         Coordinate[] coordinates = new Coordinate[]{
                 new Coordinate(0, 0, 0),
-                new Coordinate(0, 45, 0),
-                new Coordinate(5, 50, 90),
-                new Coordinate(45, 50, 90),
-                new Coordinate(50, 55, 0),
-                new Coordinate(50, 100, 0)
+                new Coordinate(0, 30, 0),
+                new Coordinate(-50, 80, 0),
+                new Coordinate(-50, 150, 0)
         };
-        Path path = new CubicHermitePath(coordinates, pathVelocityConstraints);
+        Path path = new CubicHermitePath(coordinates, pathVelocityConstraints,20,2);
 
-        PurePursuitController controller = new PurePursuitController(path, 20, 10, false);
+        PurePursuitController controller = new PurePursuitController(path, 30, 20, false);
         PathFollowerPosition.getInstance().update(0, 0, 0,  0, 0);
         PathFollowerPosition.getInstance().setupRobot(27);
 

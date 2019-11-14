@@ -9,6 +9,10 @@ public class CubicHermitePath extends Path {
 		super(coordinates, velocityConstraints);
 	}
 
+	public CubicHermitePath(Coordinate[] coordinates, VelocityConstraints velocityConstraints, double slowdownPoints, double slowdownFactor){
+		super(coordinates, velocityConstraints,slowdownPoints,slowdownFactor);
+	}
+
 	@Override
 	public void generatePoints() {
 		int steps = 400;
