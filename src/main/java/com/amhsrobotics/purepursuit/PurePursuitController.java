@@ -27,7 +27,7 @@ public class PurePursuitController {
     private TrajectoryPoint currentClosestPoint;
     private TrajectoryPoint currentTargetPoint;
     private Point2D.Double currentCircleCenterPoint;
-    private double adaptiveDistanceScaleFactor;
+    private double adaptiveDistanceGain;
     private int prevTargetIndex;
     private double time;
     private double prevTime;
@@ -270,7 +270,7 @@ public class PurePursuitController {
 
         //Adaptive Lookahead from distance away from path
         double distanceToPath = currentClosestPoint.distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY()));
-        distanceToPath = distanceToPath * adaptiveDistanceScaleFactor;
+        distanceToPath = distanceToPath * adaptiveDistanceGain;
         this.currentLookaheadDistance = lookaheadDistance + distanceToPath;
     }
 
@@ -401,11 +401,11 @@ public class PurePursuitController {
         this.reversed = reversed;
     }
 
-    public double getAdaptiveDistanceScaleFactor() {
-        return adaptiveDistanceScaleFactor;
+    public double getAdaptiveDistanceGain() {
+        return adaptiveDistanceGain;
     }
 
-    public void setAdaptiveDistanceScaleFactor(double adaptiveDistanceScaleFactor) {
-        this.adaptiveDistanceScaleFactor = adaptiveDistanceScaleFactor;
+    public void setAdaptiveDistanceGain(double adaptiveDistanceGain) {
+        this.adaptiveDistanceGain = adaptiveDistanceGain;
     }
 }
