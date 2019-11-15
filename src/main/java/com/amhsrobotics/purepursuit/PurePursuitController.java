@@ -28,7 +28,9 @@ public class PurePursuitController {
     private TrajectoryPoint currentTargetPoint;
     private Point2D.Double currentCircleCenterPoint;
     private double adaptiveDistanceGain;
+    private double adjustedCurrentVelocity;
     private int prevTargetIndex;
+    private double kCurvature;
     private double time;
     private double prevTime;
     private boolean reversed;
@@ -91,7 +93,7 @@ public class PurePursuitController {
      * @return the left wheel velocity
      */
     private double leftVelocityFromRadius() {
-        double baseVelocity = currentClosestPoint.getVelocity();
+        double baseVelocity = Math.min(currentClosestPoint.getVelocity(), adjustedCurrentVelocity);
 
         this.currentBaseVelocity = baseVelocity;
 
@@ -113,7 +115,7 @@ public class PurePursuitController {
      * @return the right wheel velocity
      */
     private double rightVelocityFromRadius() {
-        double baseVelocity = currentClosestPoint.getVelocity();
+        double baseVelocity = Math.min(currentClosestPoint.getVelocity(), adjustedCurrentVelocity);
 
         this.currentBaseVelocity = baseVelocity;
 
@@ -274,6 +276,12 @@ public class PurePursuitController {
         this.currentLookaheadDistance = lookaheadDistance + distanceToPath;
     }
 
+    private void calculateAdaptiveVelocity(){
+
+
+        this.adjustedCurrentVelocity = kCurvature / (1/currentRadius);
+    }
+
     /**
      * Maps a value between valMin and valMax to desiredMin and desiredMax
      *
@@ -408,4 +416,20 @@ public class PurePursuitController {
     public void setAdaptiveDistanceGain(double adaptiveDistanceGain) {
         this.adaptiveDistanceGain = adaptiveDistanceGain;
     }
+
+    public double getAdjustedCurrentVelocity() {
+        return adjustedCurrentVelocity;
+    }
+
+    public void setAdjustedCurrentVelocity(double adjustedCurrentVelocity) {
+        this.adjustedCurrentVelocity = adjustedCurrentVelocity;
+    }
+    public double getkCurvature() {
+        return kCurvature;
+    }
+
+    public void setkCurvature(double kCurvature) {
+        this.kCurvature = kCurvature;
+    }
+
 }
