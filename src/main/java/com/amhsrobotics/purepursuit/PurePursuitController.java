@@ -2,7 +2,6 @@ package com.amhsrobotics.purepursuit;
 
 import com.amhsrobotics.purepursuit.paths.Path;
 import com.amhsrobotics.purepursuit.paths.TrajectoryPoint;
-import com.sun.tools.jdeps.JdepsFilter;
 
 import java.awt.geom.Point2D;
 
