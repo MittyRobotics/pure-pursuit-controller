@@ -2,6 +2,7 @@ package com.amhsrobotics.purepursuit;
 
 import com.amhsrobotics.purepursuit.paths.Path;
 import com.amhsrobotics.purepursuit.paths.TrajectoryPoint;
+import com.sun.tools.jdeps.JdepsFilter;
 
 import java.awt.geom.Point2D;
 
@@ -27,6 +28,7 @@ public class PurePursuitController {
     private TrajectoryPoint currentClosestPoint;
     private TrajectoryPoint currentTargetPoint;
     private Point2D.Double currentCircleCenterPoint;
+    private double adaptiveDistanceScaleFactor;
     private int prevTargetIndex;
     private double time;
     private double prevTime;
@@ -258,14 +260,19 @@ public class PurePursuitController {
      * The adaptive lookahead distance is based on the velocity of the current point.
      */
     private void calculateAdaptiveLookahead() {
+//Adaptive Lookahead from velocity of closest point
+//        double x = currentClosestPoint.getVelocity();
+//        double a = path.getVelocityConstraints().getMinVelocity();
+//        double b = path.getVelocityConstraints().getMaxVelocity();
+//        double c = minLookaheadDistance;
+//        double d = lookaheadDistance;
+//
+//        this.currentLookaheadDistance = Math.max(map(x, a, b, c, d), minLookaheadDistance);
 
-        double x = currentClosestPoint.getVelocity();
-        double a = path.getVelocityConstraints().getMinVelocity();
-        double b = path.getVelocityConstraints().getMaxVelocity();
-        double c = minLookaheadDistance;
-        double d = lookaheadDistance;
-
-        this.currentLookaheadDistance = Math.max(map(x, a, b, c, d), minLookaheadDistance);
+        //Adaptive Lookahead from distance away from path
+        double distanceToPath = currentClosestPoint.distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY()));
+        distanceToPath = distanceToPath * adaptiveDistanceScaleFactor;
+        this.currentLookaheadDistance = lookaheadDistance + distanceToPath;
     }
 
     /**
@@ -393,5 +400,13 @@ public class PurePursuitController {
 
     public void setReversed(boolean reversed) {
         this.reversed = reversed;
+    }
+
+    public double getAdaptiveDistanceScaleFactor() {
+        return adaptiveDistanceScaleFactor;
+    }
+
+    public void setAdaptiveDistanceScaleFactor(double adaptiveDistanceScaleFactor) {
+        this.adaptiveDistanceScaleFactor = adaptiveDistanceScaleFactor;
     }
 }
