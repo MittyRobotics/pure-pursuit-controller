@@ -72,6 +72,8 @@ public class PurePursuitController {
         double endThreshold = 1;
         isFinished = currentClosestPoint.distance(new TrajectoryPoint(PathFollowerPosition.getInstance().getX(), PathFollowerPosition.getInstance().getY())) < endThreshold;
 
+        calculateAdaptiveVelocity();
+
         double left = leftVelocityFromRadius();
         double right = rightVelocityFromRadius();
 
