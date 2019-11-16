@@ -279,9 +279,7 @@ public class PurePursuitController {
     }
 
     private void calculateAdaptiveVelocity(){
-
-
-        this.adjustedCurrentVelocity = kCurvature / (1/currentRadius);
+        this.adjustedCurrentVelocity = Math.abs(kCurvature / (1/currentRadius));
     }
 
     /**
