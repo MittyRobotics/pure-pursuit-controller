@@ -30,12 +30,13 @@ public class PathSimRobot implements SimRobot {
         this.path = new CubicHermitePath(coordinates, pathVelocityConstraints,0,2);
         this.controller = new PurePursuitController(this.path,20,20,false);
         controller.setAdaptiveDistanceGain(.8);
-        controller.setkCurvature(1);
+        controller.setkCurvature(2);
 
         PathFollowerPosition.getInstance().setupRobot(27);
+        SimSampleDrivetrain.getInstance().setOdometry(0,0,0);
         
-        SimSampleDrivetrain.getInstance().getRightMasterTalon().setPIDF(0.01,0,0,.005);
-        SimSampleDrivetrain.getInstance().getLeftMasterTalon().setPIDF(0.01,0,0,.005);
+        SimSampleDrivetrain.getInstance().getRightMasterTalon().setPIDF(0.0,0,0,.005);
+        SimSampleDrivetrain.getInstance().getLeftMasterTalon().setPIDF(0.0,0,0,.005);
     }
 
     private double t = 0;
@@ -61,10 +62,10 @@ public class PathSimRobot implements SimRobot {
     private double leftLastMeasured;
     private double rightLastMeasured;
     
-    private final double kV = 0.07; //0.07
+    private final double kV = 0.08; //0.07
     private final double kA = 0.0; //0.0
     private final double kP = 0.01; //0.01
-    private final double kT = 10;
+    private final double kT = 0;
     
     public void customTankVelocity(double leftVel, double rightVel, double angle){
         double left;
@@ -80,9 +81,16 @@ public class PathSimRobot implements SimRobot {
         System.out.println(angle);
         
         double turn = angle * kT;
-        
-        leftVel += turn;
-        rightVel -= turn;
+
+        if((leftVel + rightVel)/2 < 0){
+            leftVel -= turn;
+            rightVel += turn;
+        }
+        else{
+            leftVel += turn;
+            rightVel -= turn;
+        }
+
         
         
         double measuredLeft = SimSampleDrivetrain.getInstance().getLeftMasterTalon().getVelocity();
