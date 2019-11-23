@@ -16,7 +16,7 @@ public class Main {
                 new Coordinate(-50, 80, 0),
                 new Coordinate(-50, 150, 0)
         };
-        Path path = new CubicHermitePath(coordinates, pathVelocityConstraints,20,2);
+        Path path = new CubicHermitePath(coordinates, pathVelocityConstraints,0,2);
 
         PurePursuitController controller = new PurePursuitController(path, 30, 20, false);
         PathFollowerPosition.getInstance().update(0, 0, 0,  0, 0);

@@ -9,6 +9,7 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.title.LegendTitle;
+import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -16,13 +17,18 @@ import javax.swing.*;
 import java.awt.*;
 
 public class PurePursuitSimulatorGraph extends JFrame {
+    
 
+    
     private static PurePursuitSimulatorGraph instance = new PurePursuitSimulatorGraph();
 
     public static PurePursuitSimulatorGraph getInstance(){
         return instance;
     }
-
+    public static void setInstance(PurePursuitSimulatorGraph instance) {
+        PurePursuitSimulatorGraph.instance = instance;
+    }
+    
     private XYSeriesCollection pathDataset;
     private XYSeriesCollection circleDataset;
     private XYSeriesCollection robotDataset;
@@ -37,9 +43,10 @@ public class PurePursuitSimulatorGraph extends JFrame {
 
     private Path currentPath;
 
-    private PurePursuitSimulatorGraph(){
+    public PurePursuitSimulatorGraph(){
         super("Graph");
-
+        
+        
         pathDataset = new XYSeriesCollection();
         circleDataset = new XYSeriesCollection();
         robotDataset = new XYSeriesCollection();
@@ -96,9 +103,10 @@ public class PurePursuitSimulatorGraph extends JFrame {
         this.plot = plot;
 
 
-        panel.setPreferredSize(new Dimension(600,600));
+        panel.setPreferredSize(new Dimension(200,200));
         
-        setLayout(new GridLayout(2,2));
+        setLayout(new GridLayout(2,3));
+        //setPreferredSize(new Dimension(1200,800));
         
         
         add(panel);
@@ -144,7 +152,7 @@ public class PurePursuitSimulatorGraph extends JFrame {
         // Create Panel
         ChartPanel panel = new ChartPanel(chart);
 
-        panel.setPreferredSize(new Dimension(800,800));
+        //panel.setPreferredSize(new Dimension(200,200));
     
         chart.setBackgroundPaint(new Color(71, 71, 71));
         chart.getTitle().setPaint(new Color(158, 159, 157));
@@ -164,7 +172,7 @@ public class PurePursuitSimulatorGraph extends JFrame {
         plot.setRangeGridlinePaint(new Color(0,0,0, 180));
     
         panel.setBackground(new Color(71, 71, 71));
-        panel.setPreferredSize(new Dimension(400,400));
+        panel.setPreferredSize(new Dimension(200,200));
         return panel;
     }
 
@@ -234,10 +242,10 @@ public class PurePursuitSimulatorGraph extends JFrame {
         double y1 = PathFollowerPosition.getInstance().getPathCentricY() + Math.sin(Math.toRadians(heading-90))*(robotWidth/2);
         double x2 = PathFollowerPosition.getInstance().getPathCentricX() + Math.cos(Math.toRadians(heading+90))*(robotWidth/2);
         double y2 = PathFollowerPosition.getInstance().getPathCentricY() + Math.sin(Math.toRadians(heading+90))*(robotWidth/2);
-        double x3 = x1 + Math.cos(Math.toRadians(heading))*(rightVelocity/.1);
-        double y3 = y1 + Math.sin(Math.toRadians(heading))*(rightVelocity/.1);
-        double x4 = x2 + Math.cos(Math.toRadians(heading))*(leftVelocity/.1);
-        double y4 = y2 + Math.sin(Math.toRadians(heading))*(leftVelocity/.1);
+        double x3 = x1 + Math.cos(Math.toRadians(heading))*(rightVelocity);
+        double y3 = y1 + Math.sin(Math.toRadians(heading))*(rightVelocity);
+        double x4 = x2 + Math.cos(Math.toRadians(heading))*(leftVelocity);
+        double y4 = y2 + Math.sin(Math.toRadians(heading))*(leftVelocity);
         rSeries.add(x1,y1);
         lSeries.add(x2,y2);
         rSeries.add(x3,y3);
