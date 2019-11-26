@@ -74,6 +74,7 @@ public class PurePursuitController {
 
         calculateAdaptiveVelocity();
 
+
         double left = leftVelocityFromRadius();
         double right = rightVelocityFromRadius();
 

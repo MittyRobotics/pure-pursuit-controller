@@ -17,7 +17,7 @@ public class NewSimMain {
     public static void main(String[] args) {
     
         PathSimRobot robot = new PathSimRobot();
-        RobotSimManager.getInstance().setupRobotSimManager(robot, SimSampleDrivetrain.getInstance(),40,7,2,27,40,0.02);
+        RobotSimManager.getInstance().setupRobotSimManager(robot, SimSampleDrivetrain.getInstance(),125,7,2,27,40,0.02);
         PathFollowerPosition.getInstance().update(0,0,0,0,0);
         new Thread(RobotSimManager.getInstance()).start();
         RobotGraph.getInstance().resizeGraph(-20,200,-200,20);

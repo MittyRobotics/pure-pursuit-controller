@@ -11,6 +11,7 @@ public class TrajectoryPoint {
 	private double position;
 	private double velocity;
 	private double curvature;
+	private double angle;
 	private double time;
 
 	public TrajectoryPoint(double x, double y) {
@@ -59,6 +60,9 @@ public class TrajectoryPoint {
 	}
 
 	public double getCurvature() {
+		return Math.abs(curvature);
+	}
+	public double getRawCurvature(){
 		return curvature;
 	}
 
@@ -72,5 +76,13 @@ public class TrajectoryPoint {
 
 	public void setTime(double time) {
 		this.time = time;
+	}
+	
+	public double getAngle() {
+		return angle;
+	}
+	
+	public void setAngle(double angle) {
+		this.angle = angle;
 	}
 }

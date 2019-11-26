@@ -32,10 +32,12 @@ public class PathSimRobot implements SimRobot {
 		
 		Coordinate[] coordinates = new Coordinate[]{
 				new Coordinate(0, 0, 0),
-                new Coordinate(-100, 150, 0),
+				new Coordinate(-30, 50, 0),
+				new Coordinate(-30, 110, 0),
+				new Coordinate(-10, 150, 45),
 		};
 		this.path = new CubicHermitePath(coordinates, pathVelocityConstraints, 0, 2);
-		this.controller = new PurePursuitController(this.path, 20, 20, false);
+		this.controller = new PurePursuitController(this.path, 15, 20, false);
 		controller.setAdaptiveDistanceGain(.8);
 		controller.setkCurvature(2);
 		
@@ -60,11 +62,16 @@ public class PathSimRobot implements SimRobot {
 		PathFollowerPosition.getInstance().update(SimSampleDrivetrain.getInstance().getRobotX(), SimSampleDrivetrain.getInstance().getRobotY(), SimSampleDrivetrain.getInstance().getHeading(), SimSampleDrivetrain.getInstance().getLeftMasterTalon().getVelocity(), SimSampleDrivetrain.getInstance().getRightMasterTalon().getVelocity());
 		PurePursuitOutput output = controller.update(t - 1);
 		
-		System.out.println(output.getLeftVelocity() + " " + output.getRightVelocity());
+		//System.out.println(output.getLeftVelocity() + " " + output.getRightVelocity());
+		
+		double radius = 1/controller.getCurrentClosestPoint().getRawCurvature();
+		
+		//output = ramseteTest(controller.getCurrentClosestPoint().getVelocity(), controller.getCurrentClosestPoint().getVelocity()/radius,controller.getCurrentClosestPoint().getX(), controller.getCurrentClosestPoint().getY(),Math.toRadians(controller.getCurrentClosestPoint().getAngle()));
+		
 		
 		customTankVelocity(output.getLeftVelocity(), output.getRightVelocity(), output.getAngleToLookahead());
 		
-		System.out.println(SimSampleDrivetrain.getInstance().getLeftMasterTalon().getVelocity() + " " + SimSampleDrivetrain.getInstance().getRightMasterTalon().getVelocity());
+		//System.out.println(SimSampleDrivetrain.getInstance().getLeftMasterTalon().getVelocity() + " " + SimSampleDrivetrain.getInstance().getRightMasterTalon().getVelocity());
 		graph(output);
 		
 //		if(t > 5){
@@ -77,6 +84,7 @@ public class PathSimRobot implements SimRobot {
 //            PurePursuitSimulatorGraph.setInstance(new PurePursuitSimulatorGraph());
 //            setupGraph();
 //        }
+
 	}
 	
 	private void setupGraph(){
@@ -113,7 +121,8 @@ public class PathSimRobot implements SimRobot {
         PurePursuitSimulatorGraph.getInstance().graphPath(controller.getPath());
         
         PurePursuitSimulatorGraph.getInstance().resizeGraph();
-    }
+        
+ }
 	
 	private void graph(PurePursuitOutput output){
         SwingUtilities.invokeLater(() -> {
@@ -137,7 +146,47 @@ public class PathSimRobot implements SimRobot {
             PurePursuitSimulatorGraph.getInstance().graphRobotVelocityOverTime((output.getLeftVelocity() + output.getRightVelocity()) / 2, t);
         });
     }
+    
+    private PurePursuitOutput ramseteTest(double desiredVelocity, double desiredTurningVelocity, double desiredX, double desiredY, double desiredAngle){
+		double x = PathFollowerPosition.getInstance().getX();
+		double y = PathFollowerPosition.getInstance().getY();
+		double angle = -Math.toRadians(PathFollowerPosition.getInstance().getHeading());
+	    
+		double xDiff = desiredX-x;
+		double yDiff = desiredY-y;
+		double angleDiff = desiredAngle-angle;
+		
+		double eY = Math.cos(angle) * xDiff + Math.sin(angle) * yDiff;
+		double eX = -Math.sin(angle) * xDiff + Math.cos(angle) * yDiff;
+		double eA = angleDiff;
+		
+		double beta = 1.0;// > 0, makes convergence more aggressive
+		double zeta = 0.1; //[0,1], provides more damping
+	 
+	    double k = 2*zeta*Math.sqrt(desiredTurningVelocity*desiredTurningVelocity + beta*(desiredVelocity*desiredVelocity));
+	    
+	    double linearVelocity = desiredVelocity*Math.cos(eA)  + k * eX;
+	    linearVelocity = linearVelocity;
+	    
+	    double angularVelocity = desiredTurningVelocity + k*eA /* + beta*desiredVelocity*(Math.sin(eA)/eA)*eY*/;
+		angularVelocity = -angularVelocity;
 	
+	    PurePursuitOutput output = solveInverseKinematics(linearVelocity,angularVelocity);
+	
+	
+	    System.out.println("Linear: " + linearVelocity + " Angluar: " + angularVelocity +  " Left: " + output.getLeftVelocity() + " Right: " + output.getRightVelocity() + " eX: " + eX + " eY" + eY + " eA: " + eA + " desiredTurning: " + desiredTurningVelocity + " Desired Angle: " + desiredAngle + " k: " + k + " angle: " + angle);
+
+		return output;
+    }
+	
+
+    
+    private PurePursuitOutput solveInverseKinematics(double linearVelocity, double angularVelocity){
+		double vR = ((2*linearVelocity) + (angularVelocity*RobotSimManager.getInstance().getRobotWidth()))/(2*RobotSimManager.getInstance().getDriveWheelRadius());
+		double vL = ((2*linearVelocity) - (angularVelocity*RobotSimManager.getInstance().getRobotWidth()))/(2*RobotSimManager.getInstance().getDriveWheelRadius());
+		return new PurePursuitOutput(vR,vL,0);
+    }
+    
 	
 	private double leftLastMeasured;
 	private double rightLastMeasured;
