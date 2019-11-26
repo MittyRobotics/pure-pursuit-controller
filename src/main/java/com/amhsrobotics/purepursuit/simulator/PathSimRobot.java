@@ -32,11 +32,7 @@ public class PathSimRobot implements SimRobot {
 		
 		Coordinate[] coordinates = new Coordinate[]{
 				new Coordinate(0, 0, 0),
-				new Coordinate(0, 40, 0),
-                new Coordinate(-10, 50, -90),
-				new Coordinate(-90, 50, -90),
-				new Coordinate(-100, 60, 0),
-                new Coordinate(-100, 150, 0)
+                new Coordinate(-100, 150, 0),
 		};
 		this.path = new CubicHermitePath(coordinates, pathVelocityConstraints, 0, 2);
 		this.controller = new PurePursuitController(this.path, 20, 20, false);
@@ -58,6 +54,7 @@ public class PathSimRobot implements SimRobot {
 	
 	@Override
 	public void robotPeriodic() {
+		
 		t += RobotSimManager.getInstance().getPeriodTime();
 		
 		PathFollowerPosition.getInstance().update(SimSampleDrivetrain.getInstance().getRobotX(), SimSampleDrivetrain.getInstance().getRobotY(), SimSampleDrivetrain.getInstance().getHeading(), SimSampleDrivetrain.getInstance().getLeftMasterTalon().getVelocity(), SimSampleDrivetrain.getInstance().getRightMasterTalon().getVelocity());
@@ -175,7 +172,7 @@ public class PathSimRobot implements SimRobot {
 		
 		
 		double measuredLeft = SimSampleDrivetrain.getInstance().getLeftMasterTalon().getVelocity();
-		double FFLeft = kV * leftVel + kA * ((measuredLeft - leftLastMeasured) / .02);
+		double FFLeft = kV * leftVel + kA * ((measuredLeft - leftLastMeasured) / RobotSimManager.getInstance().getPeriodTime());
 		leftLastMeasured = measuredLeft;
 		double errorLeft = leftVel - measuredLeft;
 		double FBLeft = kP * errorLeft;
@@ -184,7 +181,7 @@ public class PathSimRobot implements SimRobot {
 		
 		double measuredRight = SimSampleDrivetrain.getInstance().getRightMasterTalon().getVelocity();
 		
-		double FFRight = kV * rightVel + kA * ((measuredRight - rightLastMeasured) / .02);
+		double FFRight = kV * rightVel + kA * ((measuredRight - rightLastMeasured) / RobotSimManager.getInstance().getPeriodTime());
 		
 		rightLastMeasured = measuredRight;
 		
