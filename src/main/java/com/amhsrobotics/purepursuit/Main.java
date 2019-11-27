@@ -7,6 +7,7 @@ import com.amhsrobotics.purepursuit.paths.Path;
 public class Main {
     
     public static void main(String[] args) {
+        
 
         VelocityConstraints pathVelocityConstraints = new VelocityConstraints(40, 30, 150, 20,30, 0, 2);
 

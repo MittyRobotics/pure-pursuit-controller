@@ -37,7 +37,7 @@ public class PathSimRobot implements SimRobot {
 				new Coordinate(-10, 150, 45),
 		};
 		this.path = new CubicHermitePath(coordinates, pathVelocityConstraints, 0, 2);
-		this.controller = new PurePursuitController(this.path, 15, 20, false);
+		this.controller = new PurePursuitController(this.path, 20, 20, false);
 		controller.setAdaptiveDistanceGain(.8);
 		controller.setkCurvature(2);
 		
@@ -166,9 +166,8 @@ public class PathSimRobot implements SimRobot {
 	    double k = 2*zeta*Math.sqrt(desiredTurningVelocity*desiredTurningVelocity + beta*(desiredVelocity*desiredVelocity));
 	    
 	    double linearVelocity = desiredVelocity*Math.cos(eA)  + k * eX;
-	    linearVelocity = linearVelocity;
 	    
-	    double angularVelocity = desiredTurningVelocity + k*eA /* + beta*desiredVelocity*(Math.sin(eA)/eA)*eY*/;
+	    double angularVelocity = desiredTurningVelocity /*+ k*eA  + beta*desiredVelocity*(sinc(eA))*eY*/;
 		angularVelocity = -angularVelocity;
 	
 	    PurePursuitOutput output = solveInverseKinematics(linearVelocity,angularVelocity);
@@ -178,6 +177,14 @@ public class PathSimRobot implements SimRobot {
 
 		return output;
     }
+	
+	private static double sinc(double x) {
+		if (Math.abs(x) < 1e-9) {
+			return 1.0 - 1.0 / 6.0 * x * x;
+		} else {
+			return Math.sin(x) / x;
+		}
+	}
 	
 
     
